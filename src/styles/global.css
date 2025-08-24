@@ -1,0 +1,57 @@
+/* Manrope Font */
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Style */
+body {
+  font-family: "Manrope", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.Inter_font {
+  font-family: "Inter", sans-serif;
+}
+
+
+/* Hide Scrollbar in forms */
+.no-scrollbar::-webkit-scrollbar {
+  width: 0px !important;
+}
+
+/* Custom Scroll Bar Styles */
+::-webkit-scrollbar {
+  width: 11px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid #facabc;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #facabc;
+  /* Color of the scroll thumb */
+  border-radius: 20px;
+  border: 1px solid #facabc;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a3a3a3;
+  /* Change color when hovered */
+}
+
+.transition_all {
+  transition: all 0.5s ease-out;
+}

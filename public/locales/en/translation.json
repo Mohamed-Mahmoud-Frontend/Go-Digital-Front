@@ -1,0 +1,1066 @@
+{
+    "nav": {
+        "home": "Home",
+        "products": "Products",
+        "blog": "Blog",
+        "contact": "Contact"
+    },
+    "products": {
+        "travel": "Travel",
+        "guarantees": "Guarantees",
+        "roadCarrier": "Road Carrier Liability",
+        "medicalForeigners": "Personal Accidents for Foreigners",
+        "liabilityIntermediaries": "Insurance Intermediaries Liability"
+    },
+    "hero_section": {
+        "title": "Insurance just became digital... simple!",
+        "subtitle": "Welcome to GoDigital! The insurance platform that makes the process easier and simpler than ever! At GoDigital, insurance adapts to your needs, in a modern way that fits your demanding lifestyle!",
+        "travel_insurance": "Travel Insurance",
+        "medical_insurance_foreigners": "Personal Accidents for Foreigners",
+        "professional_liability_insurance_intermediaries": "Insurance Intermediaries Liability",
+        "road_carrier_professional_liability": "Road Carrier Liability",
+        "guarantees": "Guarantee Letters"
+    },
+    "how_works_section": {
+        "title": "How it works",
+        "step1": "Provide the necessary information",
+        "step2": "View available packages",
+        "step3": "Pay online",
+        "step4": "Receive the contract instantly"
+    },
+    "why_digital_section": {
+        "title": "Why GoDigital?",
+        "subtitle": "At GoDigital, we simplify insurance digitally and bring innovative products to your screen that meet specialized needs!",
+        "feature1": "Easy Quote & Purchase Process",
+        "feature2": "Innovative Products",
+        "feature3": "Comprehensive Coverage",
+        "feature4": "Instant Policy Issuance",
+        "get_quote": "Get Quote"
+    },
+    "hero_blog_section": {
+        "title": "Our Blog",
+        "subtitle": "Discover articles and useful tips to improve your insurance and property protection, and more."
+    },
+    "contact_section": {
+        "title": "Have questions?",
+        "subtitle": "We'd love to hear from you! (subheading) <br />We're here to help with any questions you may have!",
+        "description": "Don't hesitate to contact us!",
+        "location": "Cyprus",
+        "form": {
+            "name": "Name",
+            "surname": "Surname",
+            "email": "Email",
+            "phone": "Phone",
+            "city": "City",
+            "customer": "Are you already a GoDigital customer?",
+            "yes": "YES",
+            "no": "NO",
+            "request_type": "Request Type",
+            "message": "Message",
+            "submit": "Submit Request"
+        }
+    },
+    "article_slider": {
+        "title": "Articles",
+        "subTitle": "Useful articles about insurance that help you make the right decisions!",
+        "more_button": "More"
+    },
+    "get_quote_popup": {
+        "title": "Get a Quote",
+        "products": {
+            "travel": "Travel",
+            "foreigners": "Personal Accidents for Foreigners",
+            "intermediaries": "Insurance Intermediaries Liability",
+            "liability": "Road Carrier Liability",
+            "guarantee": "Guarantees"
+        }
+    },
+    "slides_section": {
+        "latest_articles": {
+            "title": "Latest Articles",
+            "subTitle": "Useful articles about insurance that help you make the right decisions!"
+        },
+        "travel": {
+            "title": "Travel",
+            "subTitle": "Learn more about travel insurance and trips"
+        },
+        "guarantees": {
+            "title": "Guarantees",
+            "subTitle": "Learn more about insurance and guarantee letters."
+        },
+        "road_carrier": {
+            "title": "Road Carrier Liability",
+            "subTitle": "Learn more about insurance and transportation."
+        },
+        "medical_foreigners": {
+            "title": "Personal Accidents for Foreigners",
+            "subTitle": "Learn more about insurance and health."
+        },
+        "liability_intermediaries": {
+            "title": "Insurance Intermediaries Liability",
+            "subTitle": "Learn more about insurance and intermediation."
+        }
+    },
+    "warranties_section": {
+        "title": "en:)H GoDigital προσφέρει τα πιο κάτω είδη Εγγυήσεων",
+        "warranties": [
+            "Εγγύηση Συμμετοχής",
+            "Εγγύηση Προκαταβολής",
+            "Εγγύησης Καλής Εκτέλεσης",
+            "Εγγύηση Καλής Πληρωμής",
+            "Εγγύηση Καλής Λειτουργίας και Συντήρησης",
+            "Τελωνείου",
+            "Για τμήμα Μετανάστευσης",
+            "Ρυθμιστική Αρχή Ενέργειας (Ρ.Α.Ε.)"
+        ]
+    },
+    "active_contract": {
+        "title": "en:)Προσωπικών Ατυχημάτων Αλλοδαπών",
+        "insurance_company": "en:)Ασφαλιστική Εταιρεία",
+        "insurance_period": "en:)Ασφαλιστική Περίοδος",
+        "insured_person": "en:)Ασφαλισμένο Άτομο",
+        "nationality": "en:)Εθνικότητα",
+        "identity_card": "en:)Ταυτότητα/Διαβατήριο",
+        "birth_date": "en:)Ημ/νία Γέννησης",
+        "gender": "en:)Φύλο",
+        "coverages": "en:)Καλύψεις",
+        "amount_payed": "en:)Ποσό Πληρωμής",
+        "back_button": "en:)Πίσω",
+        "details": {
+            "death": "en:)Θάνατος από ατύχημα",
+            "total_disability": "en:)Ολική/Μερική/Μόνιμη ανικανότητα από ατύχημα",
+            "hospitalization": "en:)Ενδονοσοκομειακή περίθαλψη από ατύχημα ή ασθένεια",
+            "medical_expenses": "en:)Ιατροφαρμακευτικά έξοδα από ασθένεια ή ατύχημα"
+        }
+    },
+    "foreigners_detail": {
+        "hero_section": {
+            "title": "en:)Το Blog μας",
+            "travel_insurance_title": "en:)Ιατροφαρμακευτική Ασφάλιση Αλλοδαπών",
+            "travel_insurance_subtitle": "en:)Ανακαλύψτε άρθρα και χρήσιμες συμβουλές για την ασφάλιση και την υγεία"
+        },
+        "footer_section": {
+            "title": "en:)Προσωπικών Ατυχημάτων Αλλοδαπών",
+            "subtitle": "en:)Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "list": [
+                "Lorem ipsum dolor sit amet, consectetur",
+                "adipiscing elit, sed do eiusmod tempor",
+                "incididunt ut labore et dolore magna aliqua."
+            ],
+            "get_quote_button": "en:)Λήψη Προσφοράς",
+            "more_info_button": "en:)Περισσότερες Πληροφορίες"
+        },
+        "read_more": "en:)Διαβάστε Περισσότερα"
+    },
+    "guarantees_detail": {
+        "hero_section": {
+            "title": "en:)Το Blog μας",
+            "insurance_title": "en:)Ασφάλιση Επαγγελματικής Ευθύνης Ασφαλιστικών Διαμεσολαβητών",
+            "insurance_subtitle": "en:)Ανακαλύψτε άρθρα και χρήσιμες συμβουλές για την ασφάλιση και τη διαμεσολάβηση."
+        },
+        "footer_section": {
+            "title": "en:)Εγγυητικές",
+            "subtitle": "en:)Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "list": [
+                "Lorem ipsum dolor sit amet, consectetur",
+                "adipiscing elit, sed do eiusmod tempor",
+                "incididunt ut labore et dolore magna aliqua."
+            ],
+            "get_quote_button": "en:)Λήψη Προσφοράς",
+            "more_info_button": "en:)Περισσότερες Πληροφορίες"
+        },
+        "read_more": "en:)Διαβάστε Περισσότερα"
+    },
+    "intermediaries_detail": {
+        "hero_section": {
+            "title": "en:)Το Blog μας",
+            "insurance_title": "en:)Ιατροφαρμακευτική Ασφάλιση Αλλοδαπών",
+            "insurance_subtitle": "en:)Ανακαλύψτε άρθρα και χρήσιμες συμβουλές για την ασφάλιση και την υγεία"
+        },
+        "footer_section": {
+            "title": "en:)Ευθύνης Ασφαλιστικών Διαμεσολαβητών",
+            "subtitle": "en:)Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "list": [
+                "Lorem ipsum dolor sit amet, consectetur",
+                "adipiscing elit, sed do eiusmod tempor",
+                "incididunt ut labore et dolore magna aliqua."
+            ],
+            "get_quote_button": "en:)Λήψη Προσφοράς",
+            "more_info_button": "en:)Περισσότερες Πληροφορίες"
+        },
+        "read_more": "en:)Διαβάστε Περισσότερα"
+    },
+    "liability_detail": {
+        "hero_section": {
+            "title": "en:)Το Blog μας",
+            "insurance_title": "en:)Ασφάλιση Επαγγελματικής Ευθύνης Οδικού Μεταφορέα",
+            "insurance_subtitle": "en:)Ανακαλύψτε άρθρα και χρήσιμες συμβουλές για την ασφάλιση και τις μεταφορές."
+        },
+        "footer_section": {
+            "title": "en:)Ευθύνης Οδικού Μεταφορέα",
+            "subtitle": "en:)Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "list": [
+                "Lorem ipsum dolor sit amet, consectetur",
+                "adipiscing elit, sed do eiusmod tempor",
+                "incididunt ut labore et dolore magna aliqua."
+            ],
+            "get_quote_button": "en:)Λήψη Προσφοράς",
+            "more_info_button": "en:)Περισσότερες Πληροφορίες"
+        },
+        "read_more": "en:)Διαβάστε Περισσότερα"
+    },
+    "travel_detail": {
+        "hero_section": {
+            "title": "en:)Το Blog μας",
+            "insurance_title": "en:)Ταξιδιωτική Ασφάλιση",
+            "insurance_subtitle": "en:)Ανακαλύψτε άρθρα και χρήσιμες συμβουλές για την ταξιδιωτική ασφάλιση και τα ταξίδια"
+        },
+        "footer_section": {
+            "title": "en:)Ταξιδιωτική Ασφάλιση",
+            "subtitle": "en:)Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "list": [
+                "Lorem ipsum dolor sit amet, consectetur",
+                "adipiscing elit, sed do eiusmod tempor",
+                "incididunt ut labore et dolore magna aliqua."
+            ],
+            "get_quote_button": "en:)Λήψη Προσφοράς",
+            "more_info_button": "en:)Περισσότερες Πληροφορίες"
+        },
+        "read_more": "en:)Διαβάστε Περισσότερα"
+    },
+    "article_page": {
+        "header": {
+            "title": "en:)Δες κι άλλα άρθρα"
+        },
+        "products": {
+            "travel": "en:)Ταξιδιωτική",
+            "foreigners": "en:)Προσωπικών Ατυχημάτων Αλλοδαπών",
+            "intermediaries": "en:)Ευθύνης Ασφαλιστικών Διαμεσολαβητών",
+            "liability": "en:)Ευθύνης Οδικού Μεταφορά",
+            "guarantee": "en:)Εγγυήσεων"
+        },
+        "article": {
+            "title": "en:)Lorem ipsum dolor sit amet",
+            "content": [
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+                "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
+            ],
+            "date": "en:)08/12/2024"
+        },
+        "slider": {
+            "title": "en:)Ταξίδια",
+            "subTitle": "en:)Μάθε περισσότερα για την ταξιδιωτική ασφάλιση και τα ταξίδια"
+        },
+        "footer": {
+            "title": "en:)Travel Insurance",
+            "subtitle": "en:)Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "list": [
+                "Lorem ipsum dolor sit amet, consectetur",
+                "adipiscing elit, sed do eiusmod tempor",
+                "incididunt ut labore et dolore magna aliqua."
+            ],
+            "get_quote_button": "en:)Get Quote",
+            "more_info_button": "en:)More Info"
+        }
+    },
+    "home_page": {
+        "services_section": {
+            "title": "en:)Υπηρεσίες",
+            "description": "en:)Στη GoDigital φροντίζουμε να σας προσφέρουμε κορυφαίες υπηρεσίες που να κάνουν την εμπειρία σας μοναδική.",
+            "slides": [
+                {
+                    "title": "en:)Γρήγορη Προσφορά",
+                    "description": "en:)Πάρε σε λιγότερο από 1 λεπτό προσφορά για την ασφάλιση του ταξιδιού σου."
+                },
+                {
+                    "title": "en:)Ανθρώπινη Εξυπηρέτηση",
+                    "description": "en:)Έχεις απορίες; Άσε μας τα στοιχεία σου και θα επικοινωνήσουμε άμεσα μαζί σου."
+                },
+                {
+                    "title": "en:)Βοήθεια Απαιτήσεων",
+                    "description": "en:)Τη δύσκολη στιγμή έχεις δίπλα σου έναν άνθρωπο να σε στηρίξει."
+                },
+                {
+                    "title": "en:)Άμεση Διεκπεραίωση απαιτήσεων",
+                    "description": "en:)Φροντίζουμε να αποζημιώνεστε δίκαια και άμεσα."
+                }
+            ]
+        }
+    },
+    "travel_page": {
+        "hero_section": {
+            "headTitle": "en:)Ταξιδιωτική Ασφάλιση … ψηφιακά απλή!",
+            "subtitle": "en:)Η ταξιδιωτική ασφάλιση επιτέλους πιο απλή από ποτέ!",
+            "destination_title": "en:)Που ταξιδεύεις;",
+            "destination_subtitle": "en:)Πες μας τον προορισμό σου και πάρε προσφορά!",
+            "select_placeholder": "en:)Country",
+            "select_options": {
+                "greece": "en:)Greece",
+                "egypt": "en:)Egypt",
+                "france": "en:)France"
+            }
+        },
+        "how_works_section": {
+            "title": "en:)Πώς δουλεύει",
+            "steps": [
+                "Πες μας που πας και πότε",
+                "Επέλεξε το πλάνο που σου ταιριάζει",
+                "Πλήρωσε ηλεκτρονικά",
+                "Πάρε το συμβόλαιο στη στιγμή"
+            ]
+        },
+        "coverages_section": {
+            "title": "en:)Οι καλύψεις μας",
+            "description": "en:)Οι καλύψεις που προσφέρουν τα πακέτα Ταξιδιωτικής Ασφάλισης της GoDigital, εξασφαλίζουν τη μέγιστη προστασία σύμφωνα με τις ανάγκες σας. Πάντα να βεβαιώνεστε ποιες καλύψεις περιλαμβάνονται στο πακέτο που έχετε επιλέξει.",
+            "slides": [
+                {
+                    "title": "en:)Ιατρική Περίθαλψη",
+                    "description": "en:)Για να μην ανησυχείτε για ξαφνικές ασθένειες ή ατυχήματα ενώ είστε στο εξωτερικό."
+                },
+                {
+                    "title": "en:)Απώλεια Αποσκευών",
+                    "description": "en:)Έχασαν τη βαλίτσα σας στο αεροδρόμιο! Είμαστε εδώ για να σας προσφέρουμε αποζημίωση για να συνεχίσετε το ταξίδι σας χωρίς ταλαιπωρία."
+                },
+                {
+                    "title": "en:)Ακύρωση Ταξιδιού",
+                    "description": "en:)Οι ακυρώσεις πτήσεων και τα απρόοπτα είναι στο παιχνίδι. Με την κάλυψη αυτή είστε χωρίς έννοιες για το οικονομικό κόστος τέτοιων περιστατικών."
+                },
+                {
+                    "title": "en:)Καθυστέρηση Πτήσεων",
+                    "description": "en:)Οι καθυστερήσεις πτήσεων είναι συχνό φαινόμενο. Και σε αυτή τη περίπτωση σας έχουμε καλυμμένους."
+                },
+                {
+                    "title": "en:)Προσωπικά Ατυχήματα",
+                    "description": "en:)Εξασφαλίστε την οικονομική σας προστασία, για προσωπικά ατυχήματα που μπορεί να συμβούν ενώ ταξιδεύετε."
+                },
+                {
+                    "title": "en:)Προσωπική Ευθύνη",
+                    "description": "en:)Η κάλυψη αυτή θα σας προσφέρει προστασία από νομικές ευθύνες για τραυματισμούς ή ζημιές σε περιουσία που μπορεί να προκαλέσετε σε άλλους όσο ταξιδεύετε."
+                }
+            ]
+        },
+        "services_section": {
+            "title": "en:)Υπηρεσίες",
+            "description": "en:)Στην GoDigital φροντίζουμε να σας προσφέρουμε κορυφαίες υπηρεσίες που να κάνουν την εμπειρία σας μοναδική.",
+            "services": [
+                {
+                    "title": "en:)Γρήγορη Προσφορά",
+                    "description": "en:)Πάρε σε λιγότερο από 1 λεπτό προσφορά για την ασφάλιση του ταξιδιού σου."
+                },
+                {
+                    "title": "en:)Ανθρώπινη Εξυπηρέτηση",
+                    "description": "en:)Έχεις απορίες; Άσε μας τα στοιχεία σου και θα επικοινωνήσουμε άμεσα μαζί σου."
+                },
+                {
+                    "title": "en:)24/7 Βοήθεια",
+                    "description": "en:)Στη διάθεση σας διεθνές τηλεφωνικό κέντρο για άμεση εξυπηρέτηση όσο βρίσκεστε στο εξωτερικό."
+                },
+                {
+                    "title": "en:)Άμεση Διεκπεραίωση απαιτήσεων",
+                    "description": "en:)Φροντίζουμε να αποζημιώνεστε δίκαια και άμεσα."
+                }
+            ]
+        },
+        "why_section": {
+            "title": "en:)Γιατί GoDigital;",
+            "subtitle": "en:)Στην Go Digital απλοποιούμε την ασφάλιση ψηφιακά και φέρνουμε στην οθόνη σας τις καλύτερες επιλογές ταξιδιωτικής ασφάλισης.",
+            "features": [
+                "Εύκολη Διαδικασία Αγοράς",
+                "Διαφορετικές Επιλογές",
+                "Άμεση Έκδοση Συμβολαίου",
+                "24/7 Εξυπηρέτηση σε όλο τον κόσμο"
+            ]
+        },
+        "article_slider": {
+            "subTitle": "en:)Μάθε περισσότερα για την ταξιδιωτική ασφάλιση και τα ταξίδια"
+        },
+        "get_quote_button": "en:)Get Quote"
+    },
+    "liability_page": {
+        "hero_section": {
+            "headTitle": "en:)Ασφάλιση Επαγγελματικής Ευθύνης Οδικού Μεταφορέα!",
+            "subtitle": "en:)Εξασφαλίστε την εργασία σας ότι κι αν συμβεί … ψηφιακά και απλά!",
+            "input_placeholder": "en:)Αριθμός εγγραφής οχήματος",
+            "cta_text": "en:)Πες μας τον αριθμό εγγραφής του οχήματος σου και πάρε προσφορά!"
+        },
+        "how_works_section": {
+            "title": "en:)Πώς δουλεύει",
+            "steps": [
+                "Δώσε τις αναγκαίες πληροφορίες",
+                "Δες το πλάνο σου",
+                "Πλήρωσε ηλεκτρονικά",
+                "Πάρε το συμβόλαιο στη στιγμή"
+            ]
+        },
+        "coverages_section": {
+            "title": "en:)Οι καλύψεις μας",
+            "description": "en:)Οι καλύψεις που προσφέρει το συμβόλαιο Ασφάλισης Επαγγελματικής Ευθύνης Οδικού Μεταφορέα της GoDigital, εξασφαλίζουν τη μέγιστη προστασία για να εξασκείτε το επάγγελμα σας με τον καλύτερο τρόπο. Πάντα να βεβαιώνεστε ποιες καλύψεις περιλαμβάνονται στο συμβόλαιο σας.",
+            "slides": [
+                {
+                    "title": "en:)Κάλυψη Επαγγελματικής Ευθύνης",
+                    "description": "en:)Καλύπτει απαιτήσεις που εγείρονται κατά του ασφαλισμένου και αφορούν παραβίαση καθήκοντος λόγω αμέλειας, λανθασμένων ενεργειών ή παραλείψεων, που προκύπτουν από την άσκηση και διεξαγωγή της επαγγελματικής δραστηριότητας."
+                }
+            ]
+        },
+        "services_section": {
+            "title": "en:)Υπηρεσίες",
+            "description": "en:)Στην GoDigital φροντίζουμε να σας προσφέρουμε κορυφαίες υπηρεσίες που να κάνουν την εμπειρία σας μοναδική.",
+            "services": [
+                {
+                    "title": "en:)Γρήγορη Προσφορά",
+                    "description": "en:)Πάρε σε λιγότερο από 1 λεπτό προσφορά για την ασφάλιση του ταξιδιού σου."
+                },
+                {
+                    "title": "en:)Ανθρώπινη Εξυπηρέτηση",
+                    "description": "en:)Έχεις απορίες; Άσε μας τα στοιχεία σου και θα επικοινωνήσουμε άμεσα μαζί σου."
+                },
+                {
+                    "title": "en:)Άμεση Διεκπεραίωση απαιτήσεων",
+                    "description": "en:)Φροντίζουμε να αποζημιώνεστε δίκαια και άμεσα."
+                }
+            ]
+        },
+        "why_section": {
+            "title": "en:)Γιατί GoDigital;",
+            "subtitle": "en:)Στην Go Digital απλοποιούμε την ασφάλιση ψηφιακά και φέρνουμε στην οθόνη σας την καλύτερη πρόταση Επαγγελματικής Ευθύνης Οδικού Μεταφορέα.",
+            "features": [
+                "Εύκολη Διαδικασία Αγοράς",
+                "Όλες οι αναγκαίες καλύψεις",
+                "Άμεση Έκδοση Συμβολαίου"
+            ]
+        },
+        "article_slider": {
+            "subTitle": "en:)Μάθε περισσότερα για την ασφάλιση και τις μεταφορές."
+        },
+        "get_quote_button": "en:)Get Quote"
+    },
+    "intermediaries_page": {
+        "hero_section": {
+            "headTitle": "en:)Ασφάλιση Επαγγελματικής Ευθύνης Ασφαλιστικών Διαμεσολαβητών!",
+            "subtitle": "en:)Εξασφαλίστε την καριέρα σας ότι κι αν συμβεί … ψηφιακά και απλά!",
+            "cta_text": "en:)Φυσικό ή Νομικό πρόσωπο; Επέλεξε και πάρε προσφορά!",
+            "input_placeholder": "en:)Ταυτότητα"
+        },
+        "how_works_section": {
+            "title": "en:)Πώς δουλεύει",
+            "steps": [
+                "Δώσε τις αναγκαίες πληροφορίες",
+                "Δες το πλάνο σου",
+                "Πλήρωσε ηλεκτρονικά",
+                "Πάρε το συμβόλαιο στη στιγμή"
+            ]
+        },
+        "coverages_section": {
+            "title": "en:)Οι καλύψεις μας",
+            "description": "en:)Οι καλύψεις που προσφέρει το συμβόλαιο Ασφάλισης Επαγγελματικής Ευθύνης Ασφαλιστικών Διαμεσολαβητών της GoDigital, εξασφαλίζουν τη μέγιστη προστασία για να εξασκείτε το επάγγελμα σας με τον καλύτερο τρόπο. Πάντα να βεβαιώνεστε ποιες καλύψεις περιλαμβάνονται στο συμβόλαιο σας.",
+            "slides": [
+                {
+                    "title": "en:)Κάλυψη Επαγγελματικής Ευθύνης",
+                    "description": "en:)Καλύπτει απαιτήσεις που εγείρονται κατά του ασφαλισμένου και αφορούν παραβίαση καθήκοντος λόγω αμέλειας, λανθασμένων ενεργειών ή παραλείψεων, που προκύπτουν από την άσκηση και διεξαγωγή της επαγγελματικής δραστηριότητας."
+                },
+                {
+                    "title": "en:)Έξοδα Υπεράσπισης",
+                    "description": "en:)Καλύπτει τα έξοδα υπεράσπισης του ασφαλισμένου σε περίπτωση απαίτησης λόγω αμέλειας, λανθασμένων ενεργειών ή παραλείψεων."
+                }
+            ]
+        },
+        "services_section": {
+            "title": "en:)Υπηρεσίες",
+            "description": "en:)Στην GoDigital φροντίζουμε να σας προσφέρουμε κορυφαίες υπηρεσίες που να κάνουν την εμπειρία σας μοναδική.",
+            "services": [
+                {
+                    "title": "en:)Γρήγορη Προσφορά",
+                    "description": "en:)Πάρε σε λιγότερο από 1 λεπτό προσφορά για την ασφάλιση του ταξιδιού σου."
+                },
+                {
+                    "title": "en:)Ανθρώπινη Εξυπηρέτηση",
+                    "description": "en:)Έχεις απορίες; Άσε μας τα στοιχεία σου και θα επικοινωνήσουμε άμεσα μαζί σου."
+                },
+                {
+                    "title": "en:)Άμεση Διεκπεραίωση απαιτήσεων",
+                    "description": "en:)Φροντίζουμε να αποζημιώνεστε δίκαια και άμεσα."
+                }
+            ]
+        },
+        "why_section": {
+            "title": "en:)Γιατί GoDigital;",
+            "subtitle": "en:)Στην Go Digital απλοποιούμε την ασφάλιση ψηφιακά και φέρνουμε στην οθόνη σας την καλύτερη πρόταση Επαγγελματικής Ευθύνης Ασφαλιστικών Διαμεσολαβητών.",
+            "features": [
+                "Εύκολη Διαδικασία Αγοράς",
+                "Όλες οι αναγκαίες καλύψεις",
+                "Άμεση Έκδοση Συμβολαίου"
+            ]
+        },
+        "article_slider": {
+            "subTitle": "en:)Μάθε περισσότερα για την ασφάλιση και τη διαμεσολάβηση."
+        },
+        "get_quote_button": "en:)Get Quote"
+    },
+    "guarantees_page": {
+        "hero_section": {
+            "headTitle": "en:)Ασφάλιση Εγγυήσεων … ψηφιακά απλά!",
+            "subtitle": "en:)Εξασφαλίστε την εγγυητική επιστολή που χρειάζεστε χωρίς δέσμευση κεφαλαίων!",
+            "cta_text": "en:)Διάλεξε τον τύπο εγγύησης για να ξεκινήσεις τη διαδικασία προσφοράς!",
+            "select_placeholder": "en:)Εγγύηση",
+            "select_options": {
+                "option1": "en:)Επιλογή 1",
+                "option2": "en:)Επιλογή 2",
+                "option3": "en:)Επιλογή 3"
+            }
+        },
+        "how_works_section": {
+            "title": "en:)Πώς δουλεύει",
+            "steps": [
+                "Δώσε τις αναγκαίες πληροφορίες",
+                "Συμπλήρωσε τα στοιχεία σου",
+                "Πάρε την προσφορά στο email σου σε λίγες ημέρες"
+            ]
+        },
+        "coverages_section": {
+            "title": "en:)Πλεονεκτήματα Εγγυητικών Επιστολών",
+            "description": "en:)Η Ασφάλιση Εγγυήσεων προσφέρει πολλαπλά πλεονεκτήματα σε επιχειρήσεις και οργανισμούς που συμμετέχουν σε διαγωνισμούς και αναλαμβάνουν έργα.",
+            "slides": [
+                {
+                    "title": "en:)Αποφυγή δέσμευσης σημαντικών κεφαλαίων"
+                },
+                {
+                    "title": "en:)Μεγαλύτερο κεφάλαιο κίνησης και ρευστότητα"
+                },
+                {
+                    "title": "en:)Συμμετοχή σε περισσότερους διαγωνισμούς"
+                },
+                {
+                    "title": "en:)Διεκδίκηση περισσότερων διαγωνισμών με πιθανότητα για περισσότερες αναθέσεις έργων"
+                },
+                {
+                    "title": "en:)Αύξηση εσόδων και κερδοφορίας"
+                }
+            ]
+        },
+        "services_section": {
+            "title": "en:)Υπηρεσίες",
+            "description": "en:)Στην GoDigital φροντίζουμε να σας προσφέρουμε κορυφαίες υπηρεσίες που να κάνουν την εμπειρία σας μοναδική.",
+            "services": [
+                {
+                    "title": "en:)Γρήγορη Προσφορά",
+                    "description": "en:)Πάρε σε λιγότερο από 1 λεπτό προσφορά για την ασφάλιση του ταξιδιού σου."
+                },
+                {
+                    "title": "en:)Ανθρώπινη Εξυπηρέτηση",
+                    "description": "en:)Έχεις απορίες; Άσε μας τα στοιχεία σου και θα επικοινωνήσουμε άμεσα μαζί σου."
+                },
+                {
+                    "title": "en:)Άμεση Διεκπεραίωση απαιτήσεων",
+                    "description": "en:)Φροντίζουμε να αποζημιώνεστε δίκαια και άμεσα."
+                }
+            ]
+        },
+        "why_section": {
+            "title": "en:)Γιατί GoDigital;",
+            "subtitle": "en:)Στην Go Digital απλοποιούμε την ασφάλιση ψηφιακά και φέρνουμε στην οθόνη σας την καλύτερη πρόταση για έκδοση Εγγυητικών Επιστολών.",
+            "features": [
+                "Εύκολη Διαδικασία Προσφοράς",
+                "Χωρίς Δέσμευση Κεφαλαίων",
+                "Γρήγορη Έκδοση Εγγυητικής Επιστολής"
+            ]
+        },
+        "article_slider": {
+            "subTitle": "en:)Μάθε περισσότερα για την ασφάλιση και τις εγγυητικές επιστολές."
+        },
+        "get_quote_button": "en:)Get Quote"
+    },
+    "foreigners_page": {
+        "hero_section": {
+            "headTitle": "en:)Ιατροφαρμακευτική Ασφάλιση Αλλοδαπών … ψηφιακά απλή!",
+            "subtitle": "en:)Εξασφαλίστε τις πιο αναγκαίες καλύψεις για την υγεία σας!",
+            "cta_text": "en:)Έτοιμοι; Γράψε την ταυτότητα σου και πάρε προσφορά!",
+            "input_placeholder": "en:)Ταυτότητα"
+        },
+        "how_works_section": {
+            "title": "en:)Πώς δουλεύει",
+            "steps": [
+                "Δώσε τα προσωπικά σου στοιχεία",
+                "Δες το πλάνο σου",
+                "Πλήρωσε ηλεκτρονικά",
+                "Πάρε το συμβόλαιο στη στιγμή"
+            ]
+        },
+        "coverages_section": {
+            "title": "en:)Οι καλύψεις μας",
+            "description": "en:)Οι καλύψεις που προσφέρει το συμβόλαιο Ιατροφαρμακευτικής Ασφάλισης Αλλοδαπών της GoDigital, εξασφαλίζουν τη μέγιστη προστασία για την υγεία σας. Πάντα να βεβαιώνεστε ποιες καλύψεις περιλαμβάνονται στο συμβόλαιο σας.",
+            "slides": [
+                {
+                    "title": "en:)Θάνατος από Ατύχημα",
+                    "description": "en:)Καλύπτει τον θάνατο του ασφαλισμένου από ατύχημα με τους κληρονόμους του να εισπράττουν το ασφαλισμένο ποσό."
+                },
+                {
+                    "title": "en:)Ολική, μερική και μόνιμη ανικανότητα από ατύχημα",
+                    "description": "en:)Ο ασφαλισμένος εισπράττει το ποσό της κάλυψης σε περίπτωση Μόνιμης Ολικής Ανικανότητας ή Μόνιμης Μερικής Ανικανότητας από Ατύχημα."
+                },
+                {
+                    "title": "en:)Ενδονοσοκομειακή Περίθαλψη από ατύχημα ή ασθένεια",
+                    "description": "en:)Καλύπτει τα έξοδα περίθαλψης του ασφαλισμένου σε δημόσιο νοσοκομείο, λόγω ατυχήματος ή ασθένειας."
+                },
+                {
+                    "title": "en:)Ιατροφαρμακευτικά έξοδα από ατύχημα ή ασθένεια",
+                    "description": "en:)Καλύπτει τα Ιατροφαρμακευτικά έξοδα του ασφαλισμένου σε δημόσιο νοσοκομείο, λόγω ατυχήματος ή ασθένειας."
+                }
+            ]
+        },
+        "services_section": {
+            "title": "en:)Υπηρεσίες",
+            "description": "en:)Στην GoDigital φροντίζουμε να σας προσφέρουμε κορυφαίες υπηρεσίες που να κάνουν την εμπειρία σας μοναδική.",
+            "services": [
+                {
+                    "title": "en:)Γρήγορη Προσφορά",
+                    "description": "en:)Πάρε σε λιγότερο από 1 λεπτό προσφορά για την ασφάλιση του ταξιδιού σου."
+                },
+                {
+                    "title": "en:)Ανθρώπινη Εξυπηρέτηση",
+                    "description": "en:)Έχεις απορίες; Άσε μας τα στοιχεία σου και θα επικοινωνήσουμε άμεσα μαζί σου."
+                },
+                {
+                    "title": "en:)Άμεση Διεκπεραίωση απαιτήσεων",
+                    "description": "en:)Φροντίζουμε να αποζημιώνεστε δίκαια και άμεσα."
+                }
+            ]
+        },
+        "why_section": {
+            "title": "en:)Γιατί GoDigital;",
+            "subtitle": "en:)Στην Go Digital απλοποιούμε την ασφάλιση ψηφιακά και φέρνουμε στην οθόνη σας την καλύτερη πρόταση Ιατροφαρμακευτικής Ασφάλισης Αλλοδαπών.",
+            "features": [
+                "Εύκολη Διαδικασία Αγοράς",
+                "Πλούσιες Καλύψεις",
+                "Άμεση Έκδοση Συμβολαίου"
+            ]
+        },
+        "article_slider": {
+            "subTitle": "en:)Μάθε περισσότερα για την ασφάλιση και την υγεία."
+        },
+        "get_quote_button": "en:)Get Quote"
+    },
+    "profile_page": {
+        "hero_section": {
+            "email_placeholder": "en:)Email",
+            "phone_placeholder": "en:)Phone Number",
+            "password_placeholder": "en:)Password"
+        },
+        "contracts_button": "en:)ΣΥΜΒΟΛΑΙΑ"
+    },
+    "profile_contracts_page": {
+        "buttons": {
+            "active_contracts": "en:)ΕΝΕΡΓΑ ΣΥΜΒΟΛΑΙΑ",
+            "inactive_contracts": "en:)ΑΝΕΝΕΡΓΑ ΣΥΜΒΟΛΑΙΑ",
+            "contact": "en:)ΕΠΙΚΟΙΝΩΝΙΑ"
+        },
+        "products": {
+            "travel": "en:)Travel",
+            "intermediaries_liability": "en:)Ευθύνης Ασφαλιστικών Διαμεσολαβητών"
+        },
+        "view_button": "en:)VIEW",
+        "contract_dates": "en:)21/08/24-25/08/2024"
+    },
+    "foreigners_quote_page": {
+        "steps": {
+            "step1": {
+                "title1": "en:)Ποιο είναι το όνομά σου;",
+                "title2": "en:)Ποιο είναι το επώνυμό σου;",
+                "placeholder_departure": "en:)Where are you travelling from?",
+                "placeholder_arrival": "en:)Where are you travelling to?"
+            },
+            "step2": {
+                "title1": "en:)Ποιά είναι η εθνικότητά σου;",
+                "title2": "en:)Γράψε τον αριθμό της ταυτότητας ή του διαβατηρίου σου:",
+                "placeholder_nationality": "en:)Εθνικότητα",
+                "placeholder_id": "en:)Αριθμός ταυτότητας/διαβατηρίου"
+            },
+            "step3": {
+                "title1": "en:)Πότε είναι τα γενέθλιά σου;",
+                "title2": "en:)Παρακαλούμε επίλεξε το φύλο σου:",
+                "placeholder_preference": "en:)Preference",
+                "options": [
+                    "Economy",
+                    "Business",
+                    "First Class"
+                ]
+            },
+            "step4": {
+                "title": "en:)Επίλεξε την περίοδο ασφάλισης:",
+                "placeholder_date": "en:)Date"
+            }
+        },
+        "buttons": {
+            "previous": "en:)Previous",
+            "next": "en:)Next"
+        }
+    },
+    "guarantee_quote_page": {
+        "steps": {
+            "step1": {
+                "title1": "en:)Τύπος Εγγύησης",
+                "title2": "en:)Ημ/νία έναρξης",
+                "title3": "en:)Ημ/νία λήξης",
+                "placeholder_departure": "en:)Where are you travelling to?",
+                "placeholder_arrival": "en:)Where are you travelling to?"
+            },
+            "step2": {
+                "title1": "en:)Επιλογή προσώπου",
+                "title2": "en:)Ασφαλισμένος/Κάτοχος ασφαλιστηρίου",
+                "placeholder_nationality": "en:)Εθνικότητα",
+                "placeholder_id": "en:)Αριθμός ταυτότητας/διαβατηρίου"
+            },
+            "step3": {
+                "title": "en:)Συμπλήρωσε τα στοιχεία κατόχου ασφαλιστηρίου",
+                "placeholders": {
+                    "website": "en:)Website",
+                    "email": "en:)Ηλεκτρονικό ταχυδρομίο",
+                    "primary_phone": "en:)Τηλέφωνο επικοινωνίας",
+                    "secondary_phone": "en:)Άλλο τηλέφωνο επικοινωνίας",
+                    "address": "en:)Διεύθυνση",
+                    "tax_id": "en:)ΑΦΜ",
+                    "tax_office": "en:)Δ.Ο.Υ."
+                }
+            },
+            "step4": {
+                "title": "en:)Συμπλήρωσε τα στοιχεία δικαιούχου",
+                "placeholders": {
+                    "name": "en:)Όνομα",
+                    "email": "en:)Ηλεκτρονικό ταχυδρομίο",
+                    "primary_phone": "en:)Τηλέφωνο επικοινωνίας",
+                    "secondary_phone": "en:)Άλλο τηλέφωνο επικοινωνίας",
+                    "address": "en:)Διεύθυνση",
+                    "tax_id": "en:)ΑΦΜ",
+                    "tax_office": "en:)Δ.Ο.Υ."
+                }
+            },
+            "step5": {
+                "title": "en:)Συμπλήρωσε τις λεπτομέρειες εγγύησης",
+                "placeholders": {
+                    "tender_number": "en:)Αριθμός Διαγωνισμού",
+                    "tender_title": "en:)Τίτλος ή Σκοπός του Διαγωνισμού",
+                    "project_value": "en:)Αξία έργου / Διαγωνισμού",
+                    "guarantee_amount": "en:)Ποσό Εγγύησης"
+                }
+            }
+        },
+        "buttons": {
+            "previous": "Previous",
+            "next": "Next",
+            "submit": "Submit"
+        }
+    },
+    "guarantee_proceed": {
+        "header": "en:)Εγγύηση",
+        "select_quote": "en:)Επιλέξτε Εγγύηση",
+        "accept_button": "en:)Αποδοχή Εγγύησης",
+        "nav_modal": {
+            "title": "en:)Επιλογές Πλοήγησης",
+            "home": "en:)Μετάβαση στην Αρχική",
+            "products": "en:)Προβολή Προϊόντων",
+            "contact": "en:)Επικοινωνήστε μαζί μας",
+            "cancel": "en:)Ακύρωση"
+        },
+        "success_modal": {
+            "title": "en:)Τελευταίο Βήμα!",
+            "message": "en:)Η αίτησή σας έχει υποβληθεί επιτυχώς! Θα επικοινωνήσουμε μαζί σας σύντομα."
+        }
+    },
+    "intermediaries_quote_page": {
+        "steps": {
+            "step1": {
+                "title1": "en:)Κατηγορία ασφαλιστικού διαμεσολαβητή",
+                "title2": "en:)Πότε ξεκίνησες να ασκείς το επάγγελμά σου;",
+                "placeholder_departure": "en:)Επιλέξτε κατηγορία",
+                "placeholder_arrival": "en:)Επιλέξτε ημερομηνία"
+            },
+            "step2": {
+                "title1": "en:)Έναρξη ασφάλισης",
+                "title2": "en:)Επιλογή προσώπου",
+                "placeholder_nationality": "en:)Εθνικότητα",
+                "placeholder_id": "en:)Αριθμός ταυτότητας/διαβατηρίου"
+            },
+            "step3": {
+                "title1": "en:)Τελευταίο οικονομικό έτος",
+                "title2": "en:)Τρέχον οικονομικό έτος, εκτίμηση για την επιχείρησή σας",
+                "placeholder_preference": "en:)Επιλογή"
+            }
+        },
+        "buttons": {
+            "previous": "en:)Προηγούμενο",
+            "next": "en:)Επόμενο",
+            "submit": "en:)Υποβολή"
+        }
+    },
+    "liability_quote_page": {
+        "form": {
+            "title": "en:)Αριθμός Πινακίδας (VRM)",
+            "placeholder_departure": "en:)Από πού ταξιδεύετε;"
+        },
+        "buttons": {
+            "previous": "en:)Previous",
+            "next": "en:)Next"
+        }
+    },
+    "travel_quote_page": {
+        "steps": {
+            "step1": {
+                "title1": "en:)Από πού ταξιδεύετε;",
+                "title2": "en:)Πού ταξιδεύετε;",
+                "placeholder_departure": "en:)Επιλέξτε την τοποθεσία αναχώρησης",
+                "placeholder_arrival": "en:)Επιλέξτε την τοποθεσία προορισμού"
+            },
+            "step2": {
+                "title": "en:)Διάρκεια Ταξιδιού",
+                "placeholder_start_date": "en:)Ημερομηνία Έναρξης Ταξιδιού",
+                "placeholder_end_date": "en:)Ημερομηνία Λήξης Ταξιδιού"
+            },
+            "step3": {
+                "title": "en:)Ποιον θέλετε να καλύψει η ασφάλεια;",
+                "placeholder_preference": "en:)Επιλογή"
+            },
+            "step4": {
+                "title": "en:)Ποια είναι η ημερομηνία γέννησης του κύριου ταξιδιώτη;",
+                "placeholder_date": "en:)Ημερομηνία"
+            },
+            "step5": {
+                "title": "en:)Σχέδια Ασφάλισης Ταξιδιού"
+            }
+        },
+        "buttons": {
+            "previous": "en:)Previous",
+            "next": "en:)Next",
+            "submit": "en:)Υποβολή"
+        }
+    },
+    "travel_form": {
+        "step1": {
+            "header": "en:)Τελευταίο Βήμα!",
+            "subheader": "en:)Συμπλήρωσε τα παρακάτω για να αποκτήσεις την ασφάλισή σου!",
+            "progress": {
+                "personal_details": "en:)Στοιχεία ασφαλισμένου προσώπου"
+            },
+            "placeholders": {
+                "name": "en:)Όνομα",
+                "surname": "en:)Επώνυμο",
+                "country_code": "en:)Επιλέξτε Κωδικό Χώρας",
+                "phone": "en:)Τηλέφωνο επικοινωνίας",
+                "email": "en:)E-mail",
+                "city": "en:)Πόλη",
+                "postal_code": "en:)Ταχυδρομικός Κώδικας",
+                "address": "en:)Διεύθυνση"
+            },
+            "next_button": "en:)Επόμενο"
+        },
+        "step2": {
+            "header": "en:)Τελευταίο Βήμα!",
+            "subheader": "en:)Συμπλήρωσε τα παρακάτω για να αποκτήσεις την ασφάλισή σου!",
+            "progress": {
+                "medical_history": "en:)Ιατρικό Ιστορικό"
+            },
+            "medical_question": "en:)Κάποιος από τους ταξιδιώτες έχει ή είχε κάποια προϋπάρχουσα ιατρική κατάσταση ή βρίσκεται σε λίστα αναμονής για θεραπεία ή εξέταση;",
+            "buttons": {
+                "yes": "en:)ΝΑΙ",
+                "no": "en:)ΟΧΙ"
+            },
+            "note_placeholder": "en:)Σημείωση",
+            "submit_button": "en:)Υποβολή"
+        }
+    },
+    "liability_form": {
+        "header": "en:)Τελευταίο Βήμα!",
+        "subheader": "en:)Συμπλήρωσε τα παρακάτω για να αποκτήσεις την ασφάλισή σου!",
+        "progress": {
+            "personal_details": "en:)Στοιχεία ασφαλισμένου προσώπου"
+        },
+        "placeholders": {
+            "id_passport": "en:)Αριθμός ταυτότητας/διαβατηρίου",
+            "name": "en:)Όνομα",
+            "surname": "en:)Επώνυμο",
+            "email": "en:)Ηλεκτρονικό ταχυδρομίο",
+            "primary_phone": "en:)Τηλέφωνο επικοινωνίας",
+            "secondary_phone": "en:)Άλλο τηλέφωνο επικοινωνίας",
+            "address": "en:)Διεύθυνση",
+            "tax_id": "en:)ΑΦΜ",
+            "tax_office": "en:)Δ.Ο.Υ.",
+            "country_code": "en:)Επιλέξτε Κωδικό Χώρας"
+        },
+        "submit_button": "en:)Υποβολή"
+    },
+    "intermediaries_form": {
+        "header": "en:)Τελευταίο Βήμα!",
+        "subheader": "en:)Συμπλήρωσε τα παρακάτω για να αποκτήσεις την ασφάλισή σου!",
+        "placeholders": {
+            "id_passport": "en:)Αριθμός εγγραφής εταιρείας",
+            "name": "en:)Κάτοχος ασφαλιστηρίου",
+            "email": "en:)Ηλεκτρονικό ταχυδρομίο",
+            "primary_phone": "en:)Τηλέφωνο επικοινωνίας",
+            "secondary_phone": "en:)Άλλο τηλέφωνο επικοινωνίας",
+            "address": "en:)Διεύθυνση",
+            "tax_id": "en:)ΑΦΜ",
+            "tax_office": "en:)Δ.Ο.Υ.",
+            "chamber": "en:)Επιμελητήριο",
+            "registration_number": "en:)Αριθμός εγγραφής",
+            "note": "en:)Σημείωση",
+            "country_code": "en:)Επιλέξτε Κωδικό Χώρας"
+        },
+        "questions": {
+            "question1": "en:)Έχουν εγερθεί οποιεσδήποτε απαιτήσεις εναντίον σας ή εναντίον του γραφείου σας τα τελευταία 5 χρόνια;",
+            "question2": "en:)Έχει οποιαδήποτε αίτηση σας απορριφθεί στο παρελθόν ή οποιαδήποτε ασφαλιστική εταιρεία έχει ζητήσει αυξημένα ασφάλιστρα ή ειδικούς όρους, ή έχει τερματίσει ή αρνηθεί να ανανεώσει το συμβόλαιο σας;",
+            "question3": "en:)Γνωρίζετε, εσείς ή η εταιρεία σας οποιεσδήποτε καταστάσεις ή περιστατικά τα οποία πιθανόν να οδηγήσουν σε απαίτηση ή απαιτήσεις εναντίον σας ή εναντίον της εταιρείας σας;"
+        },
+        "buttons": {
+            "yes": "en:)ΝΑΙ",
+            "no": "en:)ΟΧΙ",
+            "next": "en:)Επόμενο",
+            "submit": "en:)Υποβολή"
+        }
+    },
+    "foreigners_form": {
+        "header": "en:)Τελευταίο Βήμα!",
+        "subheader": "en:)Συμπλήρωσε τα παρακάτω για να αποκτήσεις την ασφάλισή σου!",
+        "se_subheader": "en:)Στοιχεία ασφαλισμένου προσώπου",
+        "th_subheader": "en:)Ιατρικό Ιστορικό",
+        "fo_subheader": "en:)Αν απαντήσετε ναι σε οποιαδήποτε απο τις παρακάτω ερωτήσεις, δώστε όλη τη πληροφορία στη συνέχεια.",
+        "placeholders": {
+            "insurance_start_date": "en:)Ημ/νία έναρξης ασφάλισης",
+            "id_passport": "en:)Αριθμός ταυτότητας/διαβατηρίου",
+            "name": "en:)Όνομα",
+            "surname": "en:)Επώνυμο",
+            "email": "en:)Ηλεκτρονικό ταχυδρομίο",
+            "primary_phone": "en:)Τηλέφωνο επικοινωνίας",
+            "secondary_phone": "en:)Άλλο τηλέφωνο επικοινωνίας",
+            "address": "en:)Διεύθυνση",
+            "tax_id": "en:)ΑΦΜ",
+            "tax_office": "en:)Δ.Ο.Υ.",
+            "note": "en:)Σημείωση",
+            "country_code": "en:)Επιλέξτε Κωδικό Χώρας"
+        },
+        "step3": {
+            "subheader": "en:)Κάτοχος ασφαλιστηρίου ή εργοδότης",
+            "se_subheader": "en:)Επιλέξτε εδώ για να εισαχθοούν τα στοιχεία του ασφαλιζόμενου προσώπου."
+        },
+        "questions": {
+            "question1": "en:)Σας έχουν παρασχεθεί φάρμακα τα τελευταία 5 χρόνια ή λαμβάνετε οποιαδήποτε φαρμακευτική αγωγή τώρα;",
+            "question2": "en:)Έχετε εισαχθεί σε νοσοκομείο, κλινική ή κέντρο αποκατάστασης τα τελευταία 5 χρόνια;",
+            "question3": "en:)Πάσχετε από οποιαδήποτε χρόνια πάθηση ή αναπηρία ή υποτροπιάζοντα τραυματισμό ή ασθένεια;"
+        },
+        "buttons": {
+            "yes": "en:)ΝΑΙ",
+            "no": "en:)ΟΧΙ",
+            "next": "en:)Next",
+            "submit": "en:)Υποβολή"
+        }
+    },
+    "model": {
+        "contact_button": "en:)ΕΠΙΚΟΙΝΩΝΙΑ"
+    },
+    "foreigners_proceed": {
+        "header": "en:)Προσωπικών Ατυχημάτων Αλλοδαπών",
+        "insurance_company": "en:)Ασφαλιστική Εταιρεία",
+        "insurance_period": "en:)Ασφαλιστική Περίοδος",
+        "ins_period": "en:)12μηνη",
+        "insured_person": "en:)Ασφαλισμένο Άτομο",
+        "ins_person": "en:)Ασφαλισμένο Άτομο",
+        "nationality": "en:)Εθνικότητα",
+        "nation": "en:)Άγιος Μαρτίνος",
+        "id_passport": "en:)Ταυτότητα/Διαβατήριο",
+        "birth_date": "en:)Ημ/νία Γέννησης",
+        "date": "en:)04/05/1980 (44 χρονών)",
+        "gender": "en:)Φύλο",
+        "gen": "en:)Αρσενικό",
+        "cover": "en:)Κάλυψη",
+        "total": "en:)Σύνολο",
+        "proceed_button": "en:)Συνέχεια",
+        "details": {
+            "death": "en:)Θάνατος από ατύχημα",
+            "dth": "en:)ΜΕΡΟΣ Β",
+            "disability": {
+                "amount": "en:)15.000€",
+                "title": "en:)Ολική/Μερική/Μόνιμη ανικανότητα από ατύχημα",
+                "description": "en:)Συμμετοχή του ασφαλιζόμενου 20% για κάθε μία απαίτηση",
+                "list": [
+                    "Μόνιμη ολική ανικανότητα από ατύχημα",
+                    "Μόνιμη μερική ανικανότητα από ατύχημα (ποσοστό με βάση τον πίνακα αποζημίωσης του ασφαλιστηρίου)"
+                ]
+            },
+            "hospitalization": {
+                "amount": "en:)10.000€",
+                "title": "en:)Ενδονοσοκομειακή περίθαλψη από ατύχημα ή ασθένεια (ΜΕΡΟΣ Α)",
+                "description": "en:)Μόνο εντός δημοσίου νοσοκομείου. Ανώτατο όριο κατά περιστατικό και συνολικά ετησίως έως 10.000€. (συμμετοχή του ασφαλιζόμενου 20% για κάθε μία απαίτηση)"
+            },
+            "medical_expenses": {
+                "amount": "en:)1.500€",
+                "title": "en:)Ιατροφαρμακευτικά έξοδα από ασθένεια ή ατύχημα (ΜΕΡΟΣ Α)",
+                "description": "en:)Μόνο εντός δημοσίου νοσοκομείου. Ανώτατο όριο κατά περιστατικό και συνολικά ετησίως έως 1.500€. (συμμετοχή του ασφαλιζόμενου 20% για κάθε μία απαίτηση)"
+            }
+        }
+    },
+    "liability_proceed": {
+        "header": "en:)Καλύψεις",
+        "details": {
+            "amount": "en:)9000€",
+            "title": "en:)Κάλυψη Επαγγελματικής Ευθύνης:",
+            "description": "en:)Καλύπτει απαιτήσεις που εγείρονται κατά του ασφαλισμένου και αφορούν παραβίαση καθήκοντος λόγω αμέλειας, λανθασμένων ενεργειών ή παραλείψεων, που προκύπτουν από την άσκηση και διεξαγωγή της επαγγελματικής δραστηριότητας."
+        },
+        "total": "en:)Σύνολο",
+        "proceed_button": "en:)Συνέχεια"
+    },
+    "travel_proceed": {
+        "header": {
+            "desktop": "en:)Gold Single Trip Worldwide All Countries",
+            "mobile": "en:)Economy"
+        },
+        "insurance_company": "en:)Ασφαλιστική Εταιρεία",
+        "insurance_period": "en:)Ασφαλιστική Περίοδος",
+        "travelling_from": "en:)Από πού ταξιδεύετε;",
+        "travelling_to": "en:)Πού ταξιδεύετε;",
+        "traveler": "en:)1 Ταξιδιώτης",
+        "traveler_age": "en:)22 ετών",
+        "total": "en:)Σύνολο",
+        "proceed_button": "en:)Συνέχεια",
+        "cover": "en:)Καλύψεις",
+        "covers": {
+            "cancellation": "en:)Ακύρωση",
+            "medical": "en:)Ιατρική",
+            "baggage": "en:)Αποσκευές",
+            "personal_accident": "en:)Προσωπικό Ατύχημα",
+            "travel_delay": "en:)Καθυστέρηση Ταξιδιού",
+            "personal_possessions": "en:)Προσωπικά Αντικείμενα",
+            "personal_money": "en:)Προσωπικά Χρήματα",
+            "personal_liability": "en:)Προσωπική Ευθύνη",
+            "legal_expenses": "en:)Νομικά Έξοδα"
+        }
+    },
+    "intermediaries_proceed": {
+        "header": "en:)Καλύψεις",
+        "details": {
+            "professional_liability": {
+                "amount": "en:)500€",
+                "title": "en:)Κάλυψη Επαγγελματικής Ευθύνης:",
+                "description": "en:)Καλύπτει απαιτήσεις που εγείρονται κατά του ασφαλισμένου και αφορούν παραβίαση καθήκοντος λόγω αμέλειας, λανθασμένων ενεργειών ή παραλείψεων, που προκύπτουν από την άσκηση και διεξαγωγή της επαγγελματικής δραστηριότητας."
+            },
+            "defense_expenses": {
+                "amount": "en:)10.000€",
+                "title": "en:)Έξοδα Υπεράσπισης",
+                "description": "en:)Μόνο εντός δημοσίου νοσοκομείου. Ανώτατο όριο κατά περιστατικό και συνολικά ετησίως έως 10.000€. (συμμετοχή του ασφαλιζόμενου 20% για κάθε μία απαίτηση)"
+            }
+        },
+        "total": "en:)Σύνολο",
+        "proceed_button": "en:)Συνέχεια"
+    },
+    "guarantee_finish": {
+        "header": "en:)Απάντησε τις παρακάτω ερωτήσεις",
+        "questions": [
+            "Έχουν εγερθεί οποιεσδήποτε απαιτήσεις εναντίον σας ή εναντίον του γραφείου σας τα τελευταία 5 χρόνια;",
+            "Έχει οποιαδήποτε αίτηση σας απορριφθεί στο παρελθόν ή οποιαδήποτε ασφαλιστική εταιρεία έχει ζητήσει αυξημένα ασφάλιστρα ή ειδικούς όρους, ή έχει τερματίσει ή αρνηθεί να ανανεώσει το συμβόλαιο σας;",
+            "Γνωρίζετε, εσείς ή η εταιρεία σας οποιεσδήποτε καταστάσεις ή περιστατικά τα οποία πιθανόν να οδηγήσουν σε απαίτηση ή απαιτήσεις εναντίον σας ή εναντίον της εταιρείας σας;"
+        ],
+        "yes": "en:)ΝΑΙ",
+        "no": "en:)ΟΧΙ",
+        "last_step": "en:)Τελευταίο Βήμα!",
+        "confirmation_message": "en:)Έχουμε λάβει τις πληροφορίες σου και θα επικοινωνήσει μαζί σου ο αρμόδιος!",
+        "previous": "en:)Προηγούμενο",
+        "next": "en:)Επόμενο",
+        "submit": "en:)Υποβολή"
+    }
+}

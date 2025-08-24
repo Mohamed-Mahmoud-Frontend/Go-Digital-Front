@@ -1,0 +1,47 @@
+/* Edit Splide Library Properties */
+/* important for override library default style */
+.slider_container {
+  margin: 20px 0 !important;
+}
+
+/* less 'margin' for screens smaller than 1024px */
+@media (max-width: 1024px) {
+  .slider_container {
+    margin: 5px 0 !important;
+  }
+}
+
+/* Center the pagination dots and apply the correct margin */
+.splide__pagination {
+  display: flex;
+  justify-content: center;
+}
+
+.ltr .splide__pagination {
+  margin-left: 150px;
+}
+
+.rtl .splide__pagination {
+  margin-right: 150px;
+}
+
+.splide__pagination__page {
+  width: 12px;
+  height: 12px;
+  background-color: #d9d9d9 !important;
+  opacity: 1 !important;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 0 8px;
+  /* Center the dots horizontally with margin */
+}
+
+.splide__pagination__page.is-active {
+  background-color: #f97316 !important;
+}
+
+/* Apply different color for rtl direction */
+.slider_container.rtl .splide__pagination__page.is-active {
+  background-color: #333132 !important;
+}
