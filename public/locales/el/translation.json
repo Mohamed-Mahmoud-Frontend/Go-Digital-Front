@@ -6,8 +6,8 @@
         "contact": "Επικοινωνία"
     },
     "products": {
-        "travel": "Ταξιδιωτική",
-        "guarantees": "Εγγυήσεων",
+        "travel": "Ταξιδιωτική Ασφάλιση",
+        "guarantees": "Ασφάλιση Εγγυήσεων",
         "roadCarrier": "Ευθύνης Οδικού Μεταφορέα",
         "medicalForeigners": "Προσωπικών Ατυχημάτων Αλλοδαπών",
         "liabilityIntermediaries": "Ευθύνης Ασφαλιστικών Διαμεσολαβητών"
@@ -15,14 +15,14 @@
     "hero_section": {
         "title": "Η Ασφάλιση μόλις έγινε ψηφιακά … απλή!",
         "subtitle": "Καλωσορίσατε στη GoDigital! Την πλατφόρμα ασφάλισης που τα κάνει τη διαδικασία πιο εύκολη και απλή από ποτέ! Στη GoDigital η ασφάλιση προσαρμόζεται στις δικές σας ανάγκες, με ένα σύγχρονο τρόπο που ταιριάζει στην απαιτητική σας καθημερινότητα!",
-        "travel_insurance": "Travel Insurance",
+        "travel_insurance": "Ταξιδιωτική Ασφάλιση",
         "medical_insurance_foreigners": "Προσωπικών Ατυχημάτων Αλλοδαπών",
         "professional_liability_insurance_intermediaries": "Ευθύνης Ασφαλιστικών Διαμεσολαβητών",
         "road_carrier_professional_liability": "Ευθύνης Οδικού Μεταφορέα",
         "guarantees": "Εγγυητικές Επιστολές"
     },
     "how_works_section": {
-        "title": "How it works",
+        "title": "Πως Λειτουργεί",
         "step1": "Δώσε τις αναγκαίες πληροφορίες",
         "step2": "Δες τα διαθέσιμα πακέτα",
         "step3": "Πλήρωσε ηλεκτρονικά",
@@ -35,17 +35,22 @@
         "feature2": "Καινοτόμα Προϊόντα",
         "feature3": "Πλούσιες Καλύψεις",
         "feature4": "Άμεση Έκδοση Συμβολαίου",
-        "get_quote": "Get Quote"
+        "get_quote": "Πάρε Προσφορά"
     },
     "hero_blog_section": {
         "title": "Our Blog",
         "subtitle": "Ανακάλυψε άρθρα και χρήσιμες συμβουλές για να βελτιώσεις για την ασφάλιση και την προστασία της περιουσίας και όχι μόνο."
     },
+    "hero_products_section": {
+        "get_quote_button": "Πάρε Προσφορά"
+    },
     "contact_section": {
         "title": "Έχεις απορίες;",
-        "subtitle": "Θα χαρούμε να σε ακούσουμε! (subheading) <br />Είμαστε εδώ για να σε βοηθήσουμε σε ό,τι απορία έχεις!",
+        "subtitle": "Θα χαρούμε να σε ακούσουμε! Είμαστε εδώ για να σε βοηθήσουμε σε ό,τι απορία έχεις!",
         "description": "Μην διστάσεις να επικοινωνήσεις μαζι μας!",
-        "location": "Cyprus",
+        "policy_text": "Πολιτική Απορρήτου",
+        "terms_text": "Όροι Χρήσης",
+        "complaints_text": "Φόρμα Παραπόνων",
         "form": {
             "name": "Όνομα",
             "surname": "Επώνυμο",
@@ -68,11 +73,11 @@
     "get_quote_popup": {
         "title": "Λήψη Προσφοράς",
         "products": {
-            "travel": "Ταξιδιωτική",
+            "travel": "Ταξιδιωτική Ασφάλιση",
             "foreigners": "Προσωπικών Ατυχημάτων Αλλοδαπών",
             "intermediaries": "Ευθύνης Ασφαλιστικών Διαμεσολαβητών",
             "liability": "Ευθύνης Οδικού Μεταφορά",
-            "guarantee": "Εγγυήσεων"
+            "guarantee": "Ασφάλιση Εγγυήσεων"
         }
     },
     "slides_section": {
@@ -233,11 +238,11 @@
             "title": "Δες κι άλλα άρθρα"
         },
         "products": {
-            "travel": "Ταξιδιωτική",
+            "travel": "Ταξιδιωτική Ασφάλιση",
             "foreigners": "Προσωπικών Ατυχημάτων Αλλοδαπών",
             "intermediaries": "Ευθύνης Ασφαλιστικών Διαμεσολαβητών",
             "liability": "Ευθύνης Οδικού Μεταφορά",
-            "guarantee": "Εγγυήσεων"
+            "guarantee": "Ασφάλιση Εγγυήσεων"
         },
         "article": {
             "title": "Lorem ipsum dolor sit amet",
@@ -252,14 +257,14 @@
             "subTitle": "Μάθε περισσότερα για την ταξιδιωτική ασφάλιση και τα ταξίδια"
         },
         "footer": {
-            "title": "Travel Insurance",
+            "title": "Ταξιδιωτική Ασφάλιση",
             "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
             "list": [
                 "Lorem ipsum dolor sit amet, consectetur",
                 "adipiscing elit, sed do eiusmod tempor",
                 "incididunt ut labore et dolore magna aliqua."
             ],
-            "get_quote_button": "Get Quote",
+            "get_quote_button": "Πάρε Προσφορά",
             "more_info_button": "More Info"
         }
     },
@@ -293,7 +298,7 @@
             "subtitle": "Η ταξιδιωτική ασφάλιση επιτέλους πιο απλή από ποτέ!",
             "destination_title": "Που ταξιδεύεις;",
             "destination_subtitle": "Πες μας τον προορισμό σου και πάρε προσφορά!",
-            "select_placeholder": "Country",
+            "select_placeholder": "Επέλεξε χώρα",
             "select_options": {
                 "greece": "Greece",
                 "egypt": "Egypt",
@@ -374,7 +379,7 @@
         "article_slider": {
             "subTitle": "Μάθε περισσότερα για την ταξιδιωτική ασφάλιση και τα ταξίδια"
         },
-        "get_quote_button": "Get Quote"
+        "get_quote_button": "Πάρε Προσφορά"
     },
     "liability_page": {
         "hero_section": {
@@ -432,14 +437,18 @@
         "article_slider": {
             "subTitle": "Μάθε περισσότερα για την ασφάλιση και τις μεταφορές."
         },
-        "get_quote_button": "Get Quote"
+        "get_quote_button": "Πάρε Προσφορά"
     },
     "intermediaries_page": {
         "hero_section": {
             "headTitle": "Ασφάλιση Επαγγελματικής Ευθύνης Ασφαλιστικών Διαμεσολαβητών!",
             "subtitle": "Εξασφαλίστε την καριέρα σας ότι κι αν συμβεί … ψηφιακά και απλά!",
             "cta_text": "Φυσικό ή Νομικό πρόσωπο; Επέλεξε και πάρε προσφορά!",
-            "input_placeholder": "Ταυτότητα"
+            "select_placeholder": "Τύπος",
+            "select_options": {
+              "person": "Νομικό Πρόσωπο",
+              "legal": "Φυσικό Πρόσωπο"
+            }
         },
         "how_works_section": {
             "title": "Πώς δουλεύει",
@@ -494,14 +503,14 @@
         "article_slider": {
             "subTitle": "Μάθε περισσότερα για την ασφάλιση και τη διαμεσολάβηση."
         },
-        "get_quote_button": "Get Quote"
+        "get_quote_button": "Πάρε Προσφορά"
     },
     "guarantees_page": {
         "hero_section": {
             "headTitle": "Ασφάλιση Εγγυήσεων … ψηφιακά απλά!",
             "subtitle": "Εξασφαλίστε την εγγυητική επιστολή που χρειάζεστε χωρίς δέσμευση κεφαλαίων!",
             "cta_text": "Διάλεξε τον τύπο εγγύησης για να ξεκινήσεις τη διαδικασία προσφοράς!",
-            "select_placeholder": "Εγγύηση",
+            "select_placeholder": "Τύπος Εγγύησης",
             "select_options": {
                 "option1": "Επιλογή 1",
                 "option2": "Επιλογή 2",
@@ -567,7 +576,7 @@
         "article_slider": {
             "subTitle": "Μάθε περισσότερα για την ασφάλιση και τις εγγυητικές επιστολές."
         },
-        "get_quote_button": "Get Quote"
+        "get_quote_button": "Πάρε Προσφορά"
     },
     "foreigners_page": {
         "hero_section": {
@@ -637,7 +646,7 @@
         "article_slider": {
             "subTitle": "Μάθε περισσότερα για την ασφάλιση και την υγεία."
         },
-        "get_quote_button": "Get Quote"
+        "get_quote_button": "Πάρε Προσφορά"
     },
     "profile_page": {
         "hero_section": {

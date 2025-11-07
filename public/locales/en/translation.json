@@ -6,8 +6,8 @@
         "contact": "Contact"
     },
     "products": {
-        "travel": "Travel",
-        "guarantees": "Guarantees",
+        "travel": "Travel Insurance",
+        "guarantees": "Guarantees Insurance",
         "roadCarrier": "Road Carrier Liability",
         "medicalForeigners": "Personal Accidents for Foreigners",
         "liabilityIntermediaries": "Insurance Intermediaries Liability"
@@ -41,11 +41,16 @@
         "title": "Our Blog",
         "subtitle": "Discover articles and useful tips to improve your insurance and property protection, and more."
     },
+    "hero_products_section": {
+      "get_quote_button": "Get Quote"
+    },
     "contact_section": {
         "title": "Have questions?",
-        "subtitle": "We'd love to hear from you! (subheading) <br />We're here to help with any questions you may have!",
+        "subtitle": "We'd love to hear from you! We're here to help with any questions you may have!",
         "description": "Don't hesitate to contact us!",
-        "location": "Cyprus",
+        "policy_text": "Privacy Policy",
+        "terms_text": "Terms of Use",
+        "complaints_text": "Complaints Form",
         "form": {
             "name": "Name",
             "surname": "Surname",
@@ -68,11 +73,11 @@
     "get_quote_popup": {
         "title": "Get a Quote",
         "products": {
-            "travel": "Travel",
+            "travel": "Travel Insurance",
             "foreigners": "Personal Accidents for Foreigners",
             "intermediaries": "Insurance Intermediaries Liability",
             "liability": "Road Carrier Liability",
-            "guarantee": "Guarantees"
+            "guarantee": "Guarantees Insurance"
         }
     },
     "slides_section": {
@@ -81,11 +86,11 @@
             "subTitle": "Useful articles about insurance that help you make the right decisions!"
         },
         "travel": {
-            "title": "Travel",
+            "title": "Travel Insurance",
             "subTitle": "Learn more about travel insurance and trips"
         },
         "guarantees": {
-            "title": "Guarantees",
+            "title": "Guarantees Insurance",
             "subTitle": "Learn more about insurance and guarantee letters."
         },
         "road_carrier": {
@@ -159,7 +164,7 @@
             "insurance_subtitle": "Discover articles and useful tips about insurance and intermediation."
         },
         "footer_section": {
-            "title": "Guarantees",
+            "title": "Guarantees Insurance",
             "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
             "list": [
                 "Lorem ipsum dolor sit amet, consectetur",
@@ -233,11 +238,11 @@
             "title": "See more articles"
         },
         "products": {
-            "travel": "Travel",
+            "travel": "Travel Insurance",
             "foreigners": "Personal Accidents for Foreigners",
             "intermediaries": "Insurance Intermediaries Liability",
             "liability": "Road Carrier Liability",
-            "guarantee": "Guarantees"
+            "guarantee": "Guarantees Insurance"
         },
         "article": {
             "title": "Lorem ipsum dolor sit amet",
@@ -439,7 +444,11 @@
             "headTitle": "Professional Liability Insurance for Insurance Intermediaries!",
             "subtitle": "Secure your career no matter what happens ... digitally and simply!",
             "cta_text": "Natural or Legal person? Choose and get a quote!",
-            "input_placeholder": "ID Card"
+            "select_placeholder": "Type",
+            "select_options": {
+              "person": "Person",
+              "legal": "Legal Entity"
+            }
         },
         "how_works_section": {
             "title": "How it Works",
@@ -501,7 +510,7 @@
             "headTitle": "Guarantees Insurance ... digitally simple!",
             "subtitle": "Secure the guarantee letter you need without committing capital!",
             "cta_text": "Choose the type of guarantee to start the quote process!",
-            "select_placeholder": "Guarantee",
+            "select_placeholder": "Guarantee Type",
             "select_options": {
                 "option1": "Option 1",
                 "option2": "Option 2",
@@ -654,7 +663,7 @@
             "contact": "Contact"
         },
         "products": {
-            "travel": "Travel",
+            "travel": "Travel Insurance",
             "intermediaries_liability": "Insurance Intermediaries Liability"
         },
         "view_button": "VIEW",

@@ -180,17 +180,22 @@ export const Contact = () => {
                 <h3 className="my-5 text-sm vsm:text-base md:text-[22px] font-semibold">
                     {t('contact_section.description')}
                 </h3>
-
+                <p className="flex gap-2 underline items-center font-bold mb-2">
+                    <a href={'#'}>{t('contact_section.policy_text')}</a>
+                </p>
+                <p className="flex gap-2 underline items-center font-bold mb-2">
+                    <a href={'#'}>{t('contact_section.terms_text')}</a>
+                </p>
+                <p className="flex gap-2 underline items-center font-bold mb-2">
+                    <a href={'#'}>{t('contact_section.complaints_text')}</a>
+                </p>
                 <p className="flex gap-2 items-center font-bold mb-2 mt-10 md:mt-20">
                     <Icons.PhoneIcon />
                     210 8934675
                 </p>
                 <p className="flex gap-2 items-center font-bold mb-2">
                     <Icons.MailIcon />
-                    mail@mail.com
-                </p>
-                <p className="flex gap-2 items-center font-bold mb-2">
-                    <Icons.LocationIcon />{t('contact_section.location')}
+                    info@godigitalinsurance.gr
                 </p>
             </section>
 
@@ -260,20 +265,29 @@ export const Contact = () => {
                     />
 
                     {/* Request Type Dropdown */}
-                    <select
-                        name="request_theme_id"
-                        value={formData.request_theme_id}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto outline-none"
-                    >
-                        <option value="" disabled>{t('contact_section.form.request_type')}</option>
-                        {requestTypes.map((type) => (
-                            <option key={type.id} value={type.id}>
-                                {i18n.language === 'el' ? type.text_el : type.text}
-                            </option>
-                        ))}
-                    </select>
+                    <div className="flex gap-3 w-full mx-auto">
+                        <button
+                            type="button"
+                            className={`rounded-2xl w-full h-[50px] text-[#C3C3C3] bg-white border border-[#C3C3C3]`}
+                            style={{ boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.15)' }}
+                        >
+                            {t('contact_section.form.customer')}
+                        </button>
+                        <select
+                            name="request_theme_id"
+                            value={formData.request_theme_id}
+                            onChange={handleInputChange}
+                            required
+                            className="w-full h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto outline-none"
+                        >
+                            <option value="" disabled>{t('contact_section.form.request_type')}</option>
+                            {requestTypes.map((type) => (
+                                <option key={type.id} value={type.id}>
+                                    {i18n.language === 'el' ? type.text_el : type.text}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
                     {/* Client Selection */}
                     <div className="flex gap-3 w-full mx-auto">
