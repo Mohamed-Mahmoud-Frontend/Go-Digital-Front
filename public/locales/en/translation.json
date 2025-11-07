@@ -655,10 +655,15 @@
         },
         "products": {
             "travel": "en:)Travel",
-            "intermediaries_liability": "en:)Ευθύνης Ασφαλιστικών Διαμεσολαβητών"
+            "intermediaries_liability": "en:)Ευθύνης Ασφαλιστικών Διαμεσολαβητών",
+            "medical_insurance_foreigners": "Medical Insurance for Foreigners",
+            "guarantees": "Guarantees"
         },
         "view_button": "en:)VIEW",
-        "contract_dates": "en:)21/08/24-25/08/2024"
+        "contract_dates": "en:)21/08/24-25/08/2024",
+        "no_contracts": "No contracts found",
+        "no_contracts_for_product": "No contracts found for this product type",
+        "error_loading": "An error occurred while loading contracts. Please try again later."
     },
     "foreigners_quote_page": {
         "steps": {
