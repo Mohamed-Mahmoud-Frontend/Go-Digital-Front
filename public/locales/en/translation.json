@@ -666,9 +666,14 @@
         "products": {
             "travel": "Travel Insurance",
             "intermediaries_liability": "Insurance Intermediaries Liability"
+            "medical_insurance_foreigners": "Medical Insurance for Foreigners",
+            "guarantees": "Guarantees Insurance"
         },
         "view_button": "VIEW",
         "contract_dates": "21/08/24-25/08/2024"
+        "no_contracts": "No contracts found",
+        "no_contracts_for_product": "No contracts found for this product type",
+        "error_loading": "An error occurred while loading contracts. Please try again later."
     },
     "foreigners_quote_page": {
         "steps": {

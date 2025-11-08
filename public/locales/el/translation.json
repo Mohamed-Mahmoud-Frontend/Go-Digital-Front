@@ -665,10 +665,15 @@
         },
         "products": {
             "travel": "Travel",
-            "intermediaries_liability": "Ευθύνης Ασφαλιστικών Διαμεσολαβητών"
+            "intermediaries_liability": "Ευθύνης Ασφαλιστικών Διαμεσολαβητών",
+            "medical_insurance_foreigners": "Προσωπικών Ατυχημάτων Αλλοδαπών",
+            "guarantees": "Εγγυήσεων"
         },
         "view_button": "VIEW",
-        "contract_dates": "21/08/24-25/08/2024"
+        "contract_dates": "21/08/24-25/08/2024",
+        "no_contracts": "Δεν βρέθηκαν συμβόλαια",
+        "no_contracts_for_product": "Δεν βρέθηκαν συμβόλαια για αυτόν τον τύπο προϊόντος",
+        "error_loading": "Συνέβη σφάλμα κατά τη φόρτωση των συμβολαίων. Παρακαλώ δοκιμάστε ξανά αργότερα."
     },
     "foreigners_quote_page": {
         "steps": {
