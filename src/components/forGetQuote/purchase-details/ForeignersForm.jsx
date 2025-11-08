@@ -51,7 +51,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
             setFormData(prevData => ({
                 ...prevData,
                 startDate: userDetails.step4.insurancePeriod || "",
-                identification: userDetails.step2.nationalityId || "",
+                identification: userDetails.step2.identification || "",
                 firstName: userDetails.step1.firstName || "",
                 lastName: userDetails.step1.lastName || "",
             }));
@@ -342,7 +342,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                             <div className="h-[10px] w-28 rounded-md bg-[#C3C3C3]"></div>
                         </div>
 
-                        <h3 className="my-5 font-semibold text-secondaryColor">{t("foreigners_form.step1.subheader")}</h3>
+                        <h3 className="my-5 font-semibold text-secondaryColor">{t("foreigners_form.subheader")}</h3>
 
                         {/* Form for person details */}
                         <form className="flex flex-col gap-3">
@@ -358,7 +358,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                             <input
                                 type="text"
                                 name="identification"
-                                placeholder={t("foreigners_form.placeholders.identification")}
+                                placeholder={t("foreigners_form.placeholders.id_passport")}
                                 value={formData.identification}
                                 onChange={handleChange}
                                 required
@@ -368,7 +368,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                                 <input
                                     type="text"
                                     name="firstName"
-                                    placeholder={t("foreigners_form.placeholders.first_name")}
+                                    placeholder={t("foreigners_form.placeholders.name")}
                                     value={formData.firstName}
                                     onChange={handleChange}
                                     required
@@ -377,7 +377,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                                 <input
                                     type="text"
                                     name="lastName"
-                                    placeholder={t("foreigners_form.placeholders.last_name")}
+                                    placeholder={t("foreigners_form.placeholders.surname")}
                                     value={formData.lastName}
                                     onChange={handleChange}
                                     required
@@ -454,7 +454,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                             </div>
                         ) : (
                             <>
-                                <h3 className="mt-5 font-semibold text-secondaryColor">{t("foreigners_form.step2.subheader")}</h3>
+                                <h3 className="mt-5 font-semibold text-secondaryColor">{t("foreigners_form.subheader")}</h3>
 
                                 {/* Display questions */}
                                 {formData.questions.map((question, index) => {
@@ -475,14 +475,14 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                                                         onClick={() => handleQuestionAnswerChange(apiQuestion.id, "yes")}
                                                         className={`px-8 h-[40px] border border-[#C3C3C3] rounded-[27.5px] outline-none ${question.answer === "yes" ? "bg-secondaryColor text-white" : "bg-gray-200"}`}
                                                     >
-                                                        Yes
+                                                        {t("foreigners_form.buttons.yes")}
                                                     </button>
                                                     <button
                                                         type="button"
                                                         onClick={() => handleQuestionAnswerChange(apiQuestion.id, "no")}
                                                         className={`px-8 h-[40px] border border-[#C3C3C3] rounded-[27.5px] outline-none ${question.answer === "no" ? "bg-secondaryColor text-white" : "bg-gray-200"}`}
                                                     >
-                                                        No
+                                                        {t("foreigners_form.buttons.no")}
                                                     </button>
                                                 </div>
 
@@ -491,7 +491,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                                                     <textarea
                                                         value={question.textarea || ""}
                                                         onChange={(e) => handleQuestionTextareaChange(apiQuestion.id, e.target.value)}
-                                                        placeholder="Please provide additional details..."
+                                                        placeholder="{t('foreigners_form.placeholders.additionalDetails')}"
                                                         required
                                                         className="w-full h-[100px] px-4 py-3 border border-[#C3C3C3] rounded-[10px] outline-none resize-none"
                                                     />
@@ -538,7 +538,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                             <input
                                 type="text"
                                 name="userIdentification"
-                                placeholder={t("foreigners_form.placeholders.user_identification")}
+                                placeholder={t("foreigners_form.placeholders.id_passport")}
                                 value={formData.userIdentification}
                                 onChange={handleChange}
                                 required
@@ -548,7 +548,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                                 <input
                                     type="text"
                                     name="userFirstName"
-                                    placeholder={t("foreigners_form.placeholders.user_first_name")}
+                                    placeholder={t("foreigners_form.placeholders.name")}
                                     value={formData.userFirstName}
                                     onChange={handleChange}
                                     required
@@ -557,7 +557,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                                 <input
                                     type="text"
                                     name="userLastName"
-                                    placeholder={t("foreigners_form.placeholders.user_last_name")}
+                                    placeholder={t("foreigners_form.placeholders.surname")}
                                     value={formData.userLastName}
                                     onChange={handleChange}
                                     required
@@ -587,7 +587,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                                 <input
                                     type="tel"
                                     name="userMobileNumber"
-                                    placeholder={t("foreigners_form.placeholders.user_mobile_number")}
+                                    placeholder={t("foreigners_form.placeholders.primary_phone")}
                                     value={formData.userMobileNumber}
                                     onChange={handleChange}
                                     required
@@ -598,7 +598,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                             <input
                                 type="text"
                                 name="userAddress"
-                                placeholder={t("foreigners_form.placeholders.user_address")}
+                                placeholder={t("foreigners_form.placeholders.address")}
                                 value={formData.userAddress}
                                 onChange={handleChange}
                                 required
@@ -607,7 +607,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                             <input
                                 type="text"
                                 name="userTin"
-                                placeholder={t("foreigners_form.placeholders.user_tin")}
+                                placeholder={t("foreigners_form.placeholders.tax_id")}
                                 value={formData.userTin}
                                 onChange={handleChange}
                                 required
@@ -616,7 +616,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                             <input
                                 type="text"
                                 name="userTaxOffice"
-                                placeholder={t("foreigners_form.placeholders.user_tax_office")}
+                                placeholder={t("foreigners_form.placeholders.tax_office")}
                                 value={formData.userTaxOffice}
                                 onChange={handleChange}
                                 required

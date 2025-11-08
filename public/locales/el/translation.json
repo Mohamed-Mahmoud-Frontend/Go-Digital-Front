@@ -42,7 +42,8 @@
         "subtitle": "Ανακάλυψε άρθρα και χρήσιμες συμβουλές για να βελτιώσεις για την ασφάλιση και την προστασία της περιουσίας και όχι μόνο."
     },
     "hero_products_section": {
-        "get_quote_button": "Πάρε Προσφορά"
+        "get_quote_button": "Πάρε Προσφορά",
+        "total": "Σύνολο"
     },
     "contact_section": {
         "title": "Έχεις απορίες;",
@@ -674,6 +675,8 @@
             "step1": {
                 "title1": "Ποιο είναι το όνομά σου;",
                 "title2": "Ποιο είναι το επώνυμό σου;",
+                "placeholder_name": "Όνομα",
+                "placeholder_lastname": "Επώνυμο",
                 "placeholder_departure": "Where are you travelling from?",
                 "placeholder_arrival": "Where are you travelling to?"
             },
@@ -681,12 +684,12 @@
                 "title1": "Ποιά είναι η εθνικότητά σου;",
                 "title2": "Γράψε τον αριθμό της ταυτότητας ή του διαβατηρίου σου:",
                 "placeholder_nationality": "Εθνικότητα",
-                "placeholder_id": "Αριθμός ταυτότητας/διαβατηρίου"
+                "placeholder_identification": "Αριθμός ταυτότητας/διαβατηρίου"
             },
             "step3": {
                 "title1": "Πότε είναι τα γενέθλιά σου;",
                 "title2": "Παρακαλούμε επίλεξε το φύλο σου:",
-                "placeholder_preference": "Preference",
+                "placeholder_gender": "Φύλο",
                 "options": [
                     "Economy",
                     "Business",
@@ -694,13 +697,14 @@
                 ]
             },
             "step4": {
-                "title": "Επίλεξε την περίοδο ασφάλισης:",
+                "title": "Επίλεξε την έναρξη ασφάλισης:",
                 "placeholder_date": "Date"
             }
         },
         "buttons": {
-            "previous": "Previous",
-            "next": "Next"
+            "previous": "Προηγούμενο",
+            "next": "Επόμενο",
+            "submit": "Υποβολή"
         }
     },
     "guarantee_quote_page": {
@@ -753,8 +757,8 @@
             }
         },
         "buttons": {
-            "previous": "Previous",
-            "next": "Next",
+            "previous": "Προηγούμενο",
+            "next": "Επόμενο",
             "submit": "Υποβολή"
         }
     },
@@ -806,8 +810,8 @@
             "placeholder_departure": "Από πού ταξιδεύετε;"
         },
         "buttons": {
-            "previous": "Previous",
-            "next": "Next"
+            "previous": "Προηγούμενο",
+            "next": "Επόμενο"
         }
     },
     "travel_quote_page": {
@@ -836,8 +840,8 @@
             }
         },
         "buttons": {
-            "previous": "Previous",
-            "next": "Next",
+            "previous": "Προηγούμενο",
+            "next": "Επόμενο",
             "submit": "Υποβολή"
         }
     },
@@ -942,7 +946,10 @@
             "tax_id": "ΑΦΜ",
             "tax_office": "Δ.Ο.Υ.",
             "note": "Σημείωση",
-            "country_code": "Επιλέξτε Κωδικό Χώρας"
+            "start_date": "Ημερομηνία Έναρξης Ασφάλισης",
+            "mobile_number": "Τηλεφωνικός Αριθμός",
+            "additionalDetails": "Παρακαλώ συμπληρώστε περισσότερες πληροφορίες",
+            "user_identification": "user_identification"
         },
         "step3": {
             "subheader": "Κάτοχος ασφαλιστηρίου ή εργοδότης",
@@ -956,7 +963,7 @@
         "buttons": {
             "yes": "ΝΑΙ",
             "no": "ΟΧΙ",
-            "next": "Next",
+            "next": "Επόμενο",
             "submit": "Υποβολή"
         }
     },
@@ -977,7 +984,7 @@
         "date": "04/05/1980 (44 χρονών)",
         "gender": "Φύλο",
         "gen": "Αρσενικό",
-        "cover": "Κάλυψη",
+        "cover": "Καλύψεις",
         "total": "Σύνολο",
         "proceed_button": "Συνέχεια",
         "details": {

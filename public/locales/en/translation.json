@@ -42,7 +42,8 @@
         "subtitle": "Discover articles and useful tips to improve your insurance and property protection, and more."
     },
     "hero_products_section": {
-      "get_quote_button": "Get Quote"
+      "get_quote_button": "Get Quote",
+      "total": "Total"
     },
     "contact_section": {
         "title": "Have questions?",
@@ -674,6 +675,8 @@
             "step1": {
                 "title1": "What is your first name?",
                 "title2": "What is your last name?",
+                "placeholder_name": "Name",
+                "placeholder_lastname": "Last Name",
                 "placeholder_departure": "Where are you travelling from?",
                 "placeholder_arrival": "Where are you travelling to?"
             },
@@ -681,12 +684,12 @@
                 "title1": "What is your nationality?",
                 "title2": "Enter your ID or passport number:",
                 "placeholder_nationality": "Nationality",
-                "placeholder_id": "ID / Passport Number"
+                "placeholder_identification": "ID / Passport Number"
             },
             "step3": {
                 "title1": "When is your date of birth?",
                 "title2": "Please select your gender:",
-                "placeholder_preference": "Preference",
+                "placeholder_gender": "Φύλο",
                 "options": [
                     "Economy",
                     "Business",
@@ -694,13 +697,14 @@
                 ]
             },
             "step4": {
-                "title": "Select the insurance period:",
+                "title": "Select the start date of insurance:",
                 "placeholder_date": "Date"
             }
         },
         "buttons": {
             "previous": "Previous",
-            "next": "Next"
+            "next": "Next",
+            "submit": "Submit"
         }
     },
     "guarantee_quote_page": {
@@ -942,7 +946,9 @@
             "tax_id": "Tax Identification Number (TIN)",
             "tax_office": "Tax Office",
             "note": "Note",
-            "country_code": "Select Country Code"
+            "start_date": "Start of Insurance",
+            "mobile_number": "Mobile Number",
+            "additionalDetails": "Please provide additional details"
         },
         "step3": {
             "subheader": "Policy Holder or Employer",
@@ -977,7 +983,7 @@
         "date": "04/05/1980 (44 years old)",
         "gender": "Gender",
         "gen": "Male",
-        "cover": "Coverage",
+        "cover": "Coverages",
         "total": "Total",
         "proceed_button": "Continue",
         "details": {

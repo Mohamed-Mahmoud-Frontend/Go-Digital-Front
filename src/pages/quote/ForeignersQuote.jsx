@@ -443,7 +443,7 @@ const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
         onClick={onClick}
         disabled={isDisabled}
         className={`group flex items-center justify-between px-5 sm:px-3 
-        ${isNext ? "sm:pl-16" : "sm:pr-14"} w-36 sm:w-[220px] h-12 sm:h-[59px] text-sm vsm:text-base sm:text-lg font-medium 
+        ${isNext ? "sm:pl-10" : "sm:pr-10"} w-36 sm:w-[220px] h-12 sm:h-[59px] text-sm vsm:text-base sm:text-lg font-medium 
         border rounded-[27.5px] shadow-md transition-all
         ${isDisabled ? "text-gray-400" : "text-black"}`}
     >
