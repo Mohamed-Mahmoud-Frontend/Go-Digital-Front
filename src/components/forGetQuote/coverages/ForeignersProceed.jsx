@@ -321,7 +321,7 @@ export const ForeignersProceed = () => {
                 >
                     <div className="flex flex-row-reverse sm:flex-row sm:justify-between justify-end gap-5 items-center m-8">
                         <h1 className="max-w-[683px] text-xl sm:text-2xl lg:text-3xl text-center font-medium">
-                            {selectedQuote.name || t("foreigners_proceed.cover")}
+                            {t("foreigners_proceed.cover")}
                         </h1>
                         <iconsUtil.DownloadIcon />
                     </div>

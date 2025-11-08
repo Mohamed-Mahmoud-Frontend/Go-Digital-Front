@@ -2,8 +2,10 @@ import { Link } from "react-router-dom"
 import PropTypes from "prop-types";
 // Icons
 import * as Icons from "@/utils/icons.util"
+import {useTranslation} from "react-i18next";
 
 export const HeroProductsSection = ({ headTitle, Subtitle, url, children }) => {
+    const { t } = useTranslation();
     return (
         <main
             className="flex flex-col-reverse md:flex-row justify-center md:justify-evenly items-center bg-secondaryColor text-center md:text-left rounded-3xl p-5 mx-6 lg:mx-20 md:rounded-[58px] text-primaryColor py-6 md:py-12 xl:h-[590px]"
@@ -27,7 +29,7 @@ export const HeroProductsSection = ({ headTitle, Subtitle, url, children }) => {
                             className="w-28 h-12 sm:w-[213px] sm:h-[65px] rounded-[10px] bg-primaryBgColor text-primaryColor text-xs tiny:text-sm vsm:text-base sm:text-lg font-bold hover:bg-primaryColor hover:text-secondaryColor transition_all active:scale-110"
                             style={{ boxShadow: "0px 4px 4px 0px #00000026" }}
                         >
-                            Get Quote
+                            {t('hero_products_section.get_quote_button')}
                         </button>
                     </Link>
                 </aside>

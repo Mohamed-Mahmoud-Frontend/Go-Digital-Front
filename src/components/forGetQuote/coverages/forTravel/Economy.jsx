@@ -1,5 +1,6 @@
 import { Fragment, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {useTranslation} from "react-i18next";
 import PropTypes from 'prop-types';
 // Components
 import { Model } from "@/components";
@@ -9,7 +10,7 @@ import * as iconsUtil from "@/utils/icons.util";
 export const Economy = ({ id, show, setShow, background = "white", quote, index }) => {
     const navigate = useNavigate();
     const [modalDetails, setModalDetails] = useState({ show: false, icon: null, title: "", description: "" });
-
+    const { t } = useTranslation();
     // Toggle the visibility of full Economy options
     const handleShow = () => {
         setShow((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -58,7 +59,7 @@ export const Economy = ({ id, show, setShow, background = "white", quote, index 
         >
             <header className="w-full flex justify-between px-10 items-center vsm:text-xl font-semibold text-secondaryColor pt-7 pb-5">
                 <h1>{quote?.name || `Plan ${index + 1}`}</h1>
-                <p>Total {quote?.currency || '€'}{quote?.price || '0.00'}</p>
+                <p>{t('hero_products_section.total')} {quote?.currency || '€'}{quote?.price || '0.00'}</p>
             </header>
             <hr className="border border-[#FACABC] mx-5" />
 
