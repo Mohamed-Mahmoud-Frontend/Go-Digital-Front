@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { LoginPopup, RegisterPopup, OtpPopup } from '../../components';
 // Icons
-import * as Icons from "@/utils/icons.util";
+import * as Icons from "@/utils/icons.util"; // <-- تأكد من وجود GlobeIcon, UKFlagIcon, GreekFlagIcon, ToggleArrowIcon
 // Image
 import Logo from "@/assets/images/logo.png";
 // Hooks
@@ -31,11 +31,13 @@ export const Header = () => {
     const location = useLocation();
     const { isAuthenticated, user } = useAuth();
     const submenuRef = useRef(null);
+    const langMenuRef = useRef(null); 
 
-    const [isMenuOpen, setIsMenuOpen] = useState(false); // Mobile menu visibility
-    const [isSubmenuOpen, setIsSubmenuOpen] = useState(false); // Submenu visibility
-    const [active, setActive] = useState(""); // State for active menu item
-    const [activeSubmenu, setActiveSubmenu] = useState(""); // State for active submenu item
+    const [isMenuOpen, setIsMenuOpen] = useState(false); 
+    const [isSubmenuOpen, setIsSubmenuOpen] = useState(false); 
+    const [isLangMenuOpen, setIsLangMenuOpen] = useState(false); 
+    const [active, setActive] = useState(""); 
+    const [activeSubmenu, setActiveSubmenu] = useState(""); 
     const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
     const [isRegisterPopupOpen, setIsRegisterPopupOpen] = useState(false);
     const [isOtpPopupOpen, setIsOtpPopupOpen] = useState(false);
@@ -49,6 +51,17 @@ export const Header = () => {
     // Toggle submenu visibility
     const toggleSubmenu = () => {
         setIsSubmenuOpen(!isSubmenuOpen);
+    };
+
+    // Toggle language menu visibility
+    const toggleLangMenu = () => {
+        setIsLangMenuOpen(!isLangMenuOpen);
+    };
+
+    // Handle language change from dropdown
+    const handleLanguageChange = (lang) => {
+        i18n.changeLanguage(lang);
+        setIsLangMenuOpen(false); // Close menu on selection
     };
 
     // Close submenu when a submenu item is clicked
@@ -73,11 +86,28 @@ export const Header = () => {
         };
     }, [isSubmenuOpen]);
 
+    // Close language menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (langMenuRef.current && !langMenuRef.current.contains(event.target)) {
+                setIsLangMenuOpen(false);
+            }
+        };
+
+        if (isLangMenuOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isLangMenuOpen]);
+
+
     const handleLoginPopupClose = () => {
         setIsLoginPopupOpen(false);
         setIsRegisterPopupOpen(false);
         setIsOtpPopupOpen(false);
-        // The auth state will update automatically via the loginSuccess event
     };
 
     const handleSwitchToRegister = () => {
@@ -99,33 +129,24 @@ export const Header = () => {
         setOtpEmail(email);
     };
 
-    // Change language between English and Greek
-    const changeLanguage = () => {
-        const newLang = i18n.language === 'en' ? 'el' : 'en';
-        i18n.changeLanguage(newLang);
-    };
-
     // Update `active` state based on current location
     useEffect(() => {
-        // Check if current path matches any of the main routes
         const currentRoute = Object.keys(routes).find(
             (key) => routes[key] === location.pathname
         );
-
-        // Check if current path matches any product submenu item
         const activeSubItem = productSubmenu.find(
             (item) => item.path === location.pathname
         );
 
         if (activeSubItem) {
-            setActive("products"); // Highlight main menu
-            setActiveSubmenu(activeSubItem.key); // Highlight the submenu item
+            setActive("products"); 
+            setActiveSubmenu(activeSubItem.key); 
         } else if (currentRoute) {
             setActive(currentRoute);
-            setActiveSubmenu(""); // Clear submenu highlight
+            setActiveSubmenu(""); 
         } else {
             setActive("");
-            setActiveSubmenu(""); // Clear all highlights
+            setActiveSubmenu(""); 
         }
     }, [location]);
 
@@ -239,10 +260,61 @@ export const Header = () => {
                         </Link>
                     )}
 
-                    {/* Language Switch */}
-                    <span className="flex items-center gap-1 cursor-pointer w-12 vsm:w-auto" onClick={changeLanguage}>
-                        {i18n.language != "en" ? <Icons.GreekFlagIcon /> : <Icons.UKFlagIcon />}
-                    </span>
+                    {/* (تم التعديل) Language Switch Dropdown */}
+                    <div className="relative" ref={langMenuRef}>
+                        
+                        {/* (جديد) Trigger: Shows current language + flag */}
+                        <button
+                            onClick={toggleLangMenu}
+                            className="flex items-center gap-2 p-2 rounded-md transition_all hover:bg-gray-100"
+                        >
+                            {/* Dynamically show selected language */}
+                            {i18n.language === 'en' ? (
+                                <>
+                                    <Icons.UKFlagIcon />
+                                    <span className="text-sm font-medium hidden vsm:block">English</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Icons.GreekFlagIcon />
+                                    <span className="text-sm font-medium hidden vsm:block">Ελληνικά</span>
+                                </>
+                            )}
+                            {/* Dropdown Arrow */}
+                            <Icons.ToggleArrowIcon className={`w-3 h-3 transition-transform ${isLangMenuOpen ? 'rotate-180' : 'rotate-0'}`} />
+                        </button>
+
+                        {/* Language Dropdown Menu */}
+                        {isLangMenuOpen && (
+                            <ul className="absolute top-full right-0 bg-white z-50 text-black rounded-xl shadow-xl mt-2 w-44 flex flex-col overflow-hidden border">
+                                {/* English Option */}
+                                <li
+                                    onClick={() => handleLanguageChange('en')}
+                                    className={`flex items-center gap-3 p-3 cursor-pointer transition_all ${
+                                        i18n.language === 'en'
+                                            ? 'bg-secondaryColor text-white' // Selected
+                                            : 'hover:bg-primaryBgColor hover:text-white'
+                                        }`}
+                                >
+                                    <Icons.UKFlagIcon />
+                                    <span>English</span>
+                                </li>
+
+                                {/* Greek Option */}
+                                <li
+                                    onClick={() => handleLanguageChange('el')}
+                                    className={`flex items-center gap-3 p-3 cursor-pointer transition_all ${
+                                        i18n.language === 'el'
+                                            ? 'bg-secondaryColor text-white' // Selected
+                                            : 'hover:bg-primaryBgColor hover:text-white'
+                                        }`}
+                                >
+                                    <Icons.GreekFlagIcon />
+                                    <span>Ελληνικά</span>
+                                </li>
+                            </ul>
+                        )}
+                    </div>
 
                     {/* Hamburger Icon for Mobile */}
                     <span
