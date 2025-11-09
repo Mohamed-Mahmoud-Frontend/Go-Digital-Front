@@ -23,26 +23,60 @@ export const ForeignersQuote = () => {
     genders: [],
   });
 
+  // قراءة آمنة من localStorage
   const [userData, setUserData] = useState(() => {
-    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return saved
-      ? JSON.parse(saved)
-      : {
-          step1: { firstName: "", lastName: "" },
-          step2: { nationality: "", nationalityId: "", identification: "" },
-          step3: { birthday: "", gender: "", genderId: "" },
-          step4: { insurancePeriod: "" },
-        };
+    try {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (!saved) return getDefaultUserData();
+
+      const parsed = JSON.parse(saved);
+
+      return {
+        step1: {
+          firstName: parsed.step1?.firstName || "",
+          lastName: parsed.step1?.lastName || "",
+        },
+        step2: {
+          nationality: Array.isArray(parsed.step2?.nationality) ? parsed.step2.nationality : [],
+          nationalityId: Array.isArray(parsed.step2?.nationalityId) ? parsed.step2.nationalityId : [],
+          identification: parsed.step2?.identification || "",
+        },
+        step3: {
+          birthday: parsed.step3?.birthday || "",
+          gender: parsed.step3?.gender || "",
+          genderId: parsed.step3?.genderId || "",
+        },
+        step4: { insurancePeriod: parsed.step4?.insurancePeriod || "" },
+      };
+    } catch {
+      return getDefaultUserData();
+    }
   });
 
+  function getDefaultUserData() {
+    return {
+      step1: { firstName: "", lastName: "" },
+      step2: { nationality: [], nationalityId: [], identification: "" },
+      step3: { birthday: "", gender: "", genderId: "" },
+      step4: { insurancePeriod: "" },
+    };
+  }
+
+  // حفظ تلقائي
   useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
+    } catch (err) {
+      console.error("Failed to save to localStorage:", err);
+    }
   }, [userData]);
 
+  // جلب API
   useEffect(() => {
     const fetchApiData = async () => {
       try {
         setIsLoading(true);
+        setError("");
         const response = await fetch(
           `${API_BASE_URL}/user/immigrationMedical/getArguments`,
           {
@@ -69,6 +103,7 @@ export const ForeignersQuote = () => {
     fetchApiData();
   }, [i18n.language]);
 
+  // استقبال رقم التعريف
   useEffect(() => {
     const prefilledId = localStorage.getItem("foreigners_id_prefill");
     if (prefilledId && apiData.countries.length > 0) {
@@ -84,17 +119,7 @@ export const ForeignersQuote = () => {
   const handleInputChange = (step, field, value) => {
     setIsInvalid(false);
 
-    if (step === "step2" && field === "nationality") {
-      const selected = apiData.countries.find((c) => c.name === value);
-      setUserData((prev) => ({
-        ...prev,
-        step2: {
-          ...prev.step2,
-          nationality: value,
-          nationalityId: selected ? selected.id.toString() : "",
-        },
-      }));
-    } else if (step === "step3" && field === "gender") {
+    if (step === "step3" && field === "gender") {
       const selected = apiData.genders.find((g) => g.name === value);
       setUserData((prev) => ({
         ...prev,
@@ -112,13 +137,39 @@ export const ForeignersQuote = () => {
     }
   };
 
+  const handleNationalityAdd = (name) => {
+    const country = apiData.countries.find(c => c.name === name);
+    if (country && !userData.step2.nationalityId.includes(country.id.toString())) {
+      setIsInvalid(false);
+      setUserData(prev => ({
+        ...prev,
+        step2: {
+          ...prev.step2,
+          nationality: [...prev.step2.nationality, country.name],
+          nationalityId: [...prev.step2.nationalityId, country.id.toString()],
+        },
+      }));
+    }
+  };
+
+  const handleNationalityRemove = (index) => {
+    setUserData(prev => ({
+      ...prev,
+      step2: {
+        ...prev.step2,
+        nationality: prev.step2.nationality.filter((_, i) => i !== index),
+        nationalityId: prev.step2.nationalityId.filter((_, i) => i !== index),
+      },
+    }));
+  };
+
   const isStepValid = (step) => {
     const data = userData[`step${step + 1}`];
     switch (step) {
       case 0:
         return data.firstName.trim() && data.lastName.trim();
       case 1:
-        return data.nationalityId && data.identification.trim();
+        return data.nationalityId.length > 0 && data365.identification.trim();
       case 2:
         if (!data.birthday || !data.genderId) return false;
         const birth = new Date(data.birthday);
@@ -162,7 +213,7 @@ export const ForeignersQuote = () => {
         first_name: userData.step1.firstName,
         last_name: userData.step1.lastName,
         gender: userData.step3.genderId,
-        country_id: userData.step2.nationalityId,
+        country_id: userData.step2.nationalityId, // مصفوفة
       };
 
       const response = await fetch(
@@ -256,26 +307,18 @@ export const ForeignersQuote = () => {
                 {t("foreigners_quote_page.steps.step1.title1")}
               </h1>
               <TravelInput
-                placeholder={t(
-                  "foreigners_quote_page.steps.step1.placeholder_name"
-                )}
+                placeholder={t("foreigners_quote_page.steps.step1.placeholder_name")}
                 value={userData.step1.firstName}
-                onChange={(e) =>
-                  handleInputChange("step1", "firstName", e.target.value)
-                }
+                onChange={(e) => handleInputChange("step1", "firstName", e.target.value)}
                 isInvalid={isInvalid && !userData.step1.firstName}
               />
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
                 {t("foreigners_quote_page.steps.step1.title2")}
               </h1>
               <TravelInput
-                placeholder={t(
-                  "foreigners_quote_page.steps.step1.placeholder_lastname"
-                )}
+                placeholder={t("foreigners_quote_page.steps.step1.placeholder_lastname")}
                 value={userData.step1.lastName}
-                onChange={(e) =>
-                  handleInputChange("step1", "lastName", e.target.value)
-                }
+                onChange={(e) => handleInputChange("step1", "lastName", e.target.value)}
                 isInvalid={isInvalid && !userData.step1.lastName}
               />
             </div>
@@ -287,28 +330,22 @@ export const ForeignersQuote = () => {
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
                 {t("foreigners_quote_page.steps.step2.title1")}
               </h1>
-              <SearchableSelect
-                placeholder={t(
-                  "foreigners_quote_page.steps.step2.placeholder_nationality"
-                )}
-                value={userData.step2.nationality}
-                onChange={(name) =>
-                  handleInputChange("step2", "nationality", name)
-                }
-                isInvalid={isInvalid && !userData.step2.nationalityId}
-                options={apiData.countries.map((c) => c.name)}
+              {/* Multi Nationality Select */}
+              <MultiCountrySelect
+                placeholder={t("foreigners_quote_page.steps.step2.placeholder_nationality")}
+                options={apiData.countries.map(c => c.name)}
+                selectedCountries={userData.step2.nationality}
+                onAddCountry={handleNationalityAdd}
+                onRemoveCountry={handleNationalityRemove}
+                isInvalid={isInvalid && userData.step2.nationalityId.length === 0}
               />
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
                 {t("foreigners_quote_page.steps.step2.title2")}
               </h1>
               <TravelInput
-                placeholder={t(
-                  "foreigners_quote_page.steps.step2.placeholder_identification"
-                )}
+                placeholder={t("foreigners_quote_page.steps.step2.placeholder_identification")}
                 value={userData.step2.identification}
-                onChange={(e) =>
-                  handleInputChange("step2", "identification", e.target.value)
-                }
+                onChange={(e) => handleInputChange("step2", "identification", e.target.value)}
                 isInvalid={isInvalid && !userData.step2.identification}
               />
             </div>
@@ -324,9 +361,7 @@ export const ForeignersQuote = () => {
                 type="date"
                 placeholder=""
                 value={userData.step3.birthday}
-                onChange={(e) =>
-                  handleInputChange("step3", "birthday", e.target.value)
-                }
+                onChange={(e) => handleInputChange("step3", "birthday", e.target.value)}
                 isInvalid={isInvalid && !userData.step3.birthday}
                 max={new Date().toISOString().split("T")[0]}
               />
@@ -334,15 +369,11 @@ export const ForeignersQuote = () => {
                 {t("foreigners_quote_page.steps.step3.title2")}
               </h1>
               <TravelSelect
-                placeholder={t(
-                  "foreigners_quote_page.steps.step3.placeholder_gender"
-                )}
+                placeholder={t("foreigners_quote_page.steps.step3.placeholder_gender")}
                 value={userData.step3.gender}
-                onChange={(e) =>
-                  handleInputChange("step3", "gender", e.target.value)
-                }
+                onChange={(e) => handleInputChange("step3", "gender", e.target.value)}
                 isInvalid={isInvalid && !userData.step3.genderId}
-                options={apiData.genders.map((g) => g.name)}
+                options={apiData.genders.map(g => g.name)}
               />
             </div>
           )}
@@ -357,9 +388,7 @@ export const ForeignersQuote = () => {
                 type="date"
                 placeholder=""
                 value={userData.step4.insurancePeriod}
-                onChange={(e) =>
-                  handleInputChange("step4", "insurancePeriod", e.target.value)
-                }
+                onChange={(e) => handleInputChange("step4", "insurancePeriod", e.target.value)}
                 isInvalid={isInvalid && !userData.step4.insurancePeriod}
               />
             </div>
@@ -403,14 +432,8 @@ export const ForeignersQuote = () => {
   );
 };
 
-const TravelInput = ({
-  placeholder,
-  value,
-  onChange,
-  isInvalid,
-  type = "text",
-  max,
-}) => (
+// مكونات
+const TravelInput = ({ placeholder, value, onChange, isInvalid, type = "text", max }) => (
   <input
     type={type}
     placeholder={placeholder}
@@ -418,11 +441,7 @@ const TravelInput = ({
     onChange={onChange}
     max={max}
     className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] text-[#C3C3C3] font-semibold focus:outline-none
-      ${
-        isInvalid
-          ? "border-secondaryColor border-2 animate-pulse"
-          : "border-[#C3C3C3]"
-      }
+      ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
       ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
   />
 );
@@ -432,80 +451,73 @@ const TravelSelect = ({ placeholder, value, onChange, options, isInvalid }) => (
     value={value || ""}
     onChange={onChange}
     className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none
-      ${
-        isInvalid
-          ? "border-secondaryColor border-2 animate-pulse"
-          : "border-[#C3C3C3]"
-      }
+      ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
       ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
   >
-    <option value="" disabled hidden>
-      {placeholder}
-    </option>
+    <option value="" disabled hidden>{placeholder}</option>
     {options.map((opt, i) => (
-      <option key={i} value={opt}>
-        {opt}
-      </option>
+      <option key={i} value={opt}>{opt}</option>
     ))}
   </select>
 );
 
-const SearchableSelect = ({
-  placeholder,
-  options,
-  value,
-  onChange,
-  isInvalid,
-}) => {
+const MultiCountrySelect = ({ placeholder, options, selectedCountries = [], onAddCountry, onRemoveCountry, isInvalid }) => {
   const [filter, setFilter] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
-  const displayedValue = value || filter;
-
+  const safeSelected = Array.isArray(selectedCountries) ? selectedCountries : [];
   const availableOptions = options.filter(
-    (opt) =>
-      opt.toLowerCase().includes(filter.toLowerCase()) && opt !== value
+    opt => !safeSelected.includes(opt) && opt.toLowerCase().includes(filter.toLowerCase())
   );
 
-  const handleSelect = (countryName) => {
-    onChange(countryName);
+  const handleAdd = (name) => {
+    onAddCountry(name);
     setFilter("");
     setIsOpen(false);
   };
 
-  const handleInputChange = (e) => {
-    setFilter(e.target.value);
-    if (value) {
-      onChange("");
-    }
-  };
-
   return (
     <div className="relative w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
-      <input
-        type="text"
-        placeholder={placeholder}
-        value={displayedValue}
-        onChange={handleInputChange}
-        onFocus={() => setIsOpen(true)}
-        onBlur={() => setTimeout(() => setIsOpen(false), 200)}
-        className={`w-full h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none
-          ${
-            isInvalid
-              ? "border-secondaryColor border-2 animate-pulse"
-              : "border-[#C3C3C3]"
-          }
-          ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
-      />
+      <div
+        className={`flex flex-wrap items-center gap-2 w-full min-h-[75px] px-4 py-2 border rounded-[10px] cursor-pointer
+          ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
+          ${safeSelected.length > 0 || filter ? "border-black" : "border-[#C3C3C3]"}`}
+        onClick={() => setIsOpen(true)}
+      >
+        {safeSelected.map((country, i) => (
+          <span key={i} className="flex items-center bg-gray-200 text-black rounded-full px-3 py-1 text-sm font-medium">
+            {country}
+            <button
+              type="button"
+              className="ml-2 text-gray-600 hover:text-black"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemoveCountry(i);
+              }}
+            >
+              ×
+            </button>
+          </span>
+        ))}
+        <input
+          type="text"
+          placeholder={safeSelected.length === 0 ? placeholder : ""}
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          onFocus={() => setIsOpen(true)}
+          className="flex-1 min-w-[100px] h-[58px] bg-transparent border-none outline-none text-black font-medium"
+          onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+        />
+      </div>
       {isOpen && availableOptions.length > 0 && (
         <ul className="absolute z-10 w-full max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-[10px] shadow-lg mt-1">
-          {availableOptions.map((country, index) => (
+          {availableOptions.map((country, i) => (
             <li
-              key={index}
+              key={i}
               className="px-4 py-3 cursor-pointer hover:bg-gray-100 text-black"
               onMouseDown={(e) => {
                 e.preventDefault();
-                handleSelect(country);
+                handleAdd(country);
               }}
             >
               {country}
@@ -527,10 +539,8 @@ const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
       ${isDisabled ? "text-gray-400 cursor-not-allowed" : "text-black"}`}
   >
     {iconPosition === "left" && (
-      <span
-        className={`flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform -rotate-90 group-hover:-rotate-[135deg]
-          ${isDisabled ? "bg-gray-300" : "bg-black"}`}
-      >
+      <span className={`flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform -rotate-90 group-hover:-rotate-[135deg]
+        ${isDisabled ? "bg-gray-300" : "bg-black"}`}>
         <Icons.QuoteArrowIcon />
       </span>
     )}
@@ -543,35 +553,8 @@ const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
   </button>
 );
 
-TravelInput.propTypes = {
-  placeholder: PropTypes.string,
-  value: PropTypes.string,
-  onChange: PropTypes.func.isRequired,
-  isInvalid: PropTypes.bool,
-  type: PropTypes.string,
-  max: PropTypes.string,
-};
-
-TravelSelect.propTypes = {
-  placeholder: PropTypes.string,
-  value: PropTypes.string,
-  onChange: PropTypes.func.isRequired,
-  options: PropTypes.array.isRequired,
-  isInvalid: PropTypes.bool,
-};
-
-SearchableSelect.propTypes = {
-  placeholder: PropTypes.string,
-  options: PropTypes.array.isRequired,
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  isInvalid: PropTypes.bool,
-};
-
-ActionButton.propTypes = {
-  text: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
-  iconPosition: PropTypes.oneOf(["left", "right"]).isRequired,
-  onClick: PropTypes.func.isRequired,
-  isDisabled: PropTypes.bool,
-  isNext: PropTypes.bool,
-};
+// PropTypes
+TravelInput.propTypes = { placeholder: PropTypes.string, value: PropTypes.string, onChange: PropTypes.func.isRequired, isInvalid: PropTypes.bool, type: PropTypes.string, max: PropTypes.string };
+TravelSelect.propTypes = { placeholder: PropTypes.string, value: PropTypes.string, onChange: PropTypes.func.isRequired, options: PropTypes.array.isRequired, isInvalid: PropTypes.bool };
+MultiCountrySelect.propTypes = { placeholder: PropTypes.string, options: PropTypes.array.isRequired, selectedCountries: PropTypes.array, onAddCountry: PropTypes.func.isRequired, onRemoveCountry: PropTypes.func.isRequired, isInvalid: PropTypes.bool };
+ActionButton.propTypes = { text: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired, iconPosition: PropTypes.oneOf(["left", "right"]).isRequired, onClick: PropTypes.func.isRequired, isDisabled: PropTypes.bool, isNext: PropTypes.bool };
