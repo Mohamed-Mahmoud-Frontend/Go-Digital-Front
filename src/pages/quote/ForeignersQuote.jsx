@@ -8,6 +8,9 @@ import { useTranslation } from "react-i18next";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const LOCAL_STORAGE_KEY = "foreignersQuoteForm";
 
+/* -------------------------------------------------------------------------- */
+/*                               MAIN COMPONENT                               */
+/* -------------------------------------------------------------------------- */
 export const ForeignersQuote = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -23,61 +26,59 @@ export const ForeignersQuote = () => {
     genders: [],
   });
 
-  // قراءة آمنة من localStorage
+  /* --------------------------- LOCAL STORAGE ---------------------------- */
   const [userData, setUserData] = useState(() => {
+    const defaultData = {
+      step1: { firstName: "", lastName: "" },
+      step2: { nationality: "", nationalityId: null, identification: "" },
+      step3: { birthday: "", gender: "", genderId: null },
+      step4: { insurancePeriod: "" },
+    };
+
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (!saved) return getDefaultUserData();
+      if (!saved) return defaultData;
 
       const parsed = JSON.parse(saved);
 
       return {
         step1: {
-          firstName: parsed.step1?.firstName || "",
-          lastName: parsed.step1?.lastName || "",
+          firstName: parsed.step1?.firstName ?? "",
+          lastName: parsed.step1?.lastName ?? "",
         },
         step2: {
-          nationality: Array.isArray(parsed.step2?.nationality) ? parsed.step2.nationality : [],
-          nationalityId: Array.isArray(parsed.step2?.nationalityId) ? parsed.step2.nationalityId : [],
-          identification: parsed.step2?.identification || "",
+          nationality: parsed.step2?.nationality ?? "",
+          nationalityId: parsed.step2?.nationalityId ? Number(parsed.step2.nationalityId) : null,
+          identification: parsed.step2?.identification ?? "",
         },
         step3: {
-          birthday: parsed.step3?.birthday || "",
-          gender: parsed.step3?.gender || "",
-          genderId: parsed.step3?.genderId || "",
+          birthday: parsed.step3?.birthday ?? "",
+          gender: parsed.step3?.gender ?? "",
+          genderId: parsed.step3?.genderId !== undefined ? Number(parsed.step3.genderId) : null,
         },
-        step4: { insurancePeriod: parsed.step4?.insurancePeriod || "" },
+        step4: { insurancePeriod: parsed.step4?.insurancePeriod ?? "" },
       };
     } catch {
-      return getDefaultUserData();
+      return defaultData;
     }
   });
-
-  function getDefaultUserData() {
-    return {
-      step1: { firstName: "", lastName: "" },
-      step2: { nationality: [], nationalityId: [], identification: "" },
-      step3: { birthday: "", gender: "", genderId: "" },
-      step4: { insurancePeriod: "" },
-    };
-  }
 
   // حفظ تلقائي
   useEffect(() => {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
-    } catch (err) {
-      console.error("Failed to save to localStorage:", err);
+    } catch (e) {
+      console.error("localStorage save error:", e);
     }
   }, [userData]);
 
-  // جلب API
+  /* ------------------------------- API -------------------------------- */
   useEffect(() => {
     const fetchApiData = async () => {
       try {
         setIsLoading(true);
         setError("");
-        const response = await fetch(
+        const res = await fetch(
           `${API_BASE_URL}/user/immigrationMedical/getArguments`,
           {
             method: "GET",
@@ -88,22 +89,37 @@ export const ForeignersQuote = () => {
           }
         );
 
-        if (!response.ok) throw new Error("Failed to fetch data");
+        if (!res.ok) throw new Error("Failed to fetch data");
+        const data = await res.json();
 
-        const data = await response.json();
-        setApiData(data);
+        console.log("API Response:", data);
+
+        setApiData({
+          questions: data.questions || [],
+          countries: (data.countries || []).map(c => ({
+            id: Number(c.id),
+            name: c.name,
+          })),
+          genders: (data.genders || []).map(g => ({
+            id: Number(g.id),
+            name: g.name,
+          })),
+        });
       } catch (err) {
-        console.error("Error:", err);
-        setError("Failed to load data. Please try again.");
+        console.error(err);
+        setError(
+          t("common.error.failed_load_data") ||
+            "Failed to load data. Please try again."
+        );
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchApiData();
-  }, [i18n.language]);
+  }, [i18n.language, t]);
 
-  // استقبال رقم التعريف
+  /* ---------------------- PRE-FILL IDENTIFICATION ---------------------- */
   useEffect(() => {
     const prefilledId = localStorage.getItem("foreigners_id_prefill");
     if (prefilledId && apiData.countries.length > 0) {
@@ -111,73 +127,82 @@ export const ForeignersQuote = () => {
         ...prev,
         step2: { ...prev.step2, identification: prefilledId },
       }));
-      setCurrentStep(1);
       localStorage.removeItem("foreigners_id_prefill");
     }
   }, [apiData.countries]);
 
+  /* --------------------------- INPUT HANDLERS -------------------------- */
   const handleInputChange = (step, field, value) => {
     setIsInvalid(false);
 
     if (step === "step3" && field === "gender") {
-      const selected = apiData.genders.find((g) => g.name === value);
+      const selected = apiData.genders.find((g) => g.name.toLowerCase() === value.toLowerCase());
       setUserData((prev) => ({
         ...prev,
         step3: {
           ...prev.step3,
-          gender: value,
-          genderId: selected ? selected.id.toString() : "",
+          gender: value,                    // "Male" أو "Female"
+          genderId: selected ? selected.id : null,
         },
       }));
-    } else {
-      setUserData((prev) => ({
-        ...prev,
-        [step]: { ...prev[step], [field]: value },
-      }));
+      return;
     }
+
+    setUserData((prev) => ({
+      ...prev,
+      [step]: { ...prev[step], [field]: value },
+    }));
   };
 
-  const handleNationalityAdd = (name) => {
-    const country = apiData.countries.find(c => c.name === name);
-    if (country && !userData.step2.nationalityId.includes(country.id.toString())) {
+  // دولة واحدة فقط
+  const handleNationalitySelect = (name) => {
+    const country = apiData.countries.find((c) => c.name === name);
+    if (country) {
       setIsInvalid(false);
-      setUserData(prev => ({
+      setUserData((prev) => ({
         ...prev,
         step2: {
           ...prev.step2,
-          nationality: [...prev.step2.nationality, country.name],
-          nationalityId: [...prev.step2.nationalityId, country.id.toString()],
+          nationality: country.name,
+          nationalityId: country.id,
         },
       }));
     }
   };
 
-  const handleNationalityRemove = (index) => {
-    setUserData(prev => ({
+  const handleNationalityClear = () => {
+    setUserData((prev) => ({
       ...prev,
       step2: {
         ...prev.step2,
-        nationality: prev.step2.nationality.filter((_, i) => i !== index),
-        nationalityId: prev.step2.nationalityId.filter((_, i) => i !== index),
+        nationality: "",
+        nationalityId: null,
       },
     }));
   };
 
+  /* ----------------------------- VALIDATION ---------------------------- */
   const isStepValid = (step) => {
     const data = userData[`step${step + 1}`];
     switch (step) {
       case 0:
         return data.firstName.trim() && data.lastName.trim();
       case 1:
-        return data.nationalityId.length > 0 && data365.identification.trim();
-      case 2:
-        if (!data.birthday || !data.genderId) return false;
+        return data.nationalityId !== null && data.identification.trim();
+      case 2: {
+        if (!data.birthday || !data.gender) return false;
         const birth = new Date(data.birthday);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         return birth <= today;
-      case 3:
-        return data.insurancePeriod.trim();
+      }
+      case 3: {
+        if (!data.insurancePeriod) return false;
+        const ins = new Date(data.insurancePeriod);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return ins >= today;
+      }
       default:
         return false;
     }
@@ -185,7 +210,7 @@ export const ForeignersQuote = () => {
 
   const handleNext = () => {
     if (isStepValid(currentStep)) {
-      setCurrentStep((prev) => prev + 1);
+      setCurrentStep((p) => p + 1);
       setIsInvalid(false);
     } else {
       setIsInvalid(true);
@@ -193,12 +218,12 @@ export const ForeignersQuote = () => {
   };
 
   const handlePrevious = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0));
+    setCurrentStep((p) => Math.max(p - 1, 0));
     setIsInvalid(false);
   };
 
   const handleSubmit = async () => {
-    if (!isStepValid(currentStep)) {
+    if (!isStepValid(totalSteps - 1)) {
       setIsInvalid(true);
       return;
     }
@@ -208,15 +233,24 @@ export const ForeignersQuote = () => {
 
     try {
       const payload = {
+        country_id: userData.step2.nationalityId, // number
         date_birth: userData.step3.birthday,
+        first_name: userData.step1.firstName,     // مع المسافات
+        last_name: userData.step1.lastName,       // مع المسافات
         identification: userData.step2.identification,
-        first_name: userData.step1.firstName,
-        last_name: userData.step1.lastName,
-        gender: userData.step3.genderId,
-        country_id: userData.step2.nationalityId, // مصفوفة
+        gender: userData.step3.gender.toLowerCase(), // female أو male (small letters)
       };
 
-      const response = await fetch(
+      // تحقق من الحقول
+      if (!payload.gender || payload.country_id === null) {
+        setError("Please fill all required fields.");
+        setIsLoading(false);
+        return;
+      }
+
+      console.log("Submitting payload:", payload);
+
+      const res = await fetch(
         `${API_BASE_URL}/user/immigrationMedical/getQuotes`,
         {
           method: "POST",
@@ -228,12 +262,17 @@ export const ForeignersQuote = () => {
         }
       );
 
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.message || "Failed to fetch quotes");
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("API Error:", err);
+        throw new Error(
+          err.message ||
+            t("common.error.failed_fetch_quotes") ||
+            "Failed to fetch quotes"
+        );
       }
 
-      const result = await response.json();
+      const result = await res.json();
 
       localStorage.setItem(
         "foreignersQuoteData",
@@ -243,16 +282,30 @@ export const ForeignersQuote = () => {
           quotes: result.quotes || [],
         })
       );
-
       localStorage.removeItem(LOCAL_STORAGE_KEY);
       navigate("/get-a-quote-foreigners/proceed");
     } catch (err) {
-      setError(err.message || "An error occurred. Please try again.");
+      console.error("Submit error:", err);
+      setError(
+        err.message ||
+          t("common.error.try_again") ||
+          "An error occurred. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
+  /* --------------------------- DATE HELPERS --------------------------- */
+  const getMaxBirthDate = () => new Date().toISOString().split("T")[0];
+
+  const getMinInsuranceDate = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today.toISOString().split("T")[0];
+  };
+
+  /* ----------------------------- RENDER ------------------------------ */
   if (isLoading && currentStep === 0) {
     return (
       <main>
@@ -268,8 +321,14 @@ export const ForeignersQuote = () => {
     return (
       <main>
         <QuoteHeader />
-        <div className="flex justify-center items-center min-h-screen text-red-600">
-          {error}
+        <div className="flex flex-col justify-center items-center min-h-screen text-red-600 gap-4">
+          <div className="text-xl font-semibold">{error}</div>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all"
+          >
+            {t("common.button.retry") || "Retry"}
+          </button>
         </div>
       </main>
     );
@@ -279,27 +338,32 @@ export const ForeignersQuote = () => {
     <main>
       <QuoteHeader />
 
-      <section className="border-t-2 mx-5 md:mx-0 my-2 flex flex-col justify-center items-center">
+      <section className="border-t-2  mx-5 md:mx-0 my-2 flex flex-col justify-center items-center">
+        {/* Progress Bar */}
         <div className="flex flex-col justify-center items-center my-10">
-          <div className="flex items-center gap-3 relative w-full">
+          <div className="flex items-center gap-3 relative w-full max-w-[90%] sm:max-w-xl">
             {Array.from({ length: totalSteps }).map((_, i) => (
               <div
                 key={i}
-                className={`w-14 vsm:w-20 sm:w-32 md:w-[170px] lg:w-[214px] h-[15px] rounded-[5px]
-                  ${i < currentStep ? "bg-orange-400" : "bg-gray-300"}
-                  ${i === currentStep ? "ml-[70px] md:ml-16" : ""}`}
+                className={`flex-1 h-[15px] rounded-[5px] transition-colors duration-300 ${
+                  i < currentStep ? "bg-orange-400" : "bg-gray-300"
+                }`}
               />
             ))}
             <span
               className="absolute transition-all duration-300"
-              style={{ left: `calc(${currentStep * 24}%)` }}
+              style={{
+                left: `calc(${(currentStep / (totalSteps - 1)) * 100}% - 12px)`,
+              }}
             >
               <Icons.QuotePersonIcon />
             </span>
           </div>
         </div>
 
+        {/* Step Content */}
         <div className="my-5 flex flex-wrap justify-center items-center gap-5 w-full">
+          {/* STEP 1 */}
           {currentStep === 0 && (
             <div className="flex flex-col justify-center items-center gap-5 sm:gap-10">
               <Icons.QuoteProfileIcon />
@@ -310,7 +374,7 @@ export const ForeignersQuote = () => {
                 placeholder={t("foreigners_quote_page.steps.step1.placeholder_name")}
                 value={userData.step1.firstName}
                 onChange={(e) => handleInputChange("step1", "firstName", e.target.value)}
-                isInvalid={isInvalid && !userData.step1.firstName}
+                isInvalid={isInvalid && !userData.step1.firstName.trim()}
               />
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
                 {t("foreigners_quote_page.steps.step1.title2")}
@@ -319,25 +383,25 @@ export const ForeignersQuote = () => {
                 placeholder={t("foreigners_quote_page.steps.step1.placeholder_lastname")}
                 value={userData.step1.lastName}
                 onChange={(e) => handleInputChange("step1", "lastName", e.target.value)}
-                isInvalid={isInvalid && !userData.step1.lastName}
+                isInvalid={isInvalid && !userData.step1.lastName.trim()}
               />
             </div>
           )}
 
+          {/* STEP 2 */}
           {currentStep === 1 && (
             <div className="flex flex-col justify-center items-center gap-5 sm:gap-10">
               <Icons.QuoteCardIcon />
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
                 {t("foreigners_quote_page.steps.step2.title1")}
               </h1>
-              {/* Multi Nationality Select */}
-              <MultiCountrySelect
+              <SingleCountrySelect
                 placeholder={t("foreigners_quote_page.steps.step2.placeholder_nationality")}
-                options={apiData.countries.map(c => c.name)}
-                selectedCountries={userData.step2.nationality}
-                onAddCountry={handleNationalityAdd}
-                onRemoveCountry={handleNationalityRemove}
-                isInvalid={isInvalid && userData.step2.nationalityId.length === 0}
+                options={apiData.countries.map((c) => c.name)}
+                selectedCountry={userData.step2.nationality}
+                onSelectCountry={handleNationalitySelect}
+                onClear={handleNationalityClear}
+                isInvalid={isInvalid && userData.step2.nationalityId === null}
               />
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
                 {t("foreigners_quote_page.steps.step2.title2")}
@@ -346,11 +410,12 @@ export const ForeignersQuote = () => {
                 placeholder={t("foreigners_quote_page.steps.step2.placeholder_identification")}
                 value={userData.step2.identification}
                 onChange={(e) => handleInputChange("step2", "identification", e.target.value)}
-                isInvalid={isInvalid && !userData.step2.identification}
+                isInvalid={isInvalid && !userData.step2.identification.trim()}
               />
             </div>
           )}
 
+          {/* STEP 3 */}
           {currentStep === 2 && (
             <div className="flex flex-col justify-center items-center gap-5 sm:gap-10">
               <Icons.QuoteBirthIcon />
@@ -359,11 +424,10 @@ export const ForeignersQuote = () => {
               </h1>
               <TravelInput
                 type="date"
-                placeholder=""
                 value={userData.step3.birthday}
                 onChange={(e) => handleInputChange("step3", "birthday", e.target.value)}
                 isInvalid={isInvalid && !userData.step3.birthday}
-                max={new Date().toISOString().split("T")[0]}
+                max={getMaxBirthDate()}
               />
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
                 {t("foreigners_quote_page.steps.step3.title2")}
@@ -372,12 +436,13 @@ export const ForeignersQuote = () => {
                 placeholder={t("foreigners_quote_page.steps.step3.placeholder_gender")}
                 value={userData.step3.gender}
                 onChange={(e) => handleInputChange("step3", "gender", e.target.value)}
-                isInvalid={isInvalid && !userData.step3.genderId}
-                options={apiData.genders.map(g => g.name)}
+                isInvalid={isInvalid && !userData.step3.gender}
+                options={apiData.genders.map((g) => g.name)}
               />
             </div>
           )}
 
+          {/* STEP 4 */}
           {currentStep === 3 && (
             <div className="flex flex-col justify-center items-center gap-10">
               <Icons.QuoteCalenderIcon />
@@ -386,15 +451,16 @@ export const ForeignersQuote = () => {
               </h1>
               <TravelInput
                 type="date"
-                placeholder=""
                 value={userData.step4.insurancePeriod}
                 onChange={(e) => handleInputChange("step4", "insurancePeriod", e.target.value)}
                 isInvalid={isInvalid && !userData.step4.insurancePeriod}
+                min={getMinInsuranceDate()}
               />
             </div>
           )}
         </div>
 
+        {/* Navigation Buttons */}
         <div className="flex justify-center items-center gap-3 vsm:gap-10 my-5">
           <ActionButton
             text={t("foreigners_quote_page.buttons.previous")}
@@ -421,57 +487,95 @@ export const ForeignersQuote = () => {
               iconPosition="right"
               onClick={handleSubmit}
               isNext
-              isDisabled={isLoading || !isStepValid(currentStep)}
+              isDisabled={isLoading || !isStepValid(totalSteps - 1)}
             />
           )}
         </div>
 
-        {error && <div className="text-red-600 text-center mt-4">{error}</div>}
+        {error && currentStep !== 0 && (
+          <div className="text-red-600 text-center mt-4 font-medium">
+            {error}
+          </div>
+        )}
       </section>
     </main>
   );
 };
 
-// مكونات
-const TravelInput = ({ placeholder, value, onChange, isInvalid, type = "text", max }) => (
-  <input
-    type={type}
-    placeholder={placeholder}
-    value={value || ""}
-    onChange={onChange}
-    max={max}
-    className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] text-[#C3C3C3] font-semibold focus:outline-none
-      ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
-      ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
-  />
-);
+/* -------------------------------------------------------------------------- */
+/*                               INPUT COMPONENTS                               */
+/* -------------------------------------------------------------------------- */
 
-const TravelSelect = ({ placeholder, value, onChange, options, isInvalid }) => (
+const TravelInput = ({
+  placeholder,
+  value,
+  onChange,
+  isInvalid,
+  type = "text",
+  max,
+  min,
+}) => {
+  const isDate = type === "date";
+  const valueClass = (value || isDate) ? "text-black border-black" : "text-[#C3C3C3]";
+
+  return (
+    <input
+      type={type}
+      placeholder={isDate ? "" : placeholder}
+      value={value}
+      onChange={onChange}
+      max={max}
+      min={min}
+      className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] font-semibold focus:outline-none 
+        ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
+        ${valueClass}`}
+    />
+  );
+};
+
+const TravelSelect = ({
+  placeholder,
+  value,
+  onChange,
+  options,
+  isInvalid,
+}) => (
   <select
-    value={value || ""}
+    value={value}
     onChange={onChange}
     className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none
       ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
       ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
   >
-    <option value="" disabled hidden>{placeholder}</option>
+    <option value="" disabled hidden>
+      {placeholder}
+    </option>
     {options.map((opt, i) => (
-      <option key={i} value={opt}>{opt}</option>
+      <option key={i} value={opt}>
+        {opt}
+      </option>
     ))}
   </select>
 );
 
-const MultiCountrySelect = ({ placeholder, options, selectedCountries = [], onAddCountry, onRemoveCountry, isInvalid }) => {
+const SingleCountrySelect = ({
+  placeholder,
+  options,
+  selectedCountry,
+  onSelectCountry,
+  onClear,
+  isInvalid,
+}) => {
   const [filter, setFilter] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
-  const safeSelected = Array.isArray(selectedCountries) ? selectedCountries : [];
   const availableOptions = options.filter(
-    opt => !safeSelected.includes(opt) && opt.toLowerCase().includes(filter.toLowerCase())
+    (opt) =>
+      opt.toLowerCase().includes(filter.toLowerCase())
   );
 
-  const handleAdd = (name) => {
-    onAddCountry(name);
+  const handleSelect = (name) => {
+    onSelectCountry(name);
     setFilter("");
     setIsOpen(false);
   };
@@ -479,82 +583,127 @@ const MultiCountrySelect = ({ placeholder, options, selectedCountries = [], onAd
   return (
     <div className="relative w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
       <div
-        className={`flex flex-wrap items-center gap-2 w-full min-h-[75px] px-4 py-2 border rounded-[10px] cursor-pointer
+        className={`flex items-center justify-between w-full h-[75px] px-4 border rounded-[10px] cursor-pointer
           ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
-          ${safeSelected.length > 0 || filter ? "border-black" : "border-[#C3C3C3]"}`}
-        onClick={() => setIsOpen(true)}
+          ${selectedCountry ? "border-black" : ""}`}
+        onClick={() => setIsOpen(!isOpen)}
       >
-        {safeSelected.map((country, i) => (
-          <span key={i} className="flex items-center bg-gray-200 text-black rounded-full px-3 py-1 text-sm font-medium">
-            {country}
-            <button
-              type="button"
-              className="ml-2 text-gray-600 hover:text-black"
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemoveCountry(i);
-              }}
-            >
-              ×
-            </button>
-          </span>
-        ))}
-        <input
-          type="text"
-          placeholder={safeSelected.length === 0 ? placeholder : ""}
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          onFocus={() => setIsOpen(true)}
-          className="flex-1 min-w-[100px] h-[58px] bg-transparent border-none outline-none text-black font-medium"
-          onBlur={() => setTimeout(() => setIsOpen(false), 200)}
-        />
+        <span className={selectedCountry ? "text-black font-medium" : "text-[#C3C3C3]"}>
+          {selectedCountry || placeholder}
+        </span>
+        {selectedCountry && (
+          <button
+            type="button"
+            className="text-gray-600 hover:text-black"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClear();
+            }}
+          >
+            ×
+          </button>
+        )}
       </div>
-      {isOpen && availableOptions.length > 0 && (
-        <ul className="absolute z-10 w-full max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-[10px] shadow-lg mt-1">
-          {availableOptions.map((country, i) => (
-            <li
-              key={i}
-              className="px-4 py-3 cursor-pointer hover:bg-gray-100 text-black"
-              onMouseDown={(e) => {
-                e.preventDefault();
-                handleAdd(country);
-              }}
-            >
-              {country}
-            </li>
-          ))}
-        </ul>
+
+      {isOpen && (
+        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-[10px] shadow-lg">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="w-full px-4 py-2 border-b focus:outline-none"
+            autoFocus
+          />
+          <ul className="max-h-60 overflow-y-auto">
+            {availableOptions.map((country, i) => (
+              <li
+                key={i}
+                className="px-4 py-3 cursor-pointer hover:bg-gray-100 text-black font-medium"
+                onClick={() => handleSelect(country)}
+              >
+                {country}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );
 };
 
-const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
+const ActionButton = ({
+  text,
+  iconPosition,
+  onClick,
+  isDisabled,
+  isNext,
+}) => (
   <button
     onClick={onClick}
     disabled={isDisabled}
-    className={`group flex items-center justify-between px-5 sm:px-3 
-      ${isNext ? "sm:pl-10" : "sm:pr-10"} w-36 sm:w-[220px] h-12 sm:h-[59px] text-sm vsm:text-base sm:text-lg font-medium 
+   className={`group flex items-center justify-between px-5 sm:px-3 
+      ${
+        isNext ? "sm:pl-16" : "sm:pr-14"
+      } w-36 sm:w-[220px] h-12 sm:h-[59px] text-sm vsm:text-base sm:text-lg font-medium 
       border rounded-[27.5px] shadow-md transition-all
       ${isDisabled ? "text-gray-400 cursor-not-allowed" : "text-black"}`}
   >
     {iconPosition === "left" && (
-      <span className={`flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform -rotate-90 group-hover:-rotate-[135deg]
-        ${isDisabled ? "bg-gray-300" : "bg-black"}`}>
+      <span
+        className={`flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform -rotate-90 group-hover:-rotate-[135deg]
+          ${isDisabled ? "bg-gray-300" : "bg-black"}`}
+      >
         <Icons.QuoteArrowIcon />
       </span>
     )}
     {text}
     {iconPosition === "right" && (
-      <span className="flex justify-center items-center bg-secondaryColor w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform group-hover:rotate-45">
+      <span
+        className={`flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform group-hover:rotate-45 ${
+          isDisabled ? "bg-gray-300" : "bg-secondaryColor"
+        }`}
+      >
         <Icons.QuoteArrowIcon />
       </span>
     )}
   </button>
 );
 
-// PropTypes
-TravelInput.propTypes = { placeholder: PropTypes.string, value: PropTypes.string, onChange: PropTypes.func.isRequired, isInvalid: PropTypes.bool, type: PropTypes.string, max: PropTypes.string };
-TravelSelect.propTypes = { placeholder: PropTypes.string, value: PropTypes.string, onChange: PropTypes.func.isRequired, options: PropTypes.array.isRequired, isInvalid: PropTypes.bool };
-MultiCountrySelect.propTypes = { placeholder: PropTypes.string, options: PropTypes.array.isRequired, selectedCountries: PropTypes.array, onAddCountry: PropTypes.func.isRequired, onRemoveCountry: PropTypes.func.isRequired, isInvalid: PropTypes.bool };
-ActionButton.propTypes = { text: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired, iconPosition: PropTypes.oneOf(["left", "right"]).isRequired, onClick: PropTypes.func.isRequired, isDisabled: PropTypes.bool, isNext: PropTypes.bool };
+/* -------------------------------------------------------------------------- */
+/*                                 PROPTYPES                                  */
+/* -------------------------------------------------------------------------- */
+TravelInput.propTypes = {
+  placeholder: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  isInvalid: PropTypes.bool,
+  type: PropTypes.string,
+  max: PropTypes.string,
+  min: PropTypes.string,
+};
+
+TravelSelect.propTypes = {
+  placeholder: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  options: PropTypes.arrayOf(PropTypes.string).isRequired,
+  isInvalid: PropTypes.bool,
+};
+
+SingleCountrySelect.propTypes = {
+  placeholder: PropTypes.string.isRequired,
+  options: PropTypes.arrayOf(PropTypes.string).isRequired,
+  selectedCountry: PropTypes.string,
+  onSelectCountry: PropTypes.func.isRequired,
+  onClear: PropTypes.func.isRequired,
+  isInvalid: PropTypes.bool,
+};
+
+ActionButton.propTypes = {
+  text: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  iconPosition: PropTypes.oneOf(["left", "right"]).isRequired,
+  onClick: PropTypes.func.isRequired,
+  isDisabled: PropTypes.bool,
+  isNext: PropTypes.bool,
+};

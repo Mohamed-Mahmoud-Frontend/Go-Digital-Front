@@ -55,3 +55,35 @@ html {
 .transition_all {
   transition: all 0.5s ease-out;
 }
+
+.react-tel-input .form-control {
+  height: 80px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: normal !important;
+  font-size: 1rem !important;
+}
+
+.react-tel-input .flag-dropdown {
+  background-color: white !important;
+  border-radius: 10px 0 0 10px !important;
+}
+
+.react-tel-input .selected-flag {
+  border-radius: 10px 0 0 10px !important;
+}
+
+.react-tel-input .country-list {
+  border-radius: 10px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.react-tel-input .search {
+  padding: 8px 12px !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+.react-tel-input .search-box {
+  border-radius: 6px !important;
+  margin: 8px !important;
+}

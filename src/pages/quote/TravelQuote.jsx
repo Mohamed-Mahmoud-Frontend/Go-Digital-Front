@@ -44,9 +44,9 @@ export const TravelQuote = () => {
 
       return {
         step1: {
-          fromCountry: Array.isArray(parsed.step1?.fromCountry) ? parsed.step1.fromCountry : [],
+          fromCountry: parsed.step1?.fromCountry || "",
           toCountry: Array.isArray(parsed.step1?.toCountry) ? parsed.step1.toCountry : [],
-          fromCountryId: Array.isArray(parsed.step1?.fromCountryId) ? parsed.step1.fromCountryId : [],
+          fromCountryId: parsed.step1?.fromCountryId || "",
           toCountryId: Array.isArray(parsed.step1?.toCountryId) ? parsed.step1.toCountryId : [],
         },
         step2: {
@@ -76,7 +76,7 @@ export const TravelQuote = () => {
 
   function getDefaultUserData() {
     return {
-      step1: { fromCountry: [], toCountry: [], fromCountryId: [], toCountryId: [] },
+      step1: { fromCountry: "", toCountry: [], fromCountryId: "", toCountryId: [] },
       step2: { startDate: "", endDate: "" },
       step3: { insuredType: "", insuredTypeId: "", personCount: "" },
       step4: { persons: [{ dateBirth: "", name: "", identification: "" }] },
@@ -118,7 +118,7 @@ export const TravelQuote = () => {
     fetchData();
   }, [i18n.language]);
 
-  // استقبال وجهة السفر (to_country)
+  // استقبال وجهة السفر (to_country) - Multi
   useEffect(() => {
     const prefilled = localStorage.getItem("travel_destination_prefill");
     if (prefilled && apiData.countries.length > 0) {
@@ -137,36 +137,51 @@ export const TravelQuote = () => {
     }
   }, [apiData.countries, userData.step1.toCountryId]);
 
-  const handleCountryAdd = (field, name) => {
+  // Departure: Single Select
+  const handleFromCountrySelect = (name) => {
     const country = apiData.countries.find(c => c.name === name);
-    const idField = `${field}Id`;
-    if (country && !userData.step1[idField].includes(country.id.toString())) {
+    if (country) {
       setIsInvalid(false);
       setUserData(prev => ({
         ...prev,
         step1: {
           ...prev.step1,
-          [field]: [...prev.step1[field], country.name],
-          [idField]: [...prev.step1[idField], country.id.toString()],
+          fromCountry: country.name,
+          fromCountryId: country.id.toString(),
         },
       }));
     }
   };
 
-  const handleCountryRemove = (field, index) => {
-    const idField = `${field}Id`;
+  // Destination: Multi Select
+  const handleToCountryAdd = (name) => {
+    const country = apiData.countries.find(c => c.name === name);
+    if (country && !userData.step1.toCountryId.includes(country.id.toString())) {
+      setIsInvalid(false);
+      setUserData(prev => ({
+        ...prev,
+        step1: {
+          ...prev.step1,
+          toCountry: [...prev.step1.toCountry, country.name],
+          toCountryId: [...prev.step1.toCountryId, country.id.toString()],
+        },
+      }));
+    }
+  };
+
+  const handleToCountryRemove = (index) => {
     setUserData(prev => ({
       ...prev,
       step1: {
         ...prev.step1,
-        [field]: prev.step1[field].filter((_, i) => i !== index),
-        [idField]: prev.step1[idField].filter((_, i) => i !== index),
+        toCountry: prev.step1.toCountry.filter((_, i) => i !== index),
+        toCountryId: prev.step1.toCountryId.filter((_, i) => i !== index),
       },
     }));
   };
 
   const handleInsuredTypeSelection = (name) => {
-    const type = apiData.countries.find(t => t.name === name);
+    const type = apiData.types.find(t => t.name === name);
     setUserData(prev => ({
       ...prev,
       step3: {
@@ -182,7 +197,7 @@ export const TravelQuote = () => {
     const data = userData[`step${step + 1}`];
     switch (step) {
       case 0:
-        return data.fromCountry.length > 0 && data.toCountry.length > 0;
+        return data.fromCountry && data.toCountry.length > 0;
       case 1:
         return data.startDate && data.endDate && data.startDate <= data.endDate;
       case 2:
@@ -243,8 +258,8 @@ export const TravelQuote = () => {
 
     try {
       const payload = {
-        from_country: userData.step1.fromCountryId,
-        to_country: userData.step1.toCountryId,
+        from_country: userData.step1.fromCountryId,     // string
+        to_country: userData.step1.toCountryId,         // array
         persons: userData.step4.persons.map(p => ({ date_birth: p.dateBirth })),
         start_date: userData.step2.startDate,
         end_date: userData.step2.endDate,
@@ -334,23 +349,25 @@ export const TravelQuote = () => {
         </div>
 
         <div className={`${currentStep === 4 ? "my-0" : "my-14"} flex flex-wrap justify-center items-center gap-5 w-full`}>
-          {/* === خطوة 1: المغادرة والوصول (كلاهما Multi Select) === */}
+          {/* === خطوة 1: Departure (Single) + Destination (Multi) === */}
           {currentStep === 0 && (
             <Fragment>
-              <MultiCountrySelect
+              {/* Departure: Single Select */}
+              <SearchableSelect
                 placeholder={t("travel_quote_page.steps.step1.placeholder_departure")}
                 options={apiData.countries.map(c => c.name)}
-                selectedCountries={userData.step1.fromCountry}
-                onAddCountry={(name) => handleCountryAdd("fromCountry", name)}
-                onRemoveCountry={(index) => handleCountryRemove("fromCountry", index)}
-                isInvalid={isInvalid && userData.step1.fromCountry.length === 0}
+                value={userData.step1.fromCountry}
+                onChange={handleFromCountrySelect}
+                isInvalid={isInvalid && !userData.step1.fromCountry}
               />
+
+              {/* Destination: Multi Select */}
               <MultiCountrySelect
                 placeholder={t("travel_quote_page.steps.step1.placeholder_arrival")}
                 options={apiData.countries.map(c => c.name)}
                 selectedCountries={userData.step1.toCountry}
-                onAddCountry={(name) => handleCountryAdd("toCountry", name)}
-                onRemoveCountry={(index) => handleCountryRemove("toCountry", index)}
+                onAddCountry={handleToCountryAdd}
+                onRemoveCountry={handleToCountryRemove}
                 isInvalid={isInvalid && userData.step1.toCountry.length === 0}
               />
             </Fragment>
@@ -558,6 +575,63 @@ const TravelSelect = ({ placeholder, value, onChange, options, isInvalid }) => (
   </select>
 );
 
+const SearchableSelect = ({ placeholder, options, value, onChange, isInvalid }) => {
+  const [filter, setFilter] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const displayedValue = value || filter;
+
+  const availableOptions = options.filter(
+    (opt) =>
+      opt.toLowerCase().includes(filter.toLowerCase()) && opt !== value
+  );
+
+  const handleSelect = (countryName) => {
+    onChange(countryName);
+    setFilter("");
+    setIsOpen(false);
+  };
+
+  const handleInputChange = (e) => {
+    setFilter(e.target.value);
+    if (value) {
+      onChange("");
+    }
+  };
+
+  return (
+    <div className="relative w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
+      <input
+        type="text"
+        placeholder={placeholder}
+        value={displayedValue}
+        onChange={handleInputChange}
+        onFocus={() => setIsOpen(true)}
+        onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+        className={`w-full h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none
+          ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
+          ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
+      />
+      {isOpen && availableOptions.length > 0 && (
+        <ul className="absolute z-10 w-full max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-[10px] shadow-lg mt-1">
+          {availableOptions.map((country, index) => (
+            <li
+              key={index}
+              className="px-4 py-3 cursor-pointer hover:bg-gray-100 text-black"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                handleSelect(country);
+              }}
+            >
+              {country}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
 const MultiCountrySelect = ({ placeholder, options, selectedCountries = [], onAddCountry, onRemoveCountry, isInvalid }) => {
   const [filter, setFilter] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -653,5 +727,6 @@ const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
 // PropTypes
 TravelInput.propTypes = { placeholder: PropTypes.string, value: PropTypes.string, onChange: PropTypes.func.isRequired, isInvalid: PropTypes.bool, type: PropTypes.string, min: PropTypes.string, max: PropTypes.string, fullWidth: PropTypes.bool };
 TravelSelect.propTypes = { placeholder: PropTypes.string, value: PropTypes.string, onChange: PropTypes.func.isRequired, options: PropTypes.array.isRequired, isInvalid: PropTypes.bool };
+SearchableSelect.propTypes = { placeholder: PropTypes.string, options: PropTypes.array.isRequired, value: PropTypes.string, onChange: PropTypes.func.isRequired, isInvalid: PropTypes.bool };
 MultiCountrySelect.propTypes = { placeholder: PropTypes.string, options: PropTypes.array.isRequired, selectedCountries: PropTypes.array, onAddCountry: PropTypes.func.isRequired, onRemoveCountry: PropTypes.func.isRequired, isInvalid: PropTypes.bool };
 ActionButton.propTypes = { text: PropTypes.string.isRequired, iconPosition: PropTypes.oneOf(["left", "right"]).isRequired, onClick: PropTypes.func.isRequired, isDisabled: PropTypes.bool, isNext: PropTypes.bool };

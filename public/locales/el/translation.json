@@ -1,4 +1,5 @@
-{
+{"common.error.failed_load_data": "Αποτυχία φόρτωσης δεδομένων. Δοκιμάστε ξανά.",
+"common.button.retry": "Επανάληψη",
   "nav": {
     "home": "Αρχική",
     "products": "Προϊόντα",

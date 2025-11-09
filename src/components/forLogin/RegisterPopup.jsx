@@ -1,7 +1,9 @@
 import { ClosePopUpIcon } from '@/utils/icons.util';
-import { PropTypes } from 'prop-types';
+import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -12,26 +14,42 @@ export const RegisterPopup = ({ handleLoginPopupClose, onSwitchToOtp }) => {
         name: '',
         surname: '',
         phone: '',
-        phone_extension: '30', // Default to Greece
+        phone_extension: '30',
         address: ''
     });
     const [error, setError] = useState('');
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        if (error) setError('');
+    };
+
+    const handlePhoneChange = (value, country) => {
+        const extension = country.dialCode;
+        let number = value.slice(extension.length).startsWith('0')
+            ? value.slice(extension.length + 1)
+            : value.slice(extension.length);
+
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            phone_extension: extension,
+            phone: number
         }));
-        // Clear error when user starts typing
         if (error) setError('');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(''); // Clear any previous errors
+        setError('');
+
+        if (!formData.phone) {
+            setError('Παρακαλώ εισάγετε έγκυρο αριθμό τηλεφώνου.');
+            return;
+        }
 
         try {
+            const fullPhoneNumber = formData.phone_extension + formData.phone;
             const response = await fetch(`${API_BASE_URL}/user/register`, {
                 method: 'POST',
                 headers: {
@@ -40,14 +58,13 @@ export const RegisterPopup = ({ handleLoginPopupClose, onSwitchToOtp }) => {
                 },
                 body: JSON.stringify({
                     ...formData,
-                    phone: formData.phone_extension + formData.phone
+                    phone: fullPhoneNumber
                 })
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                // Handle specific error messages from the API
                 if (response.status === 400) {
                     if (data.message?.toLowerCase().includes('email')) {
                         setError('Το email χρησιμοποιείται ήδη. Παρακαλώ χρησιμοποιήστε άλλο email.');
@@ -62,7 +79,6 @@ export const RegisterPopup = ({ handleLoginPopupClose, onSwitchToOtp }) => {
                 return;
             }
 
-            // Registration successful, switch to OTP verification
             onSwitchToOtp(formData.email);
         } catch (error) {
             console.error('Registration error:', error);
@@ -71,30 +87,34 @@ export const RegisterPopup = ({ handleLoginPopupClose, onSwitchToOtp }) => {
     };
 
     return (
-        <div className="py-9 px-24 max-w-[890px] w-full relative bg-[#F1EEEC] rounded-[39px]">
-            <span className="absolute top-9 right-8 w-6" onClick={() => handleLoginPopupClose(false)}>
+        <div className="py-8 px-6 sm:py-9 sm:px-12 md:px-24 max-w-[890px] w-full relative bg-[#F1EEEC] rounded-[39px]">
+            <span
+                className="absolute top-4 right-4 sm:top-9 sm:right-8 w-6 cursor-pointer"
+                onClick={() => handleLoginPopupClose(false)}
+            >
                 <ClosePopUpIcon />
             </span>
 
-            <h2 className="text-center justify-start text-black text-4xl font-semibold max-w-[430px] mx-auto">Λογαριασμός</h2>
-            <h3 className="text-2xl font-bold mt-10 px-2">Δημιουργία Λογαριασμού</h3>
-            <p className="text-lg font-medium mt-2 px-2">Συμπλήρωσε τα στοιχεία σου για να δημιουργήσεις τον λογαριασμό σου!</p>
+            <h2 className="text-center text-black text-3xl sm:text-4xl font-semibold max-w-[430px] mx-auto pt-4 sm:pt-0">Λογαριασμός</h2>
+            <h3 className="text-xl sm:text-2xl font-bold mt-8 px-2">Δημιουργία Λογαριασμού</h3>
+            <p className="text-base sm:text-lg font-medium mt-1 px-2 text-gray-700">Συμπλήρωσε τα στοιχεία σου για να δημιουργήσεις τον λογαριασμό σου!</p>
 
             {error && (
-                <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg w-full text-sm font-medium">
                     {error}
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4 justify-center items-end mt-4">
-                <span className="flex gap-6 w-full">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-4">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full">
                     <input
                         type="text"
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
                         placeholder="Όνομα"
-                        className="rounded-[10px] border border-stone-300 w-full px-8 py-5"
+                        className="rounded-[10px] border border-stone-300 w-full px-4 sm:px-6 py-3 sm:py-4 text-base focus:outline-none focus:ring-2 focus:ring-[#F15D2A] focus:border-transparent transition"
+                        required
                     />
                     <input
                         type="text"
@@ -102,9 +122,10 @@ export const RegisterPopup = ({ handleLoginPopupClose, onSwitchToOtp }) => {
                         value={formData.surname}
                         onChange={handleInputChange}
                         placeholder="Επώνυμο"
-                        className="rounded-[10px] border border-stone-300 w-full px-8 py-5"
+                        className="rounded-[10px] border border-stone-300 w-full px-4 sm:px-6 py-3 sm:py-4 text-base focus:outline-none focus:ring-2 focus:ring-[#F15D2A] focus:border-transparent transition"
+                        required
                     />
-                </span>
+                </div>
 
                 <input
                     type="email"
@@ -112,27 +133,29 @@ export const RegisterPopup = ({ handleLoginPopupClose, onSwitchToOtp }) => {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="E-mail"
-                    className="rounded-[10px] border border-stone-300 w-full px-8 py-5"
+                    className="rounded-[10px] border border-stone-300 w-full px-4 sm:px-6 py-3 sm:py-4 text-base focus:outline-none focus:ring-2 focus:ring-[#F15D2A] focus:border-transparent transition"
+                    required
                 />
 
-                <span className="flex gap-4 w-full">
-                    <input
-                        type="text"
-                        name="phone_extension"
-                        value={formData.phone_extension}
-                        onChange={handleInputChange}
-                        placeholder="+30 (Greece)"
-                        className="rounded-[10px] border border-stone-300 text-[#707070] w-full max-w-32 text-center py-5"
-                    />
-                    <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
+                <div className="w-full">
+                    <PhoneInput
+                        country="gr"
+                        value={formData.phone_extension + formData.phone}
+                        onChange={handlePhoneChange}
+                        inputProps={{
+                            name: 'phone_full',
+                            required: true,
+                        }}
                         placeholder="Τηλέφωνο"
-                        className="rounded-[10px] border border-stone-300 w-full px-8 py-5"
+                        enableSearch={true}
+                        countryCodeEditable={false}
+                        searchPlaceholder="Αναζήτηση..."
+                        inputClass="!w-full !h-auto !min-h-[56px] !rounded-[10px] !border !border-stone-300 !pl-[70px] !py-3 sm:!py-4 !text-base !font-medium !outline-none focus:!border-transparent focus:!ring-2 focus:!ring-[#F15D2A]"
+                        buttonClass="!h-auto !min-h-[56px] !rounded-l-[10px] !border-r-0 !border-stone-300 !bg-white hover:!bg-gray-50 !p-3 !w-[65px]" 
+                        dropdownClass="!rounded-[10px] !shadow-xl !max-h-60 !overflow-y-auto"
+                        containerClass="!w-full"
                     />
-                </span>
+                </div>
 
                 <input
                     type="text"
@@ -140,23 +163,22 @@ export const RegisterPopup = ({ handleLoginPopupClose, onSwitchToOtp }) => {
                     value={formData.address}
                     onChange={handleInputChange}
                     placeholder="Διεύθυνση"
-                    className="rounded-[10px] border border-stone-300 w-full px-8 py-5"
+                    className="rounded-[10px] border border-stone-300 w-full px-4 sm:px-6 py-3 sm:py-4 text-base focus:outline-none focus:ring-2 focus:ring-[#F15D2A] focus:border-transparent transition"
+                    required
                 />
 
-                <div className="mt-6 w-full">
-                    <button
-                        type="submit"
-                        className="w-full h-16 bg-[#F15D2A] rounded-[10px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.15)] text-white text-lg font-bold mt-6 hover:bg-[#F15D2A]/80 transition-all duration-300"
-                    >
-                        Δημιουργία
-                    </button>
-                </div>
+                <button
+                    type="submit"
+                    className="w-full h-14 sm:h-16 bg-[#F15D2A] rounded-[10px] shadow-md text-white text-lg font-bold hover:bg-[#F15D2A]/90 active:bg-[#F15D2A] transition-all duration-200 mt-6"
+                >
+                    Δημιουργία
+                </button>
             </form>
         </div>
-    )
-}
+    );
+};
 
 RegisterPopup.propTypes = {
     handleLoginPopupClose: PropTypes.func.isRequired,
     onSwitchToOtp: PropTypes.func.isRequired,
-}
+};

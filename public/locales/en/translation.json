@@ -4,7 +4,8 @@
         "products": "Products",
         "blog": "Blog",
         "contact": "Contact"
-    },
+    },"common.error.failed_load_data": "Failed to load data. Please try again.",
+"common.button.retry": "Retry",
     "products": {
         "travel": "Travel Insurance",
         "guarantees": "Guarantees Insurance",

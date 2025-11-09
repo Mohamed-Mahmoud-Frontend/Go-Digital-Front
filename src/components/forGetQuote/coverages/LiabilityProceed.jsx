@@ -211,12 +211,7 @@ export const LiabilityProceed = () => {
             <hr className="border mx-10 my-1" />
 
             <main className="Inter_font   flex justify-center items-baseline gap-7 my-10 mx-5">
-                    <button
-                            onClick={handleBack}
-                            className="mt-4 fixed w-fit  left-24 text-center sm:text-lg pt-2 font-medium text-gray-600 hover:text-black  transition-all"
-                        >
-                            {t("liability_proceed.back_button") || "Go Back"} 
-                        </button>
+                 
                 <section className="relative w-full lg:w-[582px] bg-[#FFEFEA] rounded-3xl border border-[#FDE5DE]" style={{ boxShadow: "0px -2px 4px 0px #FFEFEA" }}>
                     <div className="flex flex-row-reverse sm:flex-row sm:justify-between justify-end gap-5 items-center m-8">
                         <h1 className="max-w-[683px] text-xl sm:text-2xl lg:text-3xl text-left font-medium">
@@ -245,6 +240,8 @@ export const LiabilityProceed = () => {
                         <h1 className="text-2xl py-2 sm:text-4xl text-center font-semibold text-secondaryColor w-full">
                             {t("liability_proceed.total")} {selectedQuote?.currency}{selectedQuote?.price?.toFixed(2)}
                         </h1>
+<div>
+
 
                         <button
                             onClick={openModal}
@@ -254,6 +251,7 @@ export const LiabilityProceed = () => {
                             {t("liability_proceed.proceed_button")}
                         </button>
 
+</div>
                    
                     </div>
                 </section>
