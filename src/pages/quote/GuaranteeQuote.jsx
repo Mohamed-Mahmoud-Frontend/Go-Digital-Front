@@ -100,7 +100,7 @@ export const GuaranteeQuote = () => {
         }));
         setUserData((prev) => ({ ...prev, step6: { questions } }));
       } catch {
-        setError("فشل تحميل البيانات");
+        setError("Failed to load data");
       } finally {
         setIsLoading(false);
       }
@@ -260,8 +260,7 @@ export const GuaranteeQuote = () => {
       localStorage.removeItem(LOCAL_STORAGE_KEY);
       navigate("/get-a-quote-guarantee/proceed");
     } catch {
-      setError("فشل الإرسال");
-    } finally {
+setError("Submission failed");    } finally {
       setIsLoading(false);
     }
   };

@@ -2,10 +2,7 @@ import { Fragment, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
-
-// Components
 import { QuoteHeader, Economy, LoadingSpinner } from "@/components";
-// Icons
 import * as Icons from "@/utils/icons.util";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -14,13 +11,13 @@ const LOCAL_STORAGE_KEY = "travelQuoteForm";
 const getApiInsuredType = (insuredType) => {
   const map = {
     "Ένα Άτομο": "individual",
-    "Individual": "individual",
-    "Ζευγάρι": "couple",
-    "Couple": "couple",
-    "Οικογένεια": "family",
-    "Family": "family",
+    Individual: "individual",
+    Ζευγάρι: "couple",
+    Couple: "couple",
+    Οικογένεια: "family",
+    Family: "family",
     "Ομάδα (Group)": "group",
-    "Group": "group",
+    Group: "group",
   };
   return map[insuredType] || "";
 };
@@ -37,42 +34,49 @@ export const TravelQuote = () => {
   const [apiData, setApiData] = useState({ countries: [], types: [] });
   const [showEconomy, setShowEconomy] = useState({});
 
-  // قراءة من localStorage
   const [userData, setUserData] = useState(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
     return saved
       ? JSON.parse(saved)
       : {
-          step1: { fromCountry: "", toCountry: "", fromCountryId: "", toCountryId: "" },
+          step1: {
+            fromCountry: "",
+            toCountry: [],
+            fromCountryId: "",
+            toCountryId: [],
+          },
           step2: { startDate: "", endDate: "" },
           step3: { insuredType: "", insuredTypeId: "", personCount: "" },
-          step4: { persons: [{ dateBirth: "", name: "", identification: "" }] },
+          step4: {
+            persons: [{ dateBirth: "", name: "", identification: "" }],
+          },
           step5: { selectedQuote: null },
         };
   });
 
-  // حفظ تلقائي
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
   }, [userData]);
 
-  // جلب البيانات
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch(`${API_BASE_URL}/user/travelInsurance/getArguments`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept-Language": i18n.language,
-          },
-        });
+        const res = await fetch(
+          `${API_BASE_URL}/user/travelInsurance/getArguments`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept-Language": i18n.language,
+            },
+          }
+        );
         if (!res.ok) throw new Error("Failed to fetch");
         const data = await res.json();
         setApiData({ countries: data.countries || [], types: data.types || [] });
       } catch (err) {
-        setError("فشل تحميل البيانات");
+        setError("Failed to load data");
       } finally {
         setIsLoading(false);
       }
@@ -80,18 +84,19 @@ export const TravelQuote = () => {
     fetchData();
   }, [i18n.language]);
 
-  // ملء مسبق للوجهة
   useEffect(() => {
     const prefilled = localStorage.getItem("travel_destination_prefill");
     if (prefilled && apiData.countries.length > 0) {
-      const country = apiData.countries.find((c) => c.id.toString() === prefilled);
+      const country = apiData.countries.find(
+        (c) => c.id.toString() === prefilled
+      );
       if (country) {
         setUserData((prev) => ({
           ...prev,
           step1: {
             ...prev.step1,
-            toCountry: country.name,
-            toCountryId: country.id.toString(),
+            toCountry: [country.name],
+            toCountryId: [country.id.toString()],
           },
         }));
         localStorage.removeItem("travel_destination_prefill");
@@ -121,12 +126,39 @@ export const TravelQuote = () => {
 
   const handleCountrySelection = (step, field, name) => {
     const country = apiData.countries.find((c) => c.name === name);
+    setIsInvalid(false); // Also reset invalid state on selection
     setUserData((prev) => ({
       ...prev,
       [step]: {
         ...prev[step],
         [field]: name,
         [`${field}Id`]: country ? country.id.toString() : "",
+      },
+    }));
+  };
+
+  const handleCountryAdd = (name) => {
+    const country = apiData.countries.find((c) => c.name === name);
+    if (country && !userData.step1.toCountryId.includes(country.id.toString())) {
+      setIsInvalid(false);
+      setUserData((prev) => ({
+        ...prev,
+        step1: {
+          ...prev.step1,
+          toCountry: [...prev.step1.toCountry, country.name],
+          toCountryId: [...prev.step1.toCountryId, country.id.toString()],
+        },
+      }));
+    }
+  };
+
+  const handleCountryRemove = (index) => {
+    setUserData((prev) => ({
+      ...prev,
+      step1: {
+        ...prev.step1,
+        toCountry: prev.step1.toCountry.filter((_, i) => i !== index),
+        toCountryId: prev.step1.toCountryId.filter((_, i) => i !== index),
       },
     }));
   };
@@ -147,18 +179,24 @@ export const TravelQuote = () => {
     const data = userData[`step${step + 1}`];
     switch (step) {
       case 0:
-        return data.fromCountry && data.toCountry;
+        return data.fromCountry && data.toCountry.length > 0;
       case 1:
         return data.startDate && data.endDate && data.startDate <= data.endDate;
       case 2:
         if (!data.insuredType) return false;
-        if (["Οικογένεια", "Family", "Ομάδα (Group)", "Group"].includes(data.insuredType)) {
+        if (
+          ["Οικογένεια", "Family", "Ομάδα (Group)", "Group"].includes(
+            data.insuredType
+          )
+        ) {
           const count = parseInt(data.personCount);
           return count > 0 && count <= 20;
         }
         return true;
       case 3:
-        return data.persons.every((p) => p.dateBirth && p.name.trim() && p.identification.trim());
+        return data.persons.every(
+          (p) => p.dateBirth && p.name.trim() && p.identification.trim()
+        );
       default:
         return true;
     }
@@ -174,12 +212,23 @@ export const TravelQuote = () => {
       const type = userData.step3.insuredType;
       let count = 1;
       if (type.includes("Ζευγάρι") || type.includes("Couple")) count = 2;
-      else if (type.includes("Οικογένεια") || type.includes("Family") || type.includes("Group")) {
+      else if (
+        type.includes("Οικογένεια") ||
+        type.includes("Family") ||
+        type.includes("Group")
+      ) {
         count = parseInt(userData.step3.personCount) || 1;
       }
       const persons = Array(Math.max(count, 1))
         .fill(null)
-        .map((_, i) => userData.step4.persons[i] || { dateBirth: "", name: "", identification: "" });
+        .map(
+          (_, i) =>
+            userData.step4.persons[i] || {
+              dateBirth: "",
+              name: "",
+              identification: "",
+            }
+        );
       setUserData((prev) => ({ ...prev, step4: { persons } }));
     }
 
@@ -210,32 +259,39 @@ export const TravelQuote = () => {
       const payload = {
         from_country: userData.step1.fromCountryId,
         to_country: userData.step1.toCountryId,
-        persons: userData.step4.persons.map((p) => ({ date_birth: p.dateBirth })),
+        persons: userData.step4.persons.map((p) => ({
+          date_birth: p.dateBirth,
+        })),
         start_date: userData.step2.startDate,
         end_date: userData.step2.endDate,
         insured_type: getApiInsuredType(userData.step3.insuredType),
       };
 
-      const res = await fetch(`${API_BASE_URL}/user/travelInsurance/getQuotes`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept-Language": i18n.language,
-        },
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(
+        `${API_BASE_URL}/user/travelInsurance/getQuotes`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept-Language": i18n.language,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.message || "فشل جلب العروض");
-      }
+throw new Error(err.message || "Failed to fetch quotes");      }
 
       const result = await res.json();
-      const stored = { quotes: result.quotes || [], userData, submissionData: payload };
+      const stored = {
+        quotes: result.quotes || [],
+        userData,
+        submissionData: payload,
+      };
       localStorage.setItem("travelQuoteData", JSON.stringify(stored));
       localStorage.removeItem(LOCAL_STORAGE_KEY);
 
-      // تهيئة showEconomy ديناميكيًا
       const newShow = {};
       (result.quotes || []).forEach((_, i) => {
         newShow[`item${i + 1}`] = false;
@@ -269,7 +325,9 @@ export const TravelQuote = () => {
     return (
       <main>
         <QuoteHeader />
-        <div className="flex justify-center items-center min-h-screen text-red-600">{error}</div>
+        <div className="flex justify-center items-center min-h-screen text-red-600">
+          {error}
+        </div>
       </main>
     );
   }
@@ -278,7 +336,6 @@ export const TravelQuote = () => {
     <main>
       <QuoteHeader />
       <section className="Inter_font border-t-2 mx-5 md:mx-0 my-2 flex flex-col justify-center items-center">
-        {/* شريط التقدم */}
         <div className="flex flex-col justify-center items-center my-10">
           <div className="flex items-center gap-3 relative w-full">
             {Array.from({ length: totalSteps - 1 }).map((_, i) => (
@@ -290,7 +347,9 @@ export const TravelQuote = () => {
               />
             ))}
             <span
-              className={`${currentStep < 4 ? "absolute" : ""} transition-all duration-300`}
+              className={`${
+                currentStep < 4 ? "absolute" : ""
+              } transition-all duration-300`}
               style={{ left: `calc(${currentStep * 23.5}%)` }}
             >
               <Icons.QuotePlaneIcon />
@@ -298,29 +357,37 @@ export const TravelQuote = () => {
           </div>
         </div>
 
-        {/* النماذج */}
-        <div className={`${currentStep === 4 ? "my-0" : "my-14"} flex flex-wrap justify-center items-center gap-5 w-full`}>
-          {/* خطوة 1 */}
+        <div
+          className={`${
+            currentStep === 4 ? "my-0" : "my-14"
+          } flex flex-wrap justify-center items-center gap-5 w-full`}
+        >
           {currentStep === 0 && (
             <Fragment>
-              <TravelSelect
-                placeholder={t("travel_quote_page.steps.step1.placeholder_departure")}
+              <SearchableSelect
+                placeholder={t(
+                  "travel_quote_page.steps.step1.placeholder_departure"
+                )}
+                options={apiData.countries.map((c) => c.name)}
                 value={userData.step1.fromCountry}
-                onChange={(e) => handleCountrySelection("step1", "fromCountry", e.target.value)}
+                onChange={(name) =>
+                  handleCountrySelection("step1", "fromCountry", name)
+                }
                 isInvalid={isInvalid && !userData.step1.fromCountry}
-                options={apiData.countries.map((c) => c.name)}
               />
-              <TravelSelect
-                placeholder={t("travel_quote_page.steps.step1.placeholder_arrival")}
-                value={userData.step1.toCountry}
-                onChange={(e) => handleCountrySelection("step1", "toCountry", e.target.value)}
-                isInvalid={isInvalid && !userData.step1.toCountry}
+              <MultiCountrySelect
+                placeholder={t(
+                  "travel_quote_page.steps.step1.placeholder_arrival"
+                )}
                 options={apiData.countries.map((c) => c.name)}
+                selectedCountries={userData.step1.toCountry}
+                onAddCountry={handleCountryAdd}
+                onRemoveCountry={handleCountryRemove}
+                isInvalid={isInvalid && userData.step1.toCountry.length === 0}
               />
             </Fragment>
           )}
 
-          {/* خطوة 2 */}
           {currentStep === 1 && (
             <div className="flex flex-col justify-center items-center gap-10">
               <Icons.QuoteDurationIcon />
@@ -330,45 +397,64 @@ export const TravelQuote = () => {
               <div className="flex flex-wrap justify-center gap-5">
                 <TravelInput
                   type="date"
-                  placeholder={t("travel_quote_page.steps.step2.placeholder_start_date")}
+                  placeholder={t(
+                    "travel_quote_page.steps.step2.placeholder_start_date"
+                  )}
                   value={userData.step2.startDate}
-                  onChange={(e) => handleInputChange("step2", "startDate", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("step2", "startDate", e.target.value)
+                  }
                   isInvalid={isInvalid && !userData.step2.startDate}
                   min={new Date().toISOString().split("T")[0]}
                 />
                 <TravelInput
                   type="date"
-                  placeholder={t("travel_quote_page.steps.step2.placeholder_end_date")}
+                  placeholder={t(
+                    "travel_quote_page.steps.step2.placeholder_end_date"
+                  )}
                   value={userData.step2.endDate}
-                  onChange={(e) => handleInputChange("step2", "endDate", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("step2", "endDate", e.target.value)
+                  }
                   isInvalid={isInvalid && !userData.step2.endDate}
-                  min={userData.step2.startDate || new Date().toISOString().split("T")[0]}
+                  min={
+                    userData.step2.startDate ||
+                    new Date().toISOString().split("T")[0]
+                  }
                 />
               </div>
             </div>
           )}
 
-          {/* خطوة 3 */}
           {currentStep === 2 && (
             <div className="flex flex-col justify-center items-center gap-10">
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
                 {t("travel_quote_page.steps.step3.title")}
               </h1>
               <TravelSelect
-                placeholder={t("travel_quote_page.steps.step3.placeholder_preference")}
+                placeholder={t(
+                  "travel_quote_page.steps.step3.placeholder_preference"
+                )}
                 value={userData.step3.insuredType}
                 onChange={(e) => handleInsuredTypeSelection(e.target.value)}
                 isInvalid={isInvalid && !userData.step3.insuredType}
                 options={apiData.types.map((t) => t.name)}
               />
-              {["Οικογένεια", "Family", "Ομάδα (Group)", "Group"].includes(userData.step3.insuredType) && (
+              {["Οικογένεια", "Family", "Ομάδα (Group)", "Group"].includes(
+                userData.step3.insuredType
+              ) && (
                 <div className="flex flex-col items-center gap-3">
-                  <h2 className="text-lg font-semibold">{t("travel_quote_page.steps.step3.person_count ") || "Number of Persons"  } </h2>
+                  <h2 className="text-lg font-semibold">
+                    {t("travel_quote_page.steps.step3.person_count ") ||
+                      "Number of Persons"}{" "}
+                  </h2>
                   <TravelInput
                     type="number"
                     placeholder="1"
                     value={userData.step3.personCount}
-                    onChange={(e) => handleInputChange("step3", "personCount", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("step3", "personCount", e.target.value)
+                    }
                     isInvalid={isInvalid && !userData.step3.personCount}
                     min="1"
                     max="20"
@@ -378,7 +464,6 @@ export const TravelQuote = () => {
             </div>
           )}
 
-          {/* خطوة 4 */}
           {currentStep === 3 && (
             <div className="flex flex-col justify-center items-center gap-10 w-full">
               <Icons.QuoteBirthIcon />
@@ -387,19 +472,30 @@ export const TravelQuote = () => {
               </h1>
               <div
                 className={`grid gap-6 w-full max-w-2xl ${
-                  userData.step4.persons.length === 1 ? "grid-cols-1" : "md:grid-cols-2"
+                  userData.step4.persons.length === 1
+                    ? "grid-cols-1"
+                    : "md:grid-cols-2"
                 }`}
               >
                 {userData.step4.persons.map((person, i) => {
-                  const showLabel = !["Ένα Άτομο", "Individual"].includes(userData.step3.insuredType);
+                  const showLabel = ![
+                    "Ένα Άτομο",
+                    "Individual",
+                  ].includes(userData.step3.insuredType);
                   return (
                     <div key={i} className="flex flex-col gap-4">
-                      {showLabel && <h3 className="text-lg font-semibold">{t("common.person")} {i + 1}</h3>}
+                      {showLabel && (
+                        <h3 className="text-lg font-semibold">
+                          {t("common.person")} {i + 1}
+                        </h3>
+                      )}
                       <TravelInput
                         type="date"
                         placeholder={t("common.date_of_birth")}
                         value={person.dateBirth}
-                        onChange={(e) => handlePersonChange(i, "dateBirth", e.target.value)}
+                        onChange={(e) =>
+                          handlePersonChange(i, "dateBirth", e.target.value)
+                        }
                         isInvalid={isInvalid && !person.dateBirth}
                         max={new Date().toISOString().split("T")[0]}
                         fullWidth
@@ -408,7 +504,9 @@ export const TravelQuote = () => {
                         type="text"
                         placeholder={t("common.full_name")}
                         value={person.name}
-                        onChange={(e) => handlePersonChange(i, "name", e.target.value)}
+                        onChange={(e) =>
+                          handlePersonChange(i, "name", e.target.value)
+                        }
                         isInvalid={isInvalid && !person.name}
                         fullWidth
                       />
@@ -416,7 +514,13 @@ export const TravelQuote = () => {
                         type="text"
                         placeholder={t("common.identification")}
                         value={person.identification}
-                        onChange={(e) => handlePersonChange(i, "identification", e.target.value)}
+                        onChange={(e) =>
+                          handlePersonChange(
+                            i,
+                            "identification",
+                            e.target.value
+                          )
+                        }
                         isInvalid={isInvalid && !person.identification}
                         fullWidth
                       />
@@ -427,7 +531,6 @@ export const TravelQuote = () => {
             </div>
           )}
 
-          {/* خطوة 5 */}
           {currentStep === 4 && (
             <section className="w-full max-w-3xl">
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold mb-6">
@@ -435,10 +538,16 @@ export const TravelQuote = () => {
               </h1>
               <div className="bg-[#FDE5DE] rounded-[15px] p-4">
                 {(() => {
-                  const stored = JSON.parse(localStorage.getItem("travelQuoteData") || "{}");
+                  const stored = JSON.parse(
+                    localStorage.getItem("travelQuoteData") || "{}"
+                  );
                   const quotes = stored.quotes || [];
                   if (!quotes.length) {
-                    return <p className="text-center py-8 text-gray-600">{t("common.no_quotes")}</p>;
+                    return (
+                      <p className="text-center py-8 text-gray-600">
+                        {t("common.no_quotes")}
+                      </p>
+                    );
                   }
                   return quotes.map((quote, i) => (
                     <Economy
@@ -457,7 +566,6 @@ export const TravelQuote = () => {
           )}
         </div>
 
-        {/* الأزرار */}
         {currentStep < 4 && (
           <div className="flex justify-center items-center gap-3 vsm:gap-10 my-5">
             <ActionButton
@@ -479,8 +587,16 @@ export const TravelQuote = () => {
   );
 };
 
-// مكونات
-const TravelInput = ({ placeholder, value, onChange, isInvalid, type = "text", min, max, fullWidth = false }) => (
+const TravelInput = ({
+  placeholder,
+  value,
+  onChange,
+  isInvalid,
+  type = "text",
+  min,
+  max,
+  fullWidth = false,
+}) => (
   <input
     type={type}
     placeholder={placeholder}
@@ -488,8 +604,14 @@ const TravelInput = ({ placeholder, value, onChange, isInvalid, type = "text", m
     onChange={onChange}
     min={min}
     max={max}
-    className={`w-full ${fullWidth ? "max-w-none" : "max-w-80 vsm:max-w-96 sm:w-[400px]"} h-[75px] px-4 border rounded-[10px] text-[#C3C3C3] font-medium focus:outline-none
-      ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
+    className={`w-full ${
+      fullWidth ? "max-w-none" : "max-w-80 vsm:max-w-96 sm:w-[400px]"
+    } h-[75px] px-4 border rounded-[10px] text-[#C3C3C3] font-medium focus:outline-none
+      ${
+        isInvalid
+          ? "border-secondaryColor border-2 animate-pulse"
+          : "border-[#C3C3C3]"
+      }
       ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
   />
 );
@@ -499,7 +621,11 @@ const TravelSelect = ({ placeholder, value, onChange, options, isInvalid }) => (
     value={value || ""}
     onChange={onChange}
     className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none
-      ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
+      ${
+        isInvalid
+          ? "border-secondaryColor border-2 animate-pulse"
+          : "border-[#C3C3C3]"
+      }
       ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
   >
     <option value="" disabled hidden>
@@ -512,6 +638,160 @@ const TravelSelect = ({ placeholder, value, onChange, options, isInvalid }) => (
     ))}
   </select>
 );
+
+const SearchableSelect = ({
+  placeholder,
+  options,
+  value,
+  onChange,
+  isInvalid,
+}) => {
+  const [filter, setFilter] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const displayedValue = value || filter;
+
+  const availableOptions = options.filter(
+    (opt) =>
+      opt.toLowerCase().includes(filter.toLowerCase()) && opt !== value
+  );
+
+  const handleSelect = (countryName) => {
+    onChange(countryName);
+    setFilter("");
+    setIsOpen(false);
+  };
+
+  const handleInputChange = (e) => {
+    setFilter(e.target.value);
+    if (value) {
+      onChange(""); // Clear value if user starts typing
+    }
+  };
+
+  return (
+    <div className="relative w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
+      <input
+        type="text"
+        placeholder={placeholder}
+        value={displayedValue}
+        onChange={handleInputChange}
+        onFocus={() => setIsOpen(true)}
+        onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+        className={`w-full h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none
+          ${
+            isInvalid
+              ? "border-secondaryColor border-2 animate-pulse"
+              : "border-[#C3C3C3]"
+          }
+          ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
+      />
+      {isOpen && availableOptions.length > 0 && (
+        <ul className="absolute z-10 w-full max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-[10px] shadow-lg mt-1">
+          {availableOptions.map((country, index) => (
+            <li
+              key={index}
+              className="px-4 py-3 cursor-pointer hover:bg-gray-100 text-black"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                handleSelect(country);
+              }}
+            >
+              {country}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+const MultiCountrySelect = ({
+  placeholder,
+  options,
+  selectedCountries,
+  onAddCountry,
+  onRemoveCountry,
+  isInvalid,
+}) => {
+  const [filter, setFilter] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const availableOptions = options.filter(
+    (opt) =>
+      !selectedCountries.includes(opt) &&
+      opt.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  const handleAdd = (countryName) => {
+    onAddCountry(countryName);
+    setFilter("");
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="relative w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
+      <div
+        className={`flex flex-wrap items-center gap-2 w-full min-h-[75px] px-4 py-2 border rounded-[10px]
+          ${
+            isInvalid
+              ? "border-secondaryColor border-2 animate-pulse"
+              : "border-[#C3C3C3]"
+          }
+          ${
+            selectedCountries.length > 0 || filter
+              ? "border-black"
+              : "border-[#C3C3C3]"
+          }`}
+        onClick={() => setIsOpen(true)}
+      >
+        {selectedCountries.map((country, index) => (
+          <span
+            key={index}
+            className="flex items-center bg-gray-200 text-black rounded-full px-3 py-1 text-sm font-medium"
+          >
+            {country}
+            <button
+              type="button"
+              className="ml-2 text-gray-600 hover:text-black"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemoveCountry(index);
+              }}
+            >
+              &times;
+            </button>
+          </span>
+        ))}
+        <input
+          type="text"
+          placeholder={selectedCountries.length === 0 ? placeholder : ""}
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          onFocus={() => setIsOpen(true)}
+          className="flex-1 min-w-[100px] h-[58px] bg-transparent border-none outline-none text-black font-medium"
+          onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+        />
+      </div>
+      {isOpen && availableOptions.length > 0 && (
+        <ul className="absolute z-10 w-full max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-[10px] shadow-lg mt-1">
+          {availableOptions.map((country, index) => (
+            <li
+              key={index}
+              className="px-4 py-3 cursor-pointer hover:bg-gray-100 text-black"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                handleAdd(country);
+              }}
+            >
+              {country}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
 
 const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
   <button
@@ -539,7 +819,6 @@ const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
   </button>
 );
 
-// PropTypes
 TravelInput.propTypes = {
   placeholder: PropTypes.string,
   value: PropTypes.string,
@@ -556,6 +835,23 @@ TravelSelect.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   options: PropTypes.array.isRequired,
+  isInvalid: PropTypes.bool,
+};
+
+SearchableSelect.propTypes = {
+  placeholder: PropTypes.string,
+  options: PropTypes.array.isRequired,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  isInvalid: PropTypes.bool,
+};
+
+MultiCountrySelect.propTypes = {
+  placeholder: PropTypes.string,
+  options: PropTypes.array.isRequired,
+  selectedCountries: PropTypes.array.isRequired,
+  onAddCountry: PropTypes.func.isRequired,
+  onRemoveCountry: PropTypes.func.isRequired,
   isInvalid: PropTypes.bool,
 };
 

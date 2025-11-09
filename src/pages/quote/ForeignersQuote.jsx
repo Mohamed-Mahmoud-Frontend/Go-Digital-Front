@@ -23,7 +23,6 @@ export const ForeignersQuote = () => {
     genders: [],
   });
 
-  // قراءة البيانات من localStorage
   const [userData, setUserData] = useState(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
     return saved
@@ -36,31 +35,32 @@ export const ForeignersQuote = () => {
         };
   });
 
-  // حفظ البيانات تلقائيًا
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
   }, [userData]);
 
-  // جلب البيانات من API
   useEffect(() => {
     const fetchApiData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`${API_BASE_URL}/user/immigrationMedical/getArguments`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept-Language": i18n.language,
-          },
-        });
+        const response = await fetch(
+          `${API_BASE_URL}/user/immigrationMedical/getArguments`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept-Language": i18n.language,
+            },
+          }
+        );
 
-        if (!response.ok) throw new Error("فشل جلب البيانات");
+        if (!response.ok) throw new Error("Failed to fetch data");
 
         const data = await response.json();
         setApiData(data);
       } catch (err) {
         console.error("Error:", err);
-        setError("فشل تحميل البيانات. حاول مرة أخرى.");
+        setError("Failed to load data. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -69,7 +69,6 @@ export const ForeignersQuote = () => {
     fetchApiData();
   }, [i18n.language]);
 
-  // ملء مسبق لرقم الهوية
   useEffect(() => {
     const prefilledId = localStorage.getItem("foreigners_id_prefill");
     if (prefilledId && apiData.countries.length > 0) {
@@ -166,18 +165,21 @@ export const ForeignersQuote = () => {
         country_id: userData.step2.nationalityId,
       };
 
-      const response = await fetch(`${API_BASE_URL}/user/immigrationMedical/getQuotes`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept-Language": i18n.language,
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/user/immigrationMedical/getQuotes`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept-Language": i18n.language,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
         const err = await response.json();
-        throw new Error(err.message || "فشل جلب العروض");
+        throw new Error(err.message || "Failed to fetch quotes");
       }
 
       const result = await response.json();
@@ -194,7 +196,7 @@ export const ForeignersQuote = () => {
       localStorage.removeItem(LOCAL_STORAGE_KEY);
       navigate("/get-a-quote-foreigners/proceed");
     } catch (err) {
-      setError(err.message || "حدث خطأ. حاول مرة أخرى.");
+      setError(err.message || "An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -227,7 +229,6 @@ export const ForeignersQuote = () => {
       <QuoteHeader />
 
       <section className="border-t-2 mx-5 md:mx-0 my-2 flex flex-col justify-center items-center">
-        {/* شريط التقدم */}
         <div className="flex flex-col justify-center items-center my-10">
           <div className="flex items-center gap-3 relative w-full">
             {Array.from({ length: totalSteps }).map((_, i) => (
@@ -247,9 +248,7 @@ export const ForeignersQuote = () => {
           </div>
         </div>
 
-        {/* النماذج */}
         <div className="my-5 flex flex-wrap justify-center items-center gap-5 w-full">
-          {/* الخطوة 1 */}
           {currentStep === 0 && (
             <div className="flex flex-col justify-center items-center gap-5 sm:gap-10">
               <Icons.QuoteProfileIcon />
@@ -257,34 +256,45 @@ export const ForeignersQuote = () => {
                 {t("foreigners_quote_page.steps.step1.title1")}
               </h1>
               <TravelInput
-                placeholder={t("foreigners_quote_page.steps.step1.placeholder_name")}
+                placeholder={t(
+                  "foreigners_quote_page.steps.step1.placeholder_name"
+                )}
                 value={userData.step1.firstName}
-                onChange={(e) => handleInputChange("step1", "firstName", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("step1", "firstName", e.target.value)
+                }
                 isInvalid={isInvalid && !userData.step1.firstName}
               />
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
                 {t("foreigners_quote_page.steps.step1.title2")}
               </h1>
               <TravelInput
-                placeholder={t("foreigners_quote_page.steps.step1.placeholder_lastname")}
+                placeholder={t(
+                  "foreigners_quote_page.steps.step1.placeholder_lastname"
+                )}
                 value={userData.step1.lastName}
-                onChange={(e) => handleInputChange("step1", "lastName", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("step1", "lastName", e.target.value)
+                }
                 isInvalid={isInvalid && !userData.step1.lastName}
               />
             </div>
           )}
 
-          {/* الخطوة 2 */}
           {currentStep === 1 && (
             <div className="flex flex-col justify-center items-center gap-5 sm:gap-10">
               <Icons.QuoteCardIcon />
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
                 {t("foreigners_quote_page.steps.step2.title1")}
               </h1>
-              <TravelSelect
-                placeholder={t("foreigners_quote_page.steps.step2.placeholder_nationality")}
+              <SearchableSelect
+                placeholder={t(
+                  "foreigners_quote_page.steps.step2.placeholder_nationality"
+                )}
                 value={userData.step2.nationality}
-                onChange={(e) => handleInputChange("step2", "nationality", e.target.value)}
+                onChange={(name) =>
+                  handleInputChange("step2", "nationality", name)
+                }
                 isInvalid={isInvalid && !userData.step2.nationalityId}
                 options={apiData.countries.map((c) => c.name)}
               />
@@ -292,15 +302,18 @@ export const ForeignersQuote = () => {
                 {t("foreigners_quote_page.steps.step2.title2")}
               </h1>
               <TravelInput
-                placeholder={t("foreigners_quote_page.steps.step2.placeholder_identification")}
+                placeholder={t(
+                  "foreigners_quote_page.steps.step2.placeholder_identification"
+                )}
                 value={userData.step2.identification}
-                onChange={(e) => handleInputChange("step2", "identification", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("step2", "identification", e.target.value)
+                }
                 isInvalid={isInvalid && !userData.step2.identification}
               />
             </div>
           )}
 
-          {/* الخطوة 3 */}
           {currentStep === 2 && (
             <div className="flex flex-col justify-center items-center gap-5 sm:gap-10">
               <Icons.QuoteBirthIcon />
@@ -311,7 +324,9 @@ export const ForeignersQuote = () => {
                 type="date"
                 placeholder=""
                 value={userData.step3.birthday}
-                onChange={(e) => handleInputChange("step3", "birthday", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("step3", "birthday", e.target.value)
+                }
                 isInvalid={isInvalid && !userData.step3.birthday}
                 max={new Date().toISOString().split("T")[0]}
               />
@@ -319,16 +334,19 @@ export const ForeignersQuote = () => {
                 {t("foreigners_quote_page.steps.step3.title2")}
               </h1>
               <TravelSelect
-                placeholder={t("foreigners_quote_page.steps.step3.placeholder_gender")}
+                placeholder={t(
+                  "foreigners_quote_page.steps.step3.placeholder_gender"
+                )}
                 value={userData.step3.gender}
-                onChange={(e) => handleInputChange("step3", "gender", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("step3", "gender", e.target.value)
+                }
                 isInvalid={isInvalid && !userData.step3.genderId}
-                options={apiData.genders.map((g) => g.name)} // male / female
+                options={apiData.genders.map((g) => g.name)}
               />
             </div>
           )}
 
-          {/* الخطوة 4 */}
           {currentStep === 3 && (
             <div className="flex flex-col justify-center items-center gap-10">
               <Icons.QuoteCalenderIcon />
@@ -339,14 +357,15 @@ export const ForeignersQuote = () => {
                 type="date"
                 placeholder=""
                 value={userData.step4.insurancePeriod}
-                onChange={(e) => handleInputChange("step4", "insurancePeriod", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("step4", "insurancePeriod", e.target.value)
+                }
                 isInvalid={isInvalid && !userData.step4.insurancePeriod}
               />
             </div>
           )}
         </div>
 
-        {/* الأزرار */}
         <div className="flex justify-center items-center gap-3 vsm:gap-10 my-5">
           <ActionButton
             text={t("foreigners_quote_page.buttons.previous")}
@@ -363,7 +382,13 @@ export const ForeignersQuote = () => {
             />
           ) : (
             <ActionButton
-              text={isLoading ? <LoadingSpinner/> : t("foreigners_quote_page.buttons.submit")}
+              text={
+                isLoading ? (
+                  <LoadingSpinner />
+                ) : (
+                  t("foreigners_quote_page.buttons.submit")
+                )
+              }
               iconPosition="right"
               onClick={handleSubmit}
               isNext
@@ -378,8 +403,14 @@ export const ForeignersQuote = () => {
   );
 };
 
-// مكونات
-const TravelInput = ({ placeholder, value, onChange, isInvalid, type = "text", max }) => (
+const TravelInput = ({
+  placeholder,
+  value,
+  onChange,
+  isInvalid,
+  type = "text",
+  max,
+}) => (
   <input
     type={type}
     placeholder={placeholder}
@@ -387,7 +418,11 @@ const TravelInput = ({ placeholder, value, onChange, isInvalid, type = "text", m
     onChange={onChange}
     max={max}
     className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] text-[#C3C3C3] font-semibold focus:outline-none
-      ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
+      ${
+        isInvalid
+          ? "border-secondaryColor border-2 animate-pulse"
+          : "border-[#C3C3C3]"
+      }
       ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
   />
 );
@@ -397,7 +432,11 @@ const TravelSelect = ({ placeholder, value, onChange, options, isInvalid }) => (
     value={value || ""}
     onChange={onChange}
     className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none
-      ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
+      ${
+        isInvalid
+          ? "border-secondaryColor border-2 animate-pulse"
+          : "border-[#C3C3C3]"
+      }
       ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
   >
     <option value="" disabled hidden>
@@ -410,6 +449,73 @@ const TravelSelect = ({ placeholder, value, onChange, options, isInvalid }) => (
     ))}
   </select>
 );
+
+const SearchableSelect = ({
+  placeholder,
+  options,
+  value,
+  onChange,
+  isInvalid,
+}) => {
+  const [filter, setFilter] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const displayedValue = value || filter;
+
+  const availableOptions = options.filter(
+    (opt) =>
+      opt.toLowerCase().includes(filter.toLowerCase()) && opt !== value
+  );
+
+  const handleSelect = (countryName) => {
+    onChange(countryName);
+    setFilter("");
+    setIsOpen(false);
+  };
+
+  const handleInputChange = (e) => {
+    setFilter(e.target.value);
+    if (value) {
+      onChange("");
+    }
+  };
+
+  return (
+    <div className="relative w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
+      <input
+        type="text"
+        placeholder={placeholder}
+        value={displayedValue}
+        onChange={handleInputChange}
+        onFocus={() => setIsOpen(true)}
+        onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+        className={`w-full h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none
+          ${
+            isInvalid
+              ? "border-secondaryColor border-2 animate-pulse"
+              : "border-[#C3C3C3]"
+          }
+          ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
+      />
+      {isOpen && availableOptions.length > 0 && (
+        <ul className="absolute z-10 w-full max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-[10px] shadow-lg mt-1">
+          {availableOptions.map((country, index) => (
+            <li
+              key={index}
+              className="px-4 py-3 cursor-pointer hover:bg-gray-100 text-black"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                handleSelect(country);
+              }}
+            >
+              {country}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
 
 const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
   <button
@@ -437,7 +543,6 @@ const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
   </button>
 );
 
-// PropTypes
 TravelInput.propTypes = {
   placeholder: PropTypes.string,
   value: PropTypes.string,
@@ -455,8 +560,16 @@ TravelSelect.propTypes = {
   isInvalid: PropTypes.bool,
 };
 
+SearchableSelect.propTypes = {
+  placeholder: PropTypes.string,
+  options: PropTypes.array.isRequired,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  isInvalid: PropTypes.bool,
+};
+
 ActionButton.propTypes = {
-  text: PropTypes.string.isRequired,
+  text: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
   iconPosition: PropTypes.oneOf(["left", "right"]).isRequired,
   onClick: PropTypes.func.isRequired,
   isDisabled: PropTypes.bool,

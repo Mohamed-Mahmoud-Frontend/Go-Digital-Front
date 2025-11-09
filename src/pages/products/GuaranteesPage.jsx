@@ -56,8 +56,7 @@ export const GuaranteesPage = () => {
                     },
                 });
 
-                if (!response.ok) throw new Error("فشل جلب أنواع الضمانات");
-
+if (!response.ok) throw new Error("Failed to fetch guarantee types");
                 const data = await response.json();
                 const types = data.type_of_guarantees || [];
 
@@ -69,7 +68,7 @@ export const GuaranteesPage = () => {
                 );
             } catch (err) {
                 console.error("Error fetching guarantee types:", err);
-                setError("فشل تحميل أنواع الضمانات. حاول مرة أخرى.");
+              setError("Failed to load guarantee types. Please try again.");
             } finally {
                 setIsLoading(false);
             }
