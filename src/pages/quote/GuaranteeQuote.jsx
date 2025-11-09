@@ -1,46 +1,47 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // (ملاحظة: تم حذف useLocation)
+import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-// Components
 import { QuoteHeader, LoadingSpinner } from "@/components";
-// Icons
 import * as Icons from "@/utils/icons.util";
 import { useTranslation } from "react-i18next";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const LOCAL_STORAGE_KEY = "guaranteeQuoteForm";
 
 export const GuaranteeQuote = () => {
-    const { t, i18n } = useTranslation();
-    const navigate = useNavigate();
-    // (ملاحظة: تم حذف useLocation)
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
 
-    const totalSteps = 6;
-    const [currentStep, setCurrentStep] = useState(0);
-    const [isInvalid, setIsInvalid] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState("");
-    const [apiData, setApiData] = useState({
-        questions: [],
-        holder_types: [],
-        type_of_guarantees: [],
-    });
+  const totalSteps = 6;
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isInvalid, setIsInvalid] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [apiData, setApiData] = useState({
+    questions: [],
+    holder_types: [],
+    type_of_guarantees: [],
+  });
 
-    const [userData, setUserData] = useState({
-        // ... (نفس كود الـ userData state بدون تغيير) ...
-        step1: {
+  const [userData, setUserData] = useState(() => {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    return saved
+      ? JSON.parse(saved)
+      : {
+          step1: {
             type_of_guarantee: "",
             type_other_desc: "",
             start_date: "",
             end_date: "",
-        },
-        step2: {
+          },
+          step2: {
             holder_type: "",
             holder_first_name: "",
             holder_last_name: "",
             holder_identification: "",
             holder_contact_person: "",
-        },
-        step3: {
+          },
+          step3: {
             holder_website: "",
             holder_email: "",
             holder_mobile_number_ext: "+30",
@@ -50,8 +51,8 @@ export const GuaranteeQuote = () => {
             holder_address: "",
             holder_tin: "",
             holder_tax_office: "",
-        },
-        step4: {
+          },
+          step4: {
             beneficiary_name: "",
             beneficiary_email: "",
             beneficiary_mobile_number_ext: "+30",
@@ -61,790 +62,894 @@ export const GuaranteeQuote = () => {
             beneficiary_address: "",
             beneficiary_tin: "",
             beneficiary_contact_person: "",
-        },
-        step5: {
+          },
+          step5: {
             guarantee_number: "",
             guarantee_title: "",
             guarantee_value: "",
             guarantee_amount: "",
-        },
-        step6: {
-            questions: [],
-        },
-    });
-
-    // 1. جلب البيانات من API
-    useEffect(() => {
-        const fetchApiData = async () => {
-            try {
-                setIsLoading(true);
-                const response = await fetch(`${API_BASE_URL}/user/bondInsurance/getArguments`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Accept-Language": i18n.language,
-                    },
-                });
-
-                if (!response.ok) throw new Error("فشل جلب بيانات النموذج");
-
-                const data = await response.json();
-                setApiData(data);
-
-                const initialQuestions = data.questions.map((q) => ({
-                    id: q.id.toString(),
-                    answer: "",
-                    textarea: "",
-                }));
-
-                setUserData((prev) => ({
-                    ...prev,
-                    step6: { questions: initialQuestions },
-                }));
-            } catch (err) {
-                console.error("Error fetching API data:", err);
-                setError("فشل تحميل النموذج. حاول مرة أخرى.");
-            } finally {
-                setIsLoading(false);
-            }
+          },
+          step6: { questions: [] },
         };
+  });
 
-        fetchApiData();
-    }, [i18n.language]);
+  // حفظ تلقائي
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
+  }, [userData]);
 
-    // 2. (معدل) استقبال القيمة المختارة من localStorage
-    useEffect(() => {
-        // نقرأ القيمة من localStorage
-        const prefilledId = localStorage.getItem("guarantee_type_prefill");
-
-        // نتأكد أن القيمة موجودة وأن بيانات الـ API (الخيارات) قد وصلت
-        if (prefilledId && apiData.type_of_guarantees.length > 0) {
-            const exists = apiData.type_of_guarantees.some(
-                (t) => t.id.toString() === prefilledId
-            );
-
-            if (exists) {
-                setUserData((prev) => ({
-                    ...prev,
-                    step1: {
-                        ...prev.step1,
-                        type_of_guarantee: prefilledId,
-                    },
-                }));
-                // (جديد) نمسح القيمة بعد استخدامها
-                localStorage.removeItem("guarantee_type_prefill");
-            }
-        }
-        // هذا الـ effect يعتمد على apiData، لنتأكد أن الخيار موجود قبل تعيينه
-    }, [apiData.type_of_guarantees]);
-
-    // 3. جلب بيانات المستخدم إذا كان مسجل الدخول (بدون تغيير)
-    useEffect(() => {
-        const fetchUserDetails = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                if (!token) return;
-
-                const response = await fetch(`${API_BASE_URL}/user/details`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                        "Accept-Language": i18n.language,
-                    },
-                });
-
-                if (!response.ok) throw new Error("فشل جلب بيانات المستخدم");
-
-                const userDetails = await response.json();
-
-                setUserData((prev) => ({
-                    ...prev,
-                    step2: {
-                        ...prev.step2,
-                        holder_first_name: userDetails.first_name || "",
-                        holder_last_name: userDetails.last_name || "",
-                        holder_identification: userDetails.identification || "",
-                        holder_contact_person: `${userDetails.first_name || ""} ${userDetails.last_name || ""}`.trim(),
-                    },
-                    step3: {
-                        ...prev.step3,
-                        holder_email: userDetails.email || "",
-                        holder_mobile_number: userDetails.mobile_number || "",
-                        holder_mobile_number_ext: userDetails.mobile_extension || "+30",
-                        holder_phone_number: userDetails.phone_number || "",
-                        holder_phone_number_ext: userDetails.phone_extension || "+30",
-                        holder_address: userDetails.address || "",
-                        holder_tin: userDetails.tin || "",
-                        holder_tax_office: userDetails.tax_office || "",
-                    },
-                }));
-            } catch (error) {
-                console.error("Error fetching user details:", error);
-            }
-        };
-
-        fetchUserDetails();
-    }, [i18n.language]);
-
-    // ... (باقي دوال الـ handlers والـ JSX بدون تغيير) ...
-
-    const handleInputChange = (step, field, value) => {
-        setIsInvalid(false);
-        setUserData((prev) => ({
-            ...prev,
-            [step]: { ...prev[step], [field]: value },
-        }));
-    };
-
-    const handleQuestionChange = (questionId, answer, textarea = "") => {
-        setUserData((prev) => ({
-            ...prev,
-            step6: {
-                ...prev.step6,
-                questions: prev.step6.questions.map((q) =>
-                    q.id === questionId ? { ...q, answer, textarea } : q
-                ),
-            },
-        }));
-    };
-
-    const isStepValid = (step) => {
-        const stepData = userData[`step${step + 1}`];
-
-        if (step === 5) {
-            return stepData.questions.every((q) => q.answer !== "");
-        }
-
-        const requiredFields = Object.keys(stepData).filter(
-            (key) =>
-                ![
-                    "type_other_desc",
-                    "holder_identification",
-                    "holder_contact_person",
-                    "beneficiary_contact_person",
-                ].includes(key)
+  // جلب API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const res = await fetch(
+          `${API_BASE_URL}/user/bondInsurance/getArguments`,
+          {
+            headers: { "Accept-Language": i18n.language },
+          }
         );
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        setApiData(data);
 
-        return requiredFields.every((field) => {
-            const value = stepData[field];
-            return value && value.toString().trim() !== "";
+        const questions = (data.questions || []).map((q) => ({
+          id: q.id.toString(),
+          answer: "",
+          textarea: "",
+        }));
+        setUserData((prev) => ({ ...prev, step6: { questions } }));
+      } catch {
+        setError("فشل تحميل البيانات");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, [i18n.language]);
+
+  // استقبال نوع الضمان
+  useEffect(() => {
+    const prefill = localStorage.getItem("guarantee_type_prefill");
+    if (prefill && apiData.type_of_guarantees.length > 0) {
+      const exists = apiData.type_of_guarantees.some(
+        (t) => t.id.toString() === prefill
+      );
+      if (exists) {
+        setUserData((prev) => ({
+          ...prev,
+          step1: { ...prev.step1, type_of_guarantee: prefill },
+        }));
+        localStorage.removeItem("guarantee_type_prefill");
+      }
+    }
+  }, [apiData.type_of_guarantees]);
+
+  // بيانات المستخدم
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      try {
+        const res = await fetch(`${API_BASE_URL}/user/details`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Accept-Language": i18n.language,
+          },
         });
+        if (!res.ok) return;
+        const user = await res.json();
+        setUserData((prev) => ({
+          ...prev,
+          step2: {
+            ...prev.step2,
+            holder_first_name: user.first_name || "",
+            holder_last_name: user.last_name || "",
+            holder_identification: user.identification || "",
+            holder_contact_person: `${user.first_name || ""} ${
+              user.last_name || ""
+            }`.trim(),
+          },
+          step3: {
+            ...prev.step3,
+            holder_email: user.email || "",
+            holder_mobile_number: user.mobile_number || "",
+            holder_phone_number: user.phone_number || "",
+            holder_address: user.address || "",
+            holder_tin: user.tin || "",
+            holder_tax_office: user.tax_office || "",
+          },
+        }));
+      } catch {}
     };
+    fetchUser();
+  }, [i18n.language]);
 
-    const handleNext = async () => {
-        if (isStepValid(currentStep)) {
-            if (currentStep < totalSteps - 1) {
-                setCurrentStep((prev) => prev + 1);
-            } else {
-                await handleSubmit();
-            }
-            setIsInvalid(false);
-        } else {
-            setIsInvalid(true);
-        }
-    };
+  const handleInputChange = (step, field, value) => {
+    setIsInvalid(false);
+    setUserData((prev) => ({
+      ...prev,
+      [step]: { ...prev[step], [field]: value },
+    }));
+  };
 
-    const handlePrevious = () => {
-        setCurrentStep((prev) => Math.max(prev - 1, 0));
-        setIsInvalid(false);
-    };
+  const handleQuestionChange = (id, answer, textarea = "") => {
+    setUserData((prev) => ({
+      ...prev,
+      step6: {
+        ...prev.step6,
+        questions: prev.step6.questions.map((q) =>
+          q.id === id ? { ...q, answer, textarea } : q
+        ),
+      },
+    }));
+  };
 
-    const handleSubmit = async () => {
-        try {
-            setIsLoading(true);
+  const isStepValid = (step) => {
+    const data = userData[`step${step + 1}`];
+    const optional = [
+      "type_other_desc",
+      "holder_identification",
+      "holder_contact_person",
+      "beneficiary_contact_person",
+    ];
 
-            const requestData = {
-                type_of_guarantee: userData.step1.type_of_guarantee,
-                type_other_desc: userData.step1.type_other_desc,
-                start_date: userData.step1.start_date,
-                end_date: userData.step1.end_date,
-                holder_identification: userData.step2.holder_identification,
-                holder_first_name: userData.step2.holder_first_name,
-                holder_last_name: userData.step2.holder_last_name,
-                holder_type: userData.step2.holder_type,
-                holder_email: userData.step3.holder_email,
-                holder_mobile_number: userData.step3.holder_mobile_number,
-                holder_mobile_number_ext: userData.step3.holder_mobile_number_ext,
-                holder_phone_number: userData.step3.holder_phone_number,
-                holder_phone_number_ext: userData.step3.holder_phone_number_ext,
-                holder_address: userData.step3.holder_address,
-                holder_tin: userData.step3.holder_tin,
-                holder_tax_office: userData.step3.holder_tax_office,
-                holder_website: userData.step3.holder_website,
-                holder_contact_person: userData.step2.holder_contact_person,
-                beneficiary_name: userData.step4.beneficiary_name,
-                beneficiary_tin: userData.step4.beneficiary_tin,
-                beneficiary_address: userData.step4.beneficiary_address,
-                beneficiary_mobile_number: userData.step4.beneficiary_mobile_number,
-                beneficiary_mobile_number_ext: userData.step4.beneficiary_mobile_number_ext,
-                beneficiary_phone_number: userData.step4.beneficiary_phone_number,
-                beneficiary_phone_number_ext: userData.step4.beneficiary_phone_number_ext,
-                beneficiary_email: userData.step4.beneficiary_email,
-                beneficiary_contact_person: userData.step4.beneficiary_contact_person,
-                guarantee_number: userData.step5.guarantee_number,
-                guarantee_title: userData.step5.guarantee_title,
-                guarantee_value: parseFloat(userData.step5.guarantee_value),
-                guarantee_amount: parseFloat(userData.step5.guarantee_amount),
-                questions: userData.step6.questions,
-            };
+    if (step === 5) return data.questions.every((q) => q.answer);
 
-            localStorage.setItem("guaranteeData", JSON.stringify(requestData));
-            navigate("/get-a-quote-guarantee/proceed");
-        } catch (error) {
-            console.error("Error submitting:", error);
-            setError("فشل إرسال البيانات. حاول مرة أخرى.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    return Object.entries(data).every(([k, v]) => {
+      if (optional.includes(k)) return true;
+      if (k === "type_other_desc" && data.type_of_guarantee === "other")
+        return v.trim() !== "";
+      return v && v.toString().trim() !== "";
+    });
+  };
 
-    if (isLoading) {
-        return (
-            <main>
-                <QuoteHeader />
-                <div className="flex justify-center items-center min-h-screen">
-                    <LoadingSpinner />
-                </div>
-            </main>
-        );
+  const handleNext = async () => {
+    if (!isStepValid(currentStep)) return setIsInvalid(true);
+    if (currentStep === 5) return handleSubmit();
+    setCurrentStep((prev) => prev + 1);
+    setIsInvalid(false);
+  };
+
+  const handlePrevious = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 0));
+    setIsInvalid(false);
+  };
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    try {
+      const payload = {
+        type_of_guarantee: userData.step1.type_of_guarantee,
+        type_other_desc: userData.step1.type_other_desc,
+        start_date: userData.step1.start_date,
+        end_date: userData.step1.end_date,
+        holder_type: userData.step2.holder_type,
+        holder_first_name: userData.step2.holder_first_name,
+        holder_last_name: userData.step2.holder_last_name,
+        holder_identification: userData.step2.holder_identification,
+        holder_contact_person: userData.step2.holder_contact_person,
+        holder_website: userData.step3.holder_website,
+        holder_email: userData.step3.holder_email,
+        holder_mobile_number_ext: userData.step3.holder_mobile_number_ext,
+        holder_mobile_number: userData.step3.holder_mobile_number,
+        holder_phone_number_ext: userData.step3.holder_phone_number_ext,
+        holder_phone_number: userData.step3.holder_phone_number,
+        holder_address: userData.step3.holder_address,
+        holder_tin: userData.step3.holder_tin,
+        holder_tax_office: userData.step3.holder_tax_office,
+        beneficiary_name: userData.step4.beneficiary_name,
+        beneficiary_email: userData.step4.beneficiary_email,
+        beneficiary_mobile_number_ext:
+          userData.step4.beneficiary_mobile_number_ext,
+        beneficiary_mobile_number: userData.step4.beneficiary_mobile_number,
+        beneficiary_phone_number_ext:
+          userData.step4.beneficiary_phone_number_ext,
+        beneficiary_phone_number: userData.step4.beneficiary_phone_number,
+        beneficiary_address: userData.step4.beneficiary_address,
+        beneficiary_tin: userData.step4.beneficiary_tin,
+        beneficiary_contact_person: userData.step4.beneficiary_contact_person,
+        guarantee_number: userData.step5.guarantee_number,
+        guarantee_title: userData.step5.guarantee_title,
+        guarantee_value: parseFloat(userData.step5.guarantee_value) || 0,
+        guarantee_amount: parseFloat(userData.step5.guarantee_amount) || 0,
+        questions: userData.step6.questions,
+      };
+
+      localStorage.setItem("guaranteeData", JSON.stringify(payload));
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+      navigate("/get-a-quote-guarantee/proceed");
+    } catch {
+      setError("فشل الإرسال");
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    if (error) {
-        return (
-            <main>
-                <QuoteHeader />
-                <div className="flex justify-center items-center min-h-screen text-red-600">
-                    {error}
-                </div>
-            </main>
-        );
-    }
-
+  if (isLoading && currentStep === 0) {
     return (
-        <main>
-            <QuoteHeader />
-            <section className="border-t-2 mx-5 md:mx-0 my-2 flex flex-col justify-center items-center">
-                <div className="flex flex-col justify-center items-center my-10">
-                    <div className="flex items-center gap-3 relative w-full">
-                        {Array.from({ length: 5 }).map((_, index) => (
-                            <div
-                                key={index}
-                                className={`w-12 vsm:w-16 sm:w-24 md:w-[130px] lg:w-[150px] xl:w-[200px] h-[15px] rounded-[5px]
-   ${index < currentStep ? "bg-orange-400" : "bg-gray-300"}
-   ${index === currentStep ? "ml-[50px] md:ml-16" : ""}`}
-                            />
-                        ))}
-                        <span
-                            className="absolute transition_all"
-                            style={{
-                                left: `calc(${currentStep * (currentStep === 5 ? 21 : 19.5)}%)`,
-                            }}
-                        >
-                            <Icons.QuotePersonIcon />
-                        </span>
-                    </div>
-                </div>
-
-                <div className="my-5 flex flex-wrap justify-center items-center gap-5 w-full">
-                    {currentStep === 0 && (
-                        <div className="flex flex-col justify-center items-center gap-5">
-                            <Icons.QuoteCommentIcon />
-                            <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
-                                {t("guarantee_quote_page.steps.step1.title1")}
-                            </h1>
-                            <TravelSelect
-                                placeholder={t("guarantee_quote_page.steps.step1.select_placeholder")}
-                                value={userData.step1.type_of_guarantee}
-                                onChange={(e) =>
-                                    handleInputChange("step1", "type_of_guarantee", e.target.value)
-                                }
-                                isInvalid={isInvalid && !userData.step1.type_of_guarantee}
-                                options={apiData.type_of_guarantees.map((t) => ({
-                                    value: t.id,
-                                    label: t.name,
-                                }))}
-                            />
-                            {userData.step1.type_of_guarantee === "other" && (
-                                <TravelInput
-                                    type="text"
-                                    placeholder={t("guarantee_quote_page.steps.step1.other_placeholder")}
-                                    value={userData.step1.type_other_desc}
-                                    onChange={(e) =>
-                                        handleInputChange("step1", "type_other_desc", e.target.value)
-                                    }
-                                    isInvalid={isInvalid && !userData.step1.type_other_desc}
-                                />
-                            )}
-                            <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
-                                {t("guarantee_quote_page.steps.step1.title2")}
-                            </h1>
-                            <TravelInput
-                                type="date"
-                                placeholder={t("guarantee_quote_page.steps.step1.start_date")}
-                                value={userData.step1.start_date}
-                                onChange={(e) =>
-                                    handleInputChange("step1", "start_date", e.target.value)
-                                }
-                                isInvalid={isInvalid && !userData.step1.start_date}
-                            />
-                            <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
-                                {t("guarantee_quote_page.steps.step1.title3")}
-                            </h1>
-                            <TravelInput
-                                type="date"
-                                placeholder={t("guarantee_quote_page.steps.step1.end_date")}
-                                value={userData.step1.end_date}
-                                onChange={(e) =>
-                                    handleInputChange("step1", "end_date", e.target.value)
-                                }
-                                isInvalid={isInvalid && !userData.step1.end_date}
-                            />
-                        </div>
-                    )}
-                    {/* ... (باقي كود الخطوات 2, 3, 4, 5, 6 بدون تغيير) ... */}
-                    {currentStep === 1 && (
-                        <div className="flex flex-col justify-center items-center gap-5 sm:gap-10 w-full">
-                            <Icons.QuoteProfileIcon />
-                            <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
-                                {t("guarantee_quote_page.steps.step2.title1")}
-                            </h1>
-                            <TravelSelect
-                                placeholder={t("guarantee_quote_page.steps.step2.holder_type_placeholder")}
-                                value={userData.step2.holder_type}
-                                onChange={(e) =>
-                                    handleInputChange("step2", "holder_type", e.target.value)
-                                }
-                                isInvalid={isInvalid && !userData.step2.holder_type}
-                                options={apiData.holder_types.map((t) => ({
-                                    value: t.id,
-                                    label: t.name,
-                                }))}
-                            />
-                            <div className="flex gap-3 w-full max-w-80 vsm:max-w-[450px]">
-                                <TravelInput
-                                    type="text"
-                                    placeholder={t("guarantee_quote_page.steps.step2.first_name")}
-                                    value={userData.step2.holder_first_name}
-                                    onChange={(e) =>
-                                        handleInputChange("step2", "holder_first_name", e.target.value)
-                                    }
-                                    isInvalid={isInvalid && !userData.step2.holder_first_name}
-                                />
-                                <TravelInput
-                                    type="text"
-                                    placeholder={t("guarantee_quote_page.steps.step2.last_name")}
-                                    value={userData.step2.holder_last_name}
-                                    onChange={(e) =>
-                                        handleInputChange("step2", "holder_last_name", e.target.value)
-                                    }
-                                    isInvalid={isInvalid && !userData.step2.holder_last_name}
-                                />
-                            </div>
-                            <TravelInput
-                                type="text"
-                                placeholder={t("guarantee_quote_page.steps.step2.identification")}
-                                value={userData.step2.holder_identification}
-                                onChange={(e) =>
-                                    handleInputChange("step2", "holder_identification", e.target.value)
-                                }
-                            />
-                            <TravelInput
-                                type="text"
-                                placeholder={t("guarantee_quote_page.steps.step2.contact_person")}
-                                value={userData.step2.holder_contact_person}
-                                onChange={(e) =>
-                                    handleInputChange("step2", "holder_contact_person", e.target.value)
-                                }
-                            />
-                        </div>
-                    )}
-                    {currentStep === 2 && (
-                        <div className="overflow-y-auto max-h-screen">
-                            <h1 className="max-w-[860px] text-2xl sm:text-4xl text-center font-semibold mb-3">
-                                {t("guarantee_quote_page.steps.step3.title")}
-                            </h1>
-                            <form className="flex flex-col gap-3">
-                                <input
-                                    type="text"
-                                    name="website"
-                                    placeholder={t("guarantee_quote_page.steps.step3.placeholders.website")}
-                                    value={userData.step3.holder_website}
-                                    onChange={(e) => handleInputChange("step3", "holder_website", e.target.value)}
-                                    required
-                                    className="w-full sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto outline-none"
-                                />
-                                <input
-                                    type="email"
-                                    name="email"
-                                    placeholder={t("guarantee_quote_page.steps.step3.placeholders.email")}
-                                    value={userData.step3.holder_email}
-                                    onChange={(e) => handleInputChange("step3", "holder_email", e.target.value)}
-                                    required
-                                    className="sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto w-full outline-none"
-                                />
-                                <div className="flex items-center justify-center gap-3 w-full sm:w-[476.442px] mx-auto">
-                                    <input
-                                        type="text"
-                                        name="mobileExtension"
-                                        placeholder="+30"
-                                        value={userData.step3.holder_mobile_number_ext}
-                                        onChange={(e) => handleInputChange("step3", "holder_mobile_number_ext", e.target.value)}
-                                        required
-                                        className="w-full max-w-[90px] h-[50px] px-2 border border-[#C3C3C3] outline-none rounded-[10px] text-center"
-                                    />
-                                    <input
-                                        type="tel"
-                                        name="mobileNumber"
-                                        placeholder="Mobile Number"
-                                        value={userData.step3.holder_mobile_number}
-                                        onChange={(e) => handleInputChange("step3", "holder_mobile_number", e.target.value)}
-                                        required
-                                        className="w-full h-[50px] px-5 border border-[#C3C3C3] outline-none rounded-[10px]"
-                                    />
-                                </div>
-                                <div className="flex items-center justify-center gap-3 w-full sm:w-[476.442px] mx-auto">
-                                    <input
-                                        type="text"
-                                        name="phoneExtension"
-                                        placeholder="+30"
-                                        value={userData.step3.holder_phone_number_ext}
-                                        onChange={(e) => handleInputChange("step3", "holder_phone_number_ext", e.target.value)}
-                                        required
-                                        className="w-full max-w-[90px] h-[50px] px-2 border border-[#C3C3C3] outline-none rounded-[10px] text-center"
-                                    />
-                                    <input
-                                        type="tel"
-                                        name="phoneNumber"
-                                        placeholder="Phone Number"
-                                        value={userData.step3.holder_phone_number}
-                                        onChange={(e) => handleInputChange("step3", "holder_phone_number", e.target.value)}
-                                        required
-                                        className="w-full h-[50px] px-5 border border-[#C3C3C3] outline-none rounded-[10px]"
-                                    />
-                                </div>
-                                <input
-                                    type="text"
-                                    name="address"
-                                    placeholder={t("guarantee_quote_page.steps.step3.placeholders.address")}
-                                    value={userData.step3.holder_address}
-                                    onChange={(e) => handleInputChange("step3", "holder_address", e.target.value)}
-                                    required
-                                    className="sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto w-full outline-none"
-                                />
-                                <input
-                                    type="text"
-                                    name="taxId"
-                                    placeholder={t("guarantee_quote_page.steps.step3.placeholders.tax_id")}
-                                    value={userData.step3.holder_tin}
-                                    onChange={(e) => handleInputChange("step3", "holder_tin", e.target.value)}
-                                    required
-                                    className="sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto w-full outline-none"
-                                />
-                                <input
-                                    type="text"
-                                    name="taxOffice"
-                                    placeholder={t("guarantee_quote_page.steps.step3.placeholders.tax_office")}
-                                    value={userData.step3.holder_tax_office}
-                                    onChange={(e) => handleInputChange("step3", "holder_tax_office", e.target.value)}
-                                    required
-                                    className="sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto w-full outline-none"
-                                />
-                            </form>
-                        </div>
-                    )}
-                    {currentStep === 3 && (
-                        <div className="overflow-y-auto max-h-screen">
-                            <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold mb-3">
-                                {t("guarantee_quote_page.steps.step4.title")}
-                            </h1>
-                            <form className="flex flex-col gap-3">
-                                <input
-                                    type="text"
-                                    name="name"
-                                    placeholder={t("guarantee_quote_page.steps.step4.placeholders.name")}
-                                    value={userData.step4.beneficiary_name}
-                                    onChange={(e) => handleInputChange("step4", "beneficiary_name", e.target.value)}
-                                    required
-                                    className="w-full sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto outline-none"
-                                />
-                                <input
-                                    type="email"
-                                    name="email"
-                                    placeholder={t("guarantee_quote_page.steps.step4.placeholders.email")}
-                                    value={userData.step4.beneficiary_email}
-                                    onChange={(e) => handleInputChange("step4", "beneficiary_email", e.target.value)}
-                                    required
-                                    className="sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto w-full outline-none"
-                                />
-                                <div className="flex items-center justify-center gap-3 w-full sm:w-[476.442px] mx-auto">
-                                    <input
-                                        type="text"
-                                        name="mobileExtension"
-                                        placeholder="+30"
-                                        value={userData.step4.beneficiary_mobile_number_ext}
-                                        onChange={(e) => handleInputChange("step4", "beneficiary_mobile_number_ext", e.target.value)}
-                                        required
-                                        className="w-full max-w-[90px] h-[50px] px-2 border border-[#C3C3C3] outline-none rounded-[10px] text-center"
-                                    />
-                                    <input
-                                        type="tel"
-                                        name="mobileNumber"
-                                        placeholder="Mobile Number"
-                                        value={userData.step4.beneficiary_mobile_number}
-                                        onChange={(e) => handleInputChange("step4", "beneficiary_mobile_number", e.target.value)}
-                                        required
-                                        className="w-full h-[50px] px-5 border border-[#C3C3C3] outline-none rounded-[10px]"
-                                    />
-                                </div>
-                                <div className="flex items-center justify-center gap-3 w-full sm:w-[476.442px] mx-auto">
-                                    <input
-                                        type="text"
-                                        name="phoneExtension"
-                                        placeholder="+30"
-                                        value={userData.step4.beneficiary_phone_number_ext}
-                                        onChange={(e) => handleInputChange("step4", "beneficiary_phone_number_ext", e.target.value)}
-                                        required
-                                        className="w-full max-w-[90px] h-[50px] px-2 border border-[#C3C3C3] outline-none rounded-[10px] text-center"
-                                    />
-                                    <input
-                                        type="tel"
-                                        name="phoneNumber"
-                                        placeholder="Phone Number"
-                                        value={userData.step4.beneficiary_phone_number}
-                                        onChange={(e) => handleInputChange("step4", "beneficiary_phone_number", e.target.value)}
-                                        required
-                                        className="w-full h-[50px] px-5 border border-[#C3C3C3] outline-none rounded-[10px]"
-                                    />
-                                </div>
-                                <input
-                                    type="text"
-                                    name="address"
-                                    placeholder={t("guarantee_quote_page.steps.step4.placeholders.address")}
-                                    value={userData.step4.beneficiary_address}
-                                    onChange={(e) => handleInputChange("step4", "beneficiary_address", e.target.value)}
-                                    required
-                                    className="sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto w-full outline-none"
-                                />
-                                <input
-                                    type="text"
-                                    name="taxId"
-                                    placeholder={t("guarantee_quote_page.steps.step4.placeholders.tax_id")}
-                                    value={userData.step4.beneficiary_tin}
-                                    onChange={(e) => handleInputChange("step4", "beneficiary_tin", e.target.value)}
-                                    required
-                                    className="sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto w-full outline-none"
-                                />
-                                <input
-                                    type="text"
-                                    name="contactPerson"
-                                    placeholder="Contact Name"
-                                    value={userData.step4.beneficiary_contact_person}
-                                    onChange={(e) => handleInputChange("step4", "beneficiary_contact_person", e.target.value)}
-                                    className="sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto w-full outline-none"
-                                />
-                            </form>
-                        </div>
-                    )}
-                    {currentStep === 4 && (
-                        <div className="overflow-y-auto max-h-screen">
-                            <h1 className="max-w-[850px] text-2xl sm:text-4xl text-center font-semibold mb-3">
-                                {t("guarantee_quote_page.steps.step5.title")}
-                            </h1>
-                            <form className="flex flex-col gap-3">
-                                <input
-                                    type="text"
-                                    name="guaranteeNumber"
-                                    placeholder="Guarantee Number"
-                                    value={userData.step5.guarantee_number}
-                                    onChange={(e) => handleInputChange("step5", "guarantee_number", e.target.value)}
-                                    required
-                                    className="w-full sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto outline-none"
-                                />
-                                <input
-                                    type="text"
-                                    name="guaranteeTitle"
-                                    placeholder="Guarantee Title"
-                                    value={userData.step5.guarantee_title}
-                                    onChange={(e) => handleInputChange("step5", "guarantee_title", e.target.value)}
-                                    required
-                                    className="sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto w-full outline-none"
-                                />
-                                <input
-                                    type="number"
-                                    name="guaranteeValue"
-                                    placeholder="Guarantee Value"
-                                    value={userData.step5.guarantee_value}
-                                    onChange={(e) => handleInputChange("step5", "guarantee_value", e.target.value)}
-                                    required
-                                    className="sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto w-full outline-none"
-                                />
-                                <input
-                                    type="number"
-                                    name="guaranteeAmount"
-                                    placeholder="Guarantee Amount"
-                                    value={userData.step5.guarantee_amount}
-                                    onChange={(e) => handleInputChange("step5", "guarantee_amount", e.target.value)}
-                                    required
-                                    className="sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto w-full outline-none"
-                                />
-                            </form>
-                        </div>
-                    )}
-                    {currentStep === 5 && (
-                        <section>
-                            <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold mb-6 vsm:mb-10">
-                                {t("guarantee_finish.header")}
-                            </h1>
-                            {apiData.questions.map((question, index) => {
-                                // ... (نفس كود الأسئلة) ...
-                                const questionData = userData.step6.questions.find(q => q.id === question.id.toString());
-                                return (
-                                    <div key={question.id}>
-                                        <ol start={index + 1}>
-                                            <li
-                                                className="max-w-[454px] mx-auto text-sm text-left list-decimal"
-                                                dangerouslySetInnerHTML={{ __html: question.question }}
-                                            />
-                                        </ol>
-                                        <div className="flex justify-start gap-4 my-2 mx-auto max-w-[454px]">
-                                            <button
-                                                type="button"
-                                                onClick={() => handleQuestionChange(question.id.toString(), "yes")}
-                                                className={`max-w-[42.589px] h-[30px] border border-[#C3C3C3] rounded-[27.5px] w-full outline-none ${questionData?.answer === "yes" ? "bg-secondaryColor" : "bg-white"
-                                                    }`}
-                                            >
-                                                {t("guarantee_finish.yes")}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleQuestionChange(question.id.toString(), "no")}
-                                                className={`max-w-[42.589px] h-[30px] border border-[#C3C3C3] rounded-[27.5px] w-full outline-none ${questionData?.answer === "no" ? "bg-secondaryColor" : "bg-white"
-                                                    }`}
-                                            >
-                                                {t("guarantee_finish.no")}
-                                            </button>
-                                        </div>
-                                        {(question.mustTextareaYes && questionData?.answer === "yes") ||
-                                            (question.mustTextareaNo && questionData?.answer === "no") ? (
-                                            <div className="max-w-[454px] mx-auto my-2">
-                                                <textarea
-                                                    placeholder="Please provide additional details..."
-                                                    value={questionData?.textarea || ""}
-                                                    onChange={(e) => handleQuestionChange(question.id.toString(), questionData?.answer, e.target.value)}
-                                                    className="w-full h-20 px-3 py-2 border border-[#C3C3C3] rounded-[10px] outline-none resize-none"
-                                                />
-                                            </div>
-                                        ) : null}
-                                    </div>
-                                );
-                            })}
-                        </section>
-                    )}
-                </div>
-
-                {/* الأزرار */}
-                <div className="flex justify-center items-center gap-3 vsm:gap-10 my-5">
-                    <ActionButton
-                        text={t("guarantee_quote_page.buttons.previous")}
-                        iconPosition="left"
-                        onClick={handlePrevious}
-                        isDisabled={currentStep === 0}
-                    />
-                    <ActionButton
-                        text={
-                            currentStep < totalSteps - 1
-                                ? t("guarantee_quote_page.buttons.next")
-                                : t("guarantee_quote_page.buttons.submit")
-                        }
-                        iconPosition="right"
-                        onClick={handleNext}
-                        isNext
-                    />
-                </div>
-            </section>
-        </main>
+      <>
+        <QuoteHeader />
+        <div className="flex justify-center items-center min-h-screen">
+          <LoadingSpinner />
+        </div>
+      </>
     );
+  }
+
+  if (error && currentStep === 0) {
+    return (
+      <main>
+        <QuoteHeader />
+        <div className="flex justify-center items-center min-h-screen text-red-600">
+          {error}
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main>
+      <QuoteHeader />
+      <section className="border-t-2 mx-5 md:mx-0 my-2 flex flex-col justify-center items-center">
+        <div className="flex flex-col justify-center items-center my-10">
+          <div className="flex items-center gap-3 relative w-full">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div
+                key={i}
+                className={`w-12 vsm:w-16 sm:w-24 md:w-[130px] lg:w-[150px] xl:w-[200px] h-[15px] rounded-[5px]
+                  ${i < currentStep ? "bg-orange-400" : "bg-gray-300"}
+                  ${i === currentStep ? "ml-[50px] md:ml-16" : ""}`}
+              />
+            ))}
+            <span
+              className="absolute transition-all duration-300"
+              style={{ left: `calc(${currentStep * 19.5}%)` }}
+            >
+              <Icons.QuotePersonIcon />
+            </span>
+          </div>
+        </div>
+
+        <div className="my-5 flex flex-wrap justify-center items-center gap-5 w-full max-w-2xl">
+          {/* === خطوة 1 === */}
+          {currentStep === 0 && (
+            <div className="flex flex-col items-center gap-6 w-full">
+              <Icons.QuoteCommentIcon />
+              <h1 className="text-2xl sm:text-4xl font-semibold text-center">
+                {t("guarantee_quote_page.steps.step1.title1")}
+              </h1>
+              <TravelSelect
+                placeholder={t(
+                  "guarantee_quote_page.steps.step1.select_placeholder"
+                )}
+                value={userData.step1.type_of_guarantee}
+                onChange={(e) =>
+                  handleInputChange(
+                    "step1",
+                    "type_of_guarantee",
+                    e.target.value
+                  )
+                }
+                isInvalid={isInvalid && !userData.step1.type_of_guarantee}
+                options={apiData.type_of_guarantees.map((t) => ({
+                  value: t.id,
+                  label: t.name,
+                }))}
+              />
+              {userData.step1.type_of_guarantee === "other" && (
+                <TravelInput
+                  type="text"
+                  placeholder={t(
+                    "Select Guarantee Type"
+                  )}
+                  value={userData.step1.type_other_desc}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "step1",
+                      "type_other_desc",
+                      e.target.value
+                    )
+                  }
+                  isInvalid={isInvalid && !userData.step1.type_other_desc}
+                />
+              )}
+              <h1 className="text-2xl sm:text-4xl font-semibold text-center">
+                {t("guarantee_quote_page.steps.step1.title2")}
+              </h1>
+              <TravelInput
+                type="date"
+                placeholder={t("guarantee_quote_page.steps.step1.start_date")}
+                value={userData.step1.start_date}
+                onChange={(e) =>
+                  handleInputChange("step1", "start_date", e.target.value)
+                }
+                isInvalid={isInvalid && !userData.step1.start_date}
+                min={new Date().toISOString().split("T")[0]}
+              />
+              <h1 className="text-2xl sm:text-4xl font-semibold text-center">
+                {t("guarantee_quote_page.steps.step1.title3")}
+              </h1>
+              <TravelInput
+                type="date"
+                placeholder={t("guarantee_quote_page.steps.step1.end_date")}
+                value={userData.step1.end_date}
+                onChange={(e) =>
+                  handleInputChange("step1", "end_date", e.target.value)
+                }
+                isInvalid={isInvalid && !userData.step1.end_date}
+                min={userData.step1.start_date}
+              />
+            </div>
+          )}
+
+          {/* === خطوة 2 === */}
+          {currentStep === 1 && (
+            <div className="flex flex-col items-center gap-6 w-full">
+              <Icons.QuoteProfileIcon />
+              <h1 className="text-2xl sm:text-4xl font-semibold text-center">
+                {t("guarantee_quote_page.steps.step2.title1")}
+              </h1>
+              <TravelSelect
+                placeholder={t(
+                  "guarantee_quote_page.steps.step2.holder_type_placeholder"
+                )}
+                value={userData.step2.holder_type}
+                onChange={(e) =>
+                  handleInputChange("step2", "holder_type", e.target.value)
+                }
+                isInvalid={isInvalid && !userData.step2.holder_type}
+                options={apiData.holder_types.map((t) => ({
+                  value: t.id,
+                  label: t.name,
+                }))}
+              />
+              <div className="flex gap-3 w-full">
+                <TravelInput
+                  type="text"
+                  placeholder={t("guarantee_quote_page.steps.step2.first_name")}
+                  value={userData.step2.holder_first_name}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "step2",
+                      "holder_first_name",
+                      e.target.value
+                    )
+                  }
+                  isInvalid={isInvalid && !userData.step2.holder_first_name}
+                />
+                <TravelInput
+                  type="text"
+                  placeholder={t("guarantee_quote_page.steps.step2.last_name")}
+                  value={userData.step2.holder_last_name}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "step2",
+                      "holder_last_name",
+                      e.target.value
+                    )
+                  }
+                  isInvalid={isInvalid && !userData.step2.holder_last_name}
+                />
+              </div>
+              <TravelInput
+                type="text"
+                placeholder={t(
+                  "guarantee_quote_page.steps.step2.identification"
+                )}
+                value={userData.step2.holder_identification}
+                onChange={(e) =>
+                  handleInputChange(
+                    "step2",
+                    "holder_identification",
+                    e.target.value
+                  )
+                }
+              />
+              <TravelInput
+                type="text"
+                placeholder={t(
+                  "guarantee_quote_page.steps.step2.contact_person"
+                )}
+                value={userData.step2.holder_contact_person}
+                onChange={(e) =>
+                  handleInputChange(
+                    "step2",
+                    "holder_contact_person",
+                    e.target.value
+                  )
+                }
+              />
+            </div>
+          )}
+
+          {/* === خطوة 3 === */}
+          {currentStep === 2 && (
+            <div className="w-full max-w-lg space-y-4">
+              <h1 className="text-2xl sm:text-4xl font-semibold text-center mb-6">
+                {t("guarantee_quote_page.steps.step3.title")}
+              </h1>
+              <TravelInput
+                type="text"
+                placeholder={t(
+                  "guarantee_quote_page.steps.step3.placeholders.website"
+                )}
+                value={userData.step3.holder_website}
+                onChange={(e) =>
+                  handleInputChange("step3", "holder_website", e.target.value)
+                }
+                isInvalid={isInvalid && !userData.step3.holder_website}
+              />
+              <TravelInput
+                type="email"
+                placeholder={t(
+                  "guarantee_quote_page.steps.step3.placeholders.email"
+                )}
+                value={userData.step3.holder_email}
+                onChange={(e) =>
+                  handleInputChange("step3", "holder_email", e.target.value)
+                }
+                isInvalid={isInvalid && !userData.step3.holder_email}
+              />
+              <div className="flex gap-2">
+                <TravelInput
+                  type="text"
+                  placeholder="+30"
+                  value={userData.step3.holder_mobile_number_ext}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "step3",
+                      "holder_mobile_number_ext",
+                      e.target.value
+                    )
+                  }
+                  className="max-w-24"
+                />
+                <TravelInput
+                  type="tel"
+                  placeholder="Mobile"
+                  value={userData.step3.holder_mobile_number}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "step3",
+                      "holder_mobile_number",
+                      e.target.value
+                    )
+                  }
+                  isInvalid={isInvalid && !userData.step3.holder_mobile_number}
+                />
+              </div>
+              <div className="flex gap-2">
+                <TravelInput
+                  type="text"
+                  placeholder="+30"
+                  value={userData.step3.holder_phone_number_ext}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "step3",
+                      "holder_phone_number_ext",
+                      e.target.value
+                    )
+                  }
+                  className="max-w-24"
+                />
+                <TravelInput
+                  type="tel"
+                  placeholder="Phone"
+                  value={userData.step3.holder_phone_number}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "step3",
+                      "holder_phone_number",
+                      e.target.value
+                    )
+                  }
+                  isInvalid={isInvalid && !userData.step3.holder_phone_number}
+                />
+              </div>
+              <TravelInput
+                type="text"
+                placeholder={t(
+                  "guarantee_quote_page.steps.step3.placeholders.address"
+                )}
+                value={userData.step3.holder_address}
+                onChange={(e) =>
+                  handleInputChange("step3", "holder_address", e.target.value)
+                }
+                isInvalid={isInvalid && !userData.step3.holder_address}
+              />
+              <TravelInput
+                type="text"
+                placeholder={t(
+                  "guarantee_quote_page.steps.step3.placeholders.tax_id"
+                )}
+                value={userData.step3.holder_tin}
+                onChange={(e) =>
+                  handleInputChange("step3", "holder_tin", e.target.value)
+                }
+                isInvalid={isInvalid && !userData.step3.holder_tin}
+              />
+              <TravelInput
+                type="text"
+                placeholder={t(
+                  "guarantee_quote_page.steps.step3.placeholders.tax_office"
+                )}
+                value={userData.step3.holder_tax_office}
+                onChange={(e) =>
+                  handleInputChange(
+                    "step3",
+                    "holder_tax_office",
+                    e.target.value
+                  )
+                }
+                isInvalid={isInvalid && !userData.step3.holder_tax_office}
+              />
+            </div>
+          )}
+
+          {/* === خطوة 4 === */}
+          {currentStep === 3 && (
+            <div className="w-full max-w-lg space-y-4">
+              <h1 className="text-2xl sm:text-4xl font-semibold text-center mb-6">
+                {t("guarantee_quote_page.steps.step4.title")}
+              </h1>
+              <TravelInput
+                type="text"
+                placeholder={t(
+                  "guarantee_quote_page.steps.step4.placeholders.name"
+                )}
+                value={userData.step4.beneficiary_name}
+                onChange={(e) =>
+                  handleInputChange("step4", "beneficiary_name", e.target.value)
+                }
+                isInvalid={isInvalid && !userData.step4.beneficiary_name}
+              />
+              <TravelInput
+                type="email"
+                placeholder={t(
+                  "guarantee_quote_page.steps.step4.placeholders.email"
+                )}
+                value={userData.step4.beneficiary_email}
+                onChange={(e) =>
+                  handleInputChange(
+                    "step4",
+                    "beneficiary_email",
+                    e.target.value
+                  )
+                }
+                isInvalid={isInvalid && !userData.step4.beneficiary_email}
+              />
+              <div className="flex gap-2">
+                <TravelInput
+                  type="text"
+                  placeholder="+30"
+                  value={userData.step4.beneficiary_mobile_number_ext}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "step4",
+                      "beneficiary_mobile_number_ext",
+                      e.target.value
+                    )
+                  }
+                  className="max-w-24"
+                />
+                <TravelInput
+                  type="tel"
+                  placeholder="Mobile"
+                  value={userData.step4.beneficiary_mobile_number}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "step4",
+                      "beneficiary_mobile_number",
+                      e.target.value
+                    )
+                  }
+                  isInvalid={
+                    isInvalid && !userData.step4.beneficiary_mobile_number
+                  }
+                />
+              </div>
+              <div className="flex gap-2">
+                <TravelInput
+                  type="text"
+                  placeholder="+30"
+                  value={userData.step4.beneficiary_phone_number_ext}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "step4",
+                      "beneficiary_phone_number_ext",
+                      e.target.value
+                    )
+                  }
+                  className="max-w-24"
+                />
+                <TravelInput
+                  type="tel"
+                  placeholder="Phone"
+                  value={userData.step4.beneficiary_phone_number}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "step4",
+                      "beneficiary_phone_number",
+                      e.target.value
+                    )
+                  }
+                  isInvalid={
+                    isInvalid && !userData.step4.beneficiary_phone_number
+                  }
+                />
+              </div>
+              <TravelInput
+                type="text"
+                placeholder={t(
+                  "guarantee_quote_page.steps.step4.placeholders.address"
+                )}
+                value={userData.step4.beneficiary_address}
+                onChange={(e) =>
+                  handleInputChange(
+                    "step4",
+                    "beneficiary_address",
+                    e.target.value
+                  )
+                }
+                isInvalid={isInvalid && !userData.step4.beneficiary_address}
+              />
+              <TravelInput
+                type="text"
+                placeholder={t(
+                  "guarantee_quote_page.steps.step4.placeholders.tax_id"
+                )}
+                value={userData.step4.beneficiary_tin}
+                onChange={(e) =>
+                  handleInputChange("step4", "beneficiary_tin", e.target.value)
+                }
+                isInvalid={isInvalid && !userData.step4.beneficiary_tin}
+              />
+              <TravelInput
+                type="text"
+                placeholder="Contact Name"
+                value={userData.step4.beneficiary_contact_person}
+                onChange={(e) =>
+                  handleInputChange(
+                    "step4",
+                    "beneficiary_contact_person",
+                    e.target.value
+                  )
+                }
+              />
+            </div>
+          )}
+
+          {/* === خطوة 5 === */}
+          {currentStep === 4 && (
+            <div className="w-full max-w-lg space-y-4">
+              <h1 className="text-2xl sm:text-4xl font-semibold text-center mb-6">
+                {t("guarantee_quote_page.steps.step5.title")}
+              </h1>
+              <TravelInput
+                type="text"
+                placeholder="Guarantee Number"
+                value={userData.step5.guarantee_number}
+                onChange={(e) =>
+                  handleInputChange("step5", "guarantee_number", e.target.value)
+                }
+                isInvalid={isInvalid && !userData.step5.guarantee_number}
+              />
+              <TravelInput
+                type="text"
+                placeholder="Guarantee Title"
+                value={userData.step5.guarantee_title}
+                onChange={(e) =>
+                  handleInputChange("step5", "guarantee_title", e.target.value)
+                }
+                isInvalid={isInvalid && !userData.step5.guarantee_title}
+              />
+              <TravelInput
+                type="number"
+                placeholder="Guarantee Value"
+                value={userData.step5.guarantee_value}
+                onChange={(e) =>
+                  handleInputChange("step5", "guarantee_value", e.target.value)
+                }
+                isInvalid={isInvalid && !userData.step5.guarantee_value}
+              />
+              <TravelInput
+                type="number"
+                placeholder="Guarantee Amount"
+                value={userData.step5.guarantee_amount}
+                onChange={(e) =>
+                  handleInputChange("step5", "guarantee_amount", e.target.value)
+                }
+                isInvalid={isInvalid && !userData.step5.guarantee_amount}
+              />
+            </div>
+          )}
+
+          {/* === خطوة 6 === */}
+          {currentStep === 5 && (
+            <div className="w-full max-w-lg space-y-6">
+              <h1 className="text-2xl sm:text-4xl font-semibold text-center">
+                {t("guarantee_finish.header")}
+              </h1>
+              {apiData.questions.map((q, i) => {
+                const qData = userData.step6.questions.find(
+                  (x) => x.id === q.id.toString()
+                );
+                return (
+                  <div key={q.id} className="space-y-3">
+                    <ol start={i + 1}>
+                      <li
+                        className="text-sm list-decimal max-w-md mx-auto"
+                        dangerouslySetInnerHTML={{ __html: q.question }}
+                      />
+                    </ol>
+                    <div className="flex justify-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleQuestionChange(q.id.toString(), "yes")
+                        }
+                        className={`px-6 py-1 rounded-full border ${
+                          qData?.answer === "yes"
+                            ? "bg-secondaryColor text-white"
+                            : "bg-white"
+                        }`}
+                      >
+                        {t("guarantee_finish.yes")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleQuestionChange(q.id.toString(), "no")
+                        }
+                        className={`px-6 py-1 rounded-full border ${
+                          qData?.answer === "no"
+                            ? "bg-secondaryColor text-white"
+                            : "bg-white"
+                        }`}
+                      >
+                        {t("guarantee_finish.no")}
+                      </button>
+                    </div>
+                    {(q.mustTextareaYes && qData?.answer === "yes") ||
+                    (q.mustTextareaNo && qData?.answer === "no") ? (
+                      <textarea
+                        placeholder="اكتب التفاصيل..."
+                        value={qData?.textarea || ""}
+                        onChange={(e) =>
+                          handleQuestionChange(
+                            q.id.toString(),
+                            qData?.answer,
+                            e.target.value
+                          )
+                        }
+                        className="w-full max-w-md mx-auto p-3 border rounded-lg resize-none h-20"
+                      />
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-center gap-6 my-8">
+          <ActionButton
+            text={t("guarantee_quote_page.buttons.previous")}
+            iconPosition="left"
+            onClick={handlePrevious}
+            isDisabled={currentStep === 0}
+          />
+          <ActionButton
+            text={
+              currentStep < 5
+                ? t("guarantee_quote_page.buttons.next")
+                : t("guarantee_quote_page.buttons.submit")
+            }
+            iconPosition="right"
+            onClick={handleNext}
+            isNext
+          />
+        </div>
+      </section>
+    </main>
+  );
 };
 
-// ... (نفس كود الـ PropTypes و ActionButton و TravelSelect و TravelInput بدون تغيير) ...
-const TravelInput = ({ placeholder, value, onChange, isInvalid, type = "text" }) => (
-    <input
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        className={`w-full max-w-80 vsm:max-w-[450px] h-[75px] px-4 border rounded-[10px] text-[#C3C3C3] font-semibold focus:outline-none
- ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
- ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
-    />
+// مكونات
+const TravelInput = ({
+  placeholder,
+  value,
+  onChange,
+  isInvalid,
+  type = "text",
+  className = "",
+}) => (
+  <input
+    type={type}
+    placeholder={placeholder}
+    value={value || ""}
+    onChange={onChange}
+    className={`w-full max-w-80 vsm:max-w-[450px] h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none
+      ${
+        isInvalid
+          ? "border-secondaryColor border-2 animate-pulse"
+          : "border-[#C3C3C3]"
+      }
+      ${value ? "text-black border-black" : "text-[#C3C3C3]"} ${className}`}
+  />
 );
 
 const TravelSelect = ({ placeholder, value, onChange, options, isInvalid }) => (
-    <select
-        value={value}
-        onChange={onChange}
-        className={`w-full max-w-80 vsm:max-w-[450px] h-[75px] px-4 border rounded-[10px] font-semibold focus:outline-none 
- ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
- ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
-    >
-        <option value="" disabled hidden>
-            {placeholder}
-        </option>
-        {options.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-                {opt.label}
-            </option>
-        ))}
-    </select>
+  <select
+    value={value || ""}
+    onChange={onChange}
+    className={`w-full max-w-80 vsm:max-w-[450px] h-[75px] px- наша4 border rounded-[10px] font-medium focus:outline-none
+      ${
+        isInvalid
+          ? "border-secondaryColor border-2 animate-pulse"
+          : "border-[#C3C3C3]"
+      }
+      ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
+  >
+    <option value="" disabled hidden>
+      {placeholder}
+    </option>
+    {options.map((opt) => (
+      <option key={opt.value} value={opt.value}>
+        {opt.label}
+      </option>
+    ))}
+  </select>
 );
 
 const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
-    <button
-        onClick={onClick}
-        disabled={isDisabled}
-        className={`group flex items-center justify-between px-5 sm:px-3 
- ${isNext ? "sm:pl-16" : "sm:pr-14"} w-36 sm:w-[220px] h-12 sm:h-[59px] text-sm vsm:text-base sm:text-lg font-medium 
- border rounded-[27.5px] shadow-md transition-all
- ${isDisabled ? "text-gray-400" : "text-black"}`}
-    >
-        {iconPosition === "left" && (
-            <span
-                className={`flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform -rotate-90 group-hover:-rotate-[135deg] 
- ${isDisabled ? "bg-gray-300" : "bg-black"}`}
-            >
-                <Icons.QuoteArrowIcon />
-            </span>
-        )}
-        {text}
-        {iconPosition === "right" && (
-            <span className="flex justify-center items-center bg-secondaryColor w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform group-hover:rotate-45">
-                <Icons.QuoteArrowIcon />
-            </span>
-        )}
-    </button>
+  <button
+    onClick={onClick}
+    disabled={isDisabled}
+    className={`group flex items-center justify-between px-5 sm:px-3 
+      ${
+        isNext ? "sm:pl-16" : "sm:pr-14"
+      } w-36 sm:w-[220px] h-12 sm:h-[59px] text-sm vsm:text-base sm:text-lg font-medium 
+      border rounded-[27.5px] shadow-md transition-all
+      ${isDisabled ? "text-gray-400 cursor-not-allowed" : "text-black"}`}
+  >
+    {iconPosition === "left" && (
+      <span
+        className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-transform -rotate-90 group-hover:-rotate-[135deg]
+        ${isDisabled ? "bg-gray-300" : "bg-black"}`}
+      >
+        <Icons.QuoteArrowIcon />
+      </span>
+    )}
+    {text}
+    {iconPosition === "right" && (
+      <span className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-secondaryColor flex items-center justify-center transition-transform group-hover:rotate compound-45">
+        <Icons.QuoteArrowIcon />
+      </span>
+    )}
+  </button>
 );
 
 TravelInput.propTypes = {
-    placeholder: PropTypes.string,
-    value: PropTypes.string,
-    onChange: PropTypes.func.isRequired,
-    isInvalid: PropTypes.bool,
-    type: PropTypes.string,
+  placeholder: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  isInvalid: PropTypes.bool,
+  type: PropTypes.string,
+  className: PropTypes.string,
 };
-
 TravelSelect.propTypes = {
-    placeholder: PropTypes.string,
-    value: PropTypes.string,
-    onChange: PropTypes.func.isRequired,
-    options: PropTypes.array.isRequired,
-    isInvalid: PropTypes.bool,
+  placeholder: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  options: PropTypes.array.isRequired,
+  isInvalid: PropTypes.bool,
 };
-
 ActionButton.propTypes = {
-    text: PropTypes.string.isRequired,
-    iconPosition: PropTypes.oneOf(["left", "right"]).isRequired,
-    onClick: PropTypes.func.isRequired,
-    isDisabled: PropTypes.bool,
-    isNext: PropTypes.bool,
+  text: PropTypes.string.isRequired,
+  iconPosition: PropTypes.oneOf(["left", "right"]).isRequired,
+  onClick: PropTypes.func.isRequired,
+  isDisabled: PropTypes.bool,
+  isNext: PropTypes.bool,
 };

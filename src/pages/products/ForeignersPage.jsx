@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Header, HeroProductsSection, CircleDashed, CoveragesSection, CircleGray, ArticleSlider, SuccessRectangle, Contact, GetQuote, GetQuoteSideBT } from "@/components";
 import { useTranslation } from "react-i18next";
 // import * as Icons from "@/utils/icons.util";
@@ -117,7 +117,6 @@ export const ForeignersPage = () => {
                         )
                     })}
                 </div>
-                <Link to="/get-a-quote-foreigners">
                 <button
                     onClick={handleGetQuoteClick}
                     className="w-28 h-12 sm:w-[213px] sm:h-[65px] rounded-[10px] bg-primaryBgColor text-primaryColor text-xs tiny:text-base sm:text-lg font-bold mt-8 sm:mt-16 hover:bg-secondaryColor hover:text-primaryColor transition_all active:scale-110"
@@ -126,38 +125,37 @@ export const ForeignersPage = () => {
                 >
                     {t('foreigners_page.get_quote_button')}
                 </button>
-            </Link>
-        </section>
+            </section>
 
-   <section className="bg-secondaryColor mx-7 lg:mx-20 rounded-b-3xl md:rounded-b-[58px] rounded-t-[30px] md:rounded-t-[70px] my-5 md:my-20">
-    <div
-     className="flex flex-col justify-center items-center bg-secondaryBgColor text-center rounded-3xl md:rounded-[58px] py-12 h-[200px]"
-     style={{ boxShadow: "0px 10px 10px 0px #8E240026" }}
-    >
-     <h1 data-aos="zoom-in" className="max-w-[683px] text-3xl sm:text-[40px] font-bold leading-[54.64px]">
-      {t('foreigners_page.why_section.title')}
-     </h1>
-     <h2 data-aos="zoom-in" className="mt-5 mb-6 mx-2 sm:text-[22px] sm:leading-[30.05px]">
-      {t('foreigners_page.why_section.subtitle')}
-     </h2>
-    </div>
-    <div data-aos="fade-right" className="flex flex-wrap gap-3 vsm:gap-5 justify-center xl:justify-evenly items-center rounded-3xl md:rounded-b-[58px] text-center py-10 sm:py-16 mx-1 vsm:mx-4 xl:mx-20">
-     {t('foreigners_page.why_section.features', { returnObjects: true }).map((feature, index) => (
-      <SuccessRectangle key={index}>{feature}</SuccessRectangle>
-     ))}
-    </div>
-   </section>
+            <section className="bg-secondaryColor mx-7 lg:mx-20 rounded-b-3xl md:rounded-b-[58px] rounded-t-[30px] md:rounded-t-[70px] my-5 md:my-20">
+                <div
+                    className="flex flex-col justify-center items-center bg-secondaryBgColor text-center rounded-3xl md:rounded-[58px] py-12 h-[200px]"
+                    style={{ boxShadow: "0px 10px 10px 0px #8E240026" }}
+                >
+                    <h1 data-aos="zoom-in" className="max-w-[683px] text-3xl sm:text-[40px] font-bold leading-[54.64px]">
+                        {t('foreigners_page.why_section.title')}
+                    </h1>
+                    <h2 data-aos="zoom-in" className="mt-5 mb-6 mx-2 sm:text-[22px] sm:leading-[30.05px]">
+                        {t('foreigners_page.why_section.subtitle')}
+                    </h2>
+                </div>
+                <div data-aos="fade-right" className="flex flex-wrap gap-3 vsm:gap-5 justify-center xl:justify-evenly items-center rounded-3xl md:rounded-b-[58px] text-center py-10 sm:py-16 mx-1 vsm:mx-4 xl:mx-20">
+                    {t('foreigners_page.why_section.features', { returnObjects: true }).map((feature, index) => (
+                        <SuccessRectangle key={index}>{feature}</SuccessRectangle>
+                    ))}
+                </div>
+            </section>
 
-   <ArticleSlider
-    subTitle={t('foreigners_page.article_slider.subTitle')}
-    url="/blog/medical-insurance-foreigners"
-    categoryId={3}
-   />
+            <ArticleSlider
+                subTitle={t('foreigners_page.article_slider.subTitle')}
+                url="/blog/medical-insurance-foreigners"
+                categoryId={3}
+            />
 
-   <Contact />
+            <Contact />
 
-   <GetQuote url="/get-a-quote-foreigners" />
-   <GetQuoteSideBT url="/get-a-quote-foreigners" />
-  </>
- );
+            <GetQuote url="/get-a-quote-foreigners" />
+            <GetQuoteSideBT url="/get-a-quote-foreigners" />
+        </>
+    );
 };
