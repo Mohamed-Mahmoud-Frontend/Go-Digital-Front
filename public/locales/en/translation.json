@@ -42,8 +42,8 @@
         "subtitle": "Discover articles and useful tips to improve your insurance and property protection, and more."
     },
     "hero_products_section": {
-      "get_quote_button": "Get Quote",
-      "total": "Total"
+        "get_quote_button": "Get Quote",
+        "total": "Total"
     },
     "contact_section": {
         "title": "Have questions?",
@@ -447,8 +447,8 @@
             "cta_text": "Natural or Legal person? Choose and get a quote!",
             "select_placeholder": "Type",
             "select_options": {
-              "person": "Person",
-              "legal": "Legal Entity"
+                "person": "Person",
+                "legal": "Legal Entity"
             }
         },
         "how_works_section": {
@@ -809,16 +809,18 @@
             "submit": "Submit"
         }
     },
-    "liability_quote_page": {
-        "form": {
-            "title": "License Plate Number (VRM)",
-            "placeholder_departure": "Where are you travelling from?"
-        },
-        "buttons": {
-            "previous": "Previous",
-            "next": "Next"
-        }
-    },
+   "liability_quote_page": {
+   "form": {
+     "title": "License Plate Number (VRM)",
+     "placeholder_departure": "Where are you travelling from?",
+     "vehicles_placeholder": "Enter vehicle name",
+     "add_button": "Add"
+   },
+   "buttons": {
+     "previous": "Previous",
+     "next": "Next"
+   }
+ },
     "travel_quote_page": {
         "steps": {
             "step1": {
@@ -1023,7 +1025,8 @@
             "description": "Covers claims raised against the insured concerning breach of duty due to negligence, erroneous actions or omissions, arising from the exercise and conduct of the professional activity."
         },
         "total": "Total",
-        "proceed_button": "Continue"
+        "proceed_button": "Continue",
+        "back_button": "Go Back"
     },
     "travel_proceed": {
         "header": {

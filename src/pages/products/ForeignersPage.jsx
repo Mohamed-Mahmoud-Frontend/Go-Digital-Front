@@ -1,18 +1,15 @@
-import React from "react";
-import { Link } from "react-router-dom";
-// Components
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Header, HeroProductsSection, CircleDashed, CoveragesSection, CircleGray, ArticleSlider, SuccessRectangle, Contact, GetQuote, GetQuoteSideBT } from "@/components";
 import { useTranslation } from "react-i18next";
-// Foreigners Circle Dashed Icons
+// import * as Icons from "@/utils/icons.util";
 import Icon1 from "@/assets/icons/forCircleDashed/personal.png"
 import Icon2 from "@/assets/icons/forCircleDashed/packages.png"
 import Icon3 from "@/assets/icons/forCircleDashed/online.png"
 import Icon4 from "@/assets/icons/forCircleDashed/contract.png"
-// Foreigners Why Digital Icons
 import Icon11 from "@/assets/icons/forWhyDigital/quick.png"
 import Icon22 from "@/assets/icons/forWhyDigital/contact.png"
 import Icon33 from "@/assets/icons/forWhyDigital/checklist.png"
-// Foreigners Services Icons
 import Icon111 from "@/assets/icons/forWhyDigital/quick.png"
 import Icon222 from "@/assets/icons/forWhyDigital/contact.png"
 import Icon333 from "@/assets/icons/forWhyDigital/checklist.png"
@@ -20,12 +17,31 @@ import Icon444 from "@/assets/icons/forWhyDigital/quick.png"
 
 export const ForeignersPage = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
+
+    const [identification, setIdentification] = useState("");
+
+    useEffect(() => {
+        const savedValue = localStorage.getItem("foreigners_id_prefill");
+        if (savedValue) {
+            setIdentification(savedValue);
+        }
+    }, []);
+
+    const handleIdentificationChange = (e) => {
+        const value = e.target.value;
+        setIdentification(value);
+        localStorage.setItem("foreigners_id_prefill", value);
+    };
+
+    const handleGetQuoteClick = () => {
+        navigate("/get-a-quote-foreigners");
+    };
 
     const rawSlidesData = t('foreigners_page.coverages_section.slides', { returnObjects: true });
     const steps = t('foreigners_page.how_works_section.steps', { returnObjects: true });
     const services = t('foreigners_page.services_section.services', { returnObjects: true });
 
-    // Add icons to slidesData
     const slidesData = rawSlidesData.map((slide, index) => {
         const icons = [Icon111, Icon222, Icon333, Icon444];
         return {
@@ -48,6 +64,9 @@ export const ForeignersPage = () => {
                 </h3>
                 <input
                     data-aos="fade-right"
+                    type="text"
+                    value={identification}
+                    onChange={handleIdentificationChange}
                     placeholder={t('foreigners_page.hero_section.input_placeholder')}
                     className="w-full max-w-[450px] xl:max-w-[680px] appearance-none h-14 md:h-[74px] bg-white border border-gray-300 text-sm vsm:text-base font-bold rounded-[10px] text-[#7D7D7D] py-2 px-4 pr-10 shadow focus:outline-none focus:ring-2 focus:ring-orange-400"
                 />
@@ -99,45 +118,46 @@ export const ForeignersPage = () => {
                     })}
                 </div>
                 <Link to="/get-a-quote-foreigners">
-                    <button
-                        className="w-28 h-12 sm:w-[213px] sm:h-[65px] rounded-[10px] bg-primaryBgColor text-primaryColor text-xs tiny:text-base sm:text-lg font-bold mt-8 sm:mt-16 hover:bg-secondaryColor hover:text-primaryColor transition_all active:scale-110"
-                        style={{ boxShadow: "0px 4px 4px 0px #00000026" }}
-                        data-aos="zoom-in"
-                    >
-                        {t('foreigners_page.get_quote_button')}
-                    </button>
-                </Link>
-            </section>
-
-            <section className="bg-secondaryColor mx-7 lg:mx-20 rounded-b-3xl md:rounded-b-[58px] rounded-t-[30px] md:rounded-t-[70px] my-5 md:my-20">
-                <div
-                    className="flex flex-col justify-center items-center bg-secondaryBgColor text-center rounded-3xl md:rounded-[58px] py-12 h-[200px]"
-                    style={{ boxShadow: "0px 10px 10px 0px #8E240026" }}
+                <button
+                    onClick={handleGetQuoteClick}
+                    className="w-28 h-12 sm:w-[213px] sm:h-[65px] rounded-[10px] bg-primaryBgColor text-primaryColor text-xs tiny:text-base sm:text-lg font-bold mt-8 sm:mt-16 hover:bg-secondaryColor hover:text-primaryColor transition_all active:scale-110"
+                    style={{ boxShadow: "0px 4px 4px 0px #00000026" }}
+                    data-aos="zoom-in"
                 >
-                    <h1 data-aos="zoom-in" className="max-w-[683px] text-3xl sm:text-[40px] font-bold leading-[54.64px]">
-                        {t('foreigners_page.why_section.title')}
-                    </h1>
-                    <h2 data-aos="zoom-in" className="mt-5 mb-6 mx-2 sm:text-[22px] sm:leading-[30.05px]">
-                        {t('foreigners_page.why_section.subtitle')}
-                    </h2>
-                </div>
-                <div data-aos="fade-right" className="flex flex-wrap gap-3 vsm:gap-5 justify-center xl:justify-evenly items-center rounded-3xl md:rounded-b-[58px] text-center py-10 sm:py-16 mx-1 vsm:mx-4 xl:mx-20">
-                    {t('foreigners_page.why_section.features', { returnObjects: true }).map((feature, index) => (
-                        <SuccessRectangle key={index}>{feature}</SuccessRectangle>
-                    ))}
-                </div>
-            </section>
+                    {t('foreigners_page.get_quote_button')}
+                </button>
+            </Link>
+        </section>
 
-            <ArticleSlider
-                subTitle={t('foreigners_page.article_slider.subTitle')}
-                url="/blog/medical-insurance-foreigners"
-                categoryId={3}
-            />
+   <section className="bg-secondaryColor mx-7 lg:mx-20 rounded-b-3xl md:rounded-b-[58px] rounded-t-[30px] md:rounded-t-[70px] my-5 md:my-20">
+    <div
+     className="flex flex-col justify-center items-center bg-secondaryBgColor text-center rounded-3xl md:rounded-[58px] py-12 h-[200px]"
+     style={{ boxShadow: "0px 10px 10px 0px #8E240026" }}
+    >
+     <h1 data-aos="zoom-in" className="max-w-[683px] text-3xl sm:text-[40px] font-bold leading-[54.64px]">
+      {t('foreigners_page.why_section.title')}
+     </h1>
+     <h2 data-aos="zoom-in" className="mt-5 mb-6 mx-2 sm:text-[22px] sm:leading-[30.05px]">
+      {t('foreigners_page.why_section.subtitle')}
+     </h2>
+    </div>
+    <div data-aos="fade-right" className="flex flex-wrap gap-3 vsm:gap-5 justify-center xl:justify-evenly items-center rounded-3xl md:rounded-b-[58px] text-center py-10 sm:py-16 mx-1 vsm:mx-4 xl:mx-20">
+     {t('foreigners_page.why_section.features', { returnObjects: true }).map((feature, index) => (
+      <SuccessRectangle key={index}>{feature}</SuccessRectangle>
+     ))}
+    </div>
+   </section>
 
-            <Contact />
+   <ArticleSlider
+    subTitle={t('foreigners_page.article_slider.subTitle')}
+    url="/blog/medical-insurance-foreigners"
+    categoryId={3}
+   />
 
-            <GetQuote url="/get-a-quote-foreigners" />
-            <GetQuoteSideBT url="/get-a-quote-foreigners" />
-        </>
-    );
+   <Contact />
+
+   <GetQuote url="/get-a-quote-foreigners" />
+   <GetQuoteSideBT url="/get-a-quote-foreigners" />
+  </>
+ );
 };

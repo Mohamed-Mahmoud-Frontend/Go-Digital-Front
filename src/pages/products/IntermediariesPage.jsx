@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import {  useNavigate } from "react-router-dom";
 // Components
 import { Header, HeroProductsSection, CircleDashed, CoveragesSection, CircleGray, ArticleSlider, SuccessRectangle, Contact, GetQuote, GetQuoteSideBT } from "@/components";
 import { useTranslation } from "react-i18next";
@@ -17,14 +17,68 @@ import Icon33 from "@/assets/icons/forWhyDigital/checklist.png"
 import Icon111 from "@/assets/icons/forWhyDigital/quick.png"
 import Icon222 from "@/assets/icons/forWhyDigital/contact.png"
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export const IntermediariesPage = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const navigate = useNavigate();
+
+    const [typeOptions, setTypeOptions] = useState([]);
+    const [selectedType, setSelectedType] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchApiData = async () => {
+            try {
+                setIsLoading(true);
+                setError(null);
+                const response = await fetch(`${API_BASE_URL}/user/intermediaryInsurance/getArguments`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept-Language': i18n.language
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+
+                const data = await response.json();
+                setTypeOptions(data.types || []);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                setError('Failed to load options. Please try again.');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchApiData();
+    }, [i18n.language]);
+
+    useEffect(() => {
+        const savedValue = localStorage.getItem("intermediaries_type_prefill");
+        if (savedValue) {
+            setSelectedType(savedValue);
+        }
+    }, []);
+
+    const handleTypeChange = (e) => {
+        const value = e.target.value;
+        setSelectedType(value);
+        localStorage.setItem("intermediaries_type_prefill", value);
+    };
+
+    const handleGetQuoteClick = () => {
+        navigate("/get-a-quote-intermediaries");
+    };
 
     const rawSlidesData = t('intermediaries_page.coverages_section.slides', { returnObjects: true });
     const services = t('intermediaries_page.services_section.services', { returnObjects: true });
     const steps = t('intermediaries_page.how_works_section.steps', { returnObjects: true });
 
-    // Add icons to slidesData
     const slidesData = rawSlidesData.map((slide, index) => {
         const icons = [Icon111, Icon222];
         return {
@@ -46,11 +100,24 @@ export const IntermediariesPage = () => {
                     {t('intermediaries_page.hero_section.cta_text')}
                 </h3>
                 <div data-aos="fade-right" className="relative w-full max-w-[450px] xl:max-w-[680px]">
-                    <select defaultValue="" className="w-full appearance-none h-14 md:h-[74px] bg-white border border-gray-300 text-sm vsm:text-base font-bold rounded-[10px] text-[#7D7D7D] py-2 px-4 pr-10 shadow focus:outline-none focus:ring-2 focus:ring-orange-400">
-                        <option value="" disabled hidden>{t('intermediaries_page.hero_section.select_placeholder')}</option>
-                        <option value="1">{t('intermediaries_page.hero_section.select_options.person')}</option>
-                        <option value="2">{t('intermediaries_page.hero_section.select_options.legal')}</option>
-                    </select>
+                    {isLoading ? (
+                        <div className="h-14 md:h-[74px] bg-gray-200 border border-gray-300 rounded-[10px] animate-pulse" />
+                    ) : error ? (
+                        <p className="text-red-500 text-sm">{error}</p>
+                    ) : (
+                        <select
+                            value={selectedType}
+                            onChange={handleTypeChange}
+                            className="w-full appearance-none h-14 md:h-[74px] bg-white border border-gray-300 text-sm vsm:text-base font-bold rounded-[10px] text-[#7D7D7D] py-2 px-4 pr-10 shadow focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        >
+                            <option value="" disabled hidden>{t('intermediaries_page.hero_section.select_placeholder')}</option>
+                            {typeOptions.map((type) => (
+                                <option key={type.id} value={type.name}>
+                                    {type.name}
+                                </option>
+                            ))}
+                        </select>
+                    )}
                     <span className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400">
                         <Icons.SelectArrowIcon />
                     </span>
@@ -102,15 +169,14 @@ export const IntermediariesPage = () => {
                         )
                     })}
                 </div>
-                <Link to="/get-a-quote-intermediaries">
-                    <button
-                        className="w-28 h-12 sm:w-[213px] sm:h-[65px] rounded-[10px] bg-primaryBgColor text-primaryColor text-xs tiny:text-base sm:text-lg font-bold mt-8 sm:mt-16 hover:bg-secondaryColor hover:text-primaryColor transition_all active:scale-110"
-                        style={{ boxShadow: "0px 4px 4px 0px #00000026" }}
-                        data-aos="zoom-in"
-                    >
-                        {t('intermediaries_page.get_quote_button')}
-                    </button>
-                </Link>
+                <button
+                    onClick={handleGetQuoteClick}
+                    className="w-28 h-12 sm:w-[213px] sm:h-[65px] rounded-[10px] bg-primaryBgColor text-primaryColor text-xs tiny:text-base sm:text-lg font-bold mt-8 sm:mt-16 hover:bg-secondaryColor hover:text-primaryColor transition_all active:scale-110"
+                    style={{ boxShadow: "0px 4px 4px 0px #00000026" }}
+                    data-aos="zoom-in"
+                >
+                    {t('intermediaries_page.get_quote_button')}
+                </button>
             </section>
 
             <section className="bg-secondaryColor mx-7 lg:mx-20 rounded-b-3xl md:rounded-b-[58px] rounded-t-[30px] md:rounded-t-[70px] my-5 md:my-20">

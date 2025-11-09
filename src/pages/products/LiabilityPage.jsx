@@ -1,28 +1,55 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import {  useNavigate } from "react-router-dom";
 // Components
 import { Header, HeroProductsSection, CircleDashed, CircleGray, CoveragesSection, ArticleSlider, SuccessRectangle, Contact, GetQuote, GetQuoteSideBT } from "@/components";
 import { useTranslation } from "react-i18next";
-// Liability Circle Dashed Icons
+// Icons
+// import * as Icons from "@/utils/icons.util";
 import Icon1 from "@/assets/icons/forCircleDashed/information.png"
 import Icon2 from "@/assets/icons/forCircleDashed/packages.png"
 import Icon3 from "@/assets/icons/forCircleDashed/online.png"
 import Icon4 from "@/assets/icons/forCircleDashed/contract.png"
-// Liability Why Digital Icons
 import Icon11 from "@/assets/icons/forWhyDigital/quick.png"
 import Icon22 from "@/assets/icons/forWhyDigital/contact.png"
 import Icon33 from "@/assets/icons/forWhyDigital/checklist.png"
-// Liability Services Icons
 import Icon111 from "@/assets/icons/forWhyDigital/quick.png"
 
 export const LiabilityPage = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
+
+    const [licensePlate, setLicensePlate] = useState("");
+
+    useEffect(() => {
+        const savedVehicles = localStorage.getItem('liabilityVehicles');
+        if (savedVehicles) {
+            try {
+                const vehicles = JSON.parse(savedVehicles);
+                if (Array.isArray(vehicles) && vehicles.length > 0) {
+                    setLicensePlate(vehicles[0] || ""); // نعرض أول قيمة فقط
+                }
+            } catch (e) {
+                console.error("Failed to parse liabilityVehicles from localStorage", e);
+                localStorage.removeItem('liabilityVehicles'); // تنظيف القيمة الخاطئة
+            }
+        }
+    }, []);
+
+    const handleLicensePlateChange = (e) => {
+        const value = e.target.value;
+        setLicensePlate(value);
+        // نحفظ القيمة كأول عنصر في مصفوفة
+        localStorage.setItem('liabilityVehicles', JSON.stringify([value]));
+    };
+
+    const handleGetQuoteClick = () => {
+        navigate("/get-a-quote-liability");
+    };
 
     const rawSlidesData = t('liability_page.coverages_section.slides', { returnObjects: true });
     const services = t('liability_page.services_section.services', { returnObjects: true });
     const steps = t('liability_page.how_works_section.steps', { returnObjects: true });
 
-    // Add icons to slidesData
     const slidesData = rawSlidesData.map((slide, index) => {
         const icons = [Icon111];
         return {
@@ -45,6 +72,9 @@ export const LiabilityPage = () => {
                 </h3>
                 <input
                     data-aos="fade-right"
+                    type="text"
+                    value={licensePlate}
+                    onChange={handleLicensePlateChange}
                     placeholder={t('liability_page.hero_section.input_placeholder')}
                     className="w-full max-w-[450px] xl:max-w-[680px] appearance-none h-14 md:h-[74px] bg-white border border-gray-300 text-sm vsm:text-base font-bold rounded-[10px] text-[#7D7D7D] py-2 px-4 pr-10 shadow focus:outline-none focus:ring-2 focus:ring-orange-400"
                 />
@@ -95,15 +125,14 @@ export const LiabilityPage = () => {
                         )
                     })}
                 </div>
-                <Link to="/get-a-quote-liability">
-                    <button
-                        className="w-28 h-12 sm:w-[213px] sm:h-[65px] rounded-[10px] bg-primaryBgColor text-primaryColor text-xs tiny:text-base sm:text-lg font-bold mt-8 sm:mt-16 hover:bg-secondaryColor hover:text-primaryColor transition_all active:scale-110"
-                        style={{ boxShadow: "0px 4px 4px 0px #00000026" }}
-                        data-aos="zoom-in"
-                    >
-                        {t('liability_page.get_quote_button')}
-                    </button>
-                </Link>
+                <button
+                    onClick={handleGetQuoteClick}
+                    className="w-28 h-12 sm:w-[213px] sm:h-[65px] rounded-[10px] bg-primaryBgColor text-primaryColor text-xs tiny:text-base sm:text-lg font-bold mt-8 sm:mt-16 hover:bg-secondaryColor hover:text-primaryColor transition_all active:scale-110"
+                    style={{ boxShadow: "0px 4px 4px 0px #00000026" }}
+                    data-aos="zoom-in"
+                >
+                    {t('liability_page.get_quote_button')}
+                </button>
             </section>
 
             <section className="bg-secondaryColor mx-7 lg:mx-20 rounded-b-3xl md:rounded-b-[58px] rounded-t-[30px] md:rounded-t-[70px] my-5 md:my-20">

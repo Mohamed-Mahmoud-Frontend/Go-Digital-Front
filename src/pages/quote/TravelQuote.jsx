@@ -9,7 +9,6 @@ import * as Icons from "@/utils/icons.util";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// Add this helper function before the TravelQuote component
 const getApiInsuredType = (insuredType) => {
     switch (insuredType) {
         case "Ένα Άτομο":
@@ -32,10 +31,10 @@ const getApiInsuredType = (insuredType) => {
 export const TravelQuote = () => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
-    const totalSteps = 5; // Total number of steps (including price selection as the final step)
-    const [currentStep, setCurrentStep] = useState(0); // Current active step
-    const [isInvalid, setIsInvalid] = useState(false); // Track invalid inputs
-    const [isLoading, setIsLoading] = useState(false);
+    const totalSteps = 5;
+    const [currentStep, setCurrentStep] = useState(0);
+    const [isInvalid, setIsInvalid] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [apiData, setApiData] = useState({
         countries: [],
@@ -72,40 +71,58 @@ export const TravelQuote = () => {
         step5: { selectedQuote: null }
     });
 
-    // Fetch API data on component mount
     useEffect(() => {
+        const fetchApiData = async () => {
+            try {
+                setIsLoading(true);
+                const response = await fetch(`${API_BASE_URL}/user/travelInsurance/getArguments`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept-Language': i18n.language
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch travel insurance data');
+                }
+
+                const data = await response.json();
+                setApiData({
+                    countries: data.countries || [],
+                    types: data.types || []
+                });
+            } catch (error) {
+                console.error('Error fetching travel insurance data:', error);
+                setError('Failed to load travel insurance options');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
         fetchApiData();
     }, [i18n.language]);
 
-    const fetchApiData = async () => {
-        try {
-            setIsLoading(true);
-            const response = await fetch(`${API_BASE_URL}/user/travelInsurance/getArguments`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept-Language': i18n.language
-                }
-            });
+    useEffect(() => {
+        const prefilledId = localStorage.getItem("travel_destination_prefill");
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch travel insurance data');
+        if (prefilledId && apiData.countries.length > 0) {
+            const selectedCountry = apiData.countries.find(c => c.id.toString() === prefilledId);
+
+            if (selectedCountry) {
+                setUserData(prev => ({
+                    ...prev,
+                    step1: {
+                        ...prev.step1,
+                        toCountry: selectedCountry.name,
+                        toCountryId: selectedCountry.id.toString()
+                    }
+                }));
+                localStorage.removeItem("travel_destination_prefill");
             }
-
-            const data = await response.json();
-            setApiData({
-                countries: data.countries || [],
-                types: data.types || []
-            });
-        } catch (error) {
-            console.error('Error fetching travel insurance data:', error);
-            setError('Failed to load travel insurance options');
-        } finally {
-            setIsLoading(false);
         }
-    };
+    }, [apiData.countries]);
 
-    // Handle input change for specific fields in each step
     const handleInputChange = (step, field, value) => {
         setIsInvalid(false);
         setUserData((prevData) => ({
@@ -114,7 +131,6 @@ export const TravelQuote = () => {
         }));
     };
 
-    // Handle person data changes in step 4
     const handlePersonChange = (index, field, value) => {
         setUserData((prevData) => ({
             ...prevData,
@@ -127,7 +143,6 @@ export const TravelQuote = () => {
         }));
     };
 
-    // Handle country selection
     const handleCountrySelection = (step, field, countryName) => {
         const country = apiData.countries.find(c => c.name === countryName);
         setUserData((prevData) => ({
@@ -140,7 +155,6 @@ export const TravelQuote = () => {
         }));
     };
 
-    // Handle insured type selection
     const handleInsuredTypeSelection = (typeName) => {
         const type = apiData.types.find(t => t.name === typeName);
         setUserData((prevData) => ({
@@ -153,22 +167,21 @@ export const TravelQuote = () => {
         }));
     };
 
-    // Validate input for the current step
     const isStepValid = (step) => {
         const stepData = userData[`step${step + 1}`];
 
         switch (step) {
-            case 0: // Step 1: Countries
+            case 0:
                 return stepData.fromCountry && stepData.toCountry;
-            case 1: // Step 2: Dates
+            case 1:
                 return stepData.startDate && stepData.endDate;
-            case 2: // Step 3: Type and person count
+            case 2:
                 if (!stepData.insuredType) return false;
                 if (["Οικογένεια", "Family", "Ομάδα (Group)", "Group"].includes(stepData.insuredType)) {
                     return stepData.personCount && parseInt(stepData.personCount) > 0;
                 }
                 return true;
-            case 3: // Step 4: Persons
+            case 3:
                 return stepData.persons.every(person =>
                     person.dateBirth && person.name && person.identification
                 );
@@ -177,21 +190,16 @@ export const TravelQuote = () => {
         }
     };
 
-    // Proceed to the next step after validation
     const handleNext = () => {
         if (isStepValid(currentStep)) {
-            // If moving to step 4, adjust persons array based on type and count
             if (currentStep === 2) {
                 const type = userData.step3.insuredType;
                 let personCount = 1;
-
                 if (type === "Ένα Άτομο" || type === "Individual") personCount = 1;
                 else if (type === "Ζευγάρι" || type === "Couple") personCount = 2;
                 else if (type === "Οικογένεια" || type === "Family" || type === "Ομάδα (Group)" || type === "Group") {
                     personCount = parseInt(userData.step3.personCount) || 1;
                 }
-
-                // Adjust persons array
                 const newPersons = Array(personCount).fill(null).map((_, index) =>
                     userData.step4.persons[index] || {
                         dateBirth: "",
@@ -199,19 +207,15 @@ export const TravelQuote = () => {
                         identification: ""
                     }
                 );
-
                 setUserData((prevData) => ({
                     ...prevData,
                     step4: { ...prevData.step4, persons: newPersons }
                 }));
             }
-
-            // If moving from step 4 to step 5, fetch quotes
             if (currentStep === 3) {
                 handleSubmit(false);
-                return; // Don't proceed to next step yet, wait for quotes
+                return;
             }
-
             setCurrentStep((prev) => prev + 1);
             setIsInvalid(false);
         } else {
@@ -219,24 +223,19 @@ export const TravelQuote = () => {
         }
     };
 
-    // Return to the previous step
     const handlePrevious = () => {
         setCurrentStep((prev) => Math.max(prev - 1, 0));
         setIsInvalid(false);
     };
 
-    // Submit the data to get quotes
     const handleSubmit = async (navigateToProceed = true) => {
         if (!isStepValid(currentStep)) {
             setIsInvalid(true);
             return;
         }
-
         setIsLoading(true);
         setError('');
-
         try {
-            // Prepare submission data
             const submissionData = {
                 from_country: userData.step1.fromCountryId,
                 to_country: userData.step1.toCountryId,
@@ -247,9 +246,6 @@ export const TravelQuote = () => {
                 end_date: userData.step2.endDate,
                 insured_type: getApiInsuredType(userData.step3.insuredType)
             };
-
-            console.log('TravelQuote submissionData:', submissionData);
-
             const response = await fetch(`${API_BASE_URL}/user/travelInsurance/getQuotes`, {
                 method: 'POST',
                 headers: {
@@ -258,35 +254,26 @@ export const TravelQuote = () => {
                 },
                 body: JSON.stringify(submissionData)
             });
-
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Failed to get quotes');
             }
-
             const result = await response.json();
-
-            // Store the data in localStorage for the next step
             const storedData = {
                 quotes: result.quotes || [],
                 userData: userData,
                 submissionData: submissionData
             };
             localStorage.setItem('travelQuoteData', JSON.stringify(storedData));
-
-            // Initialize showEconomy state based on number of quotes
             const quotesCount = result.quotes?.length || 0;
             const newShowEconomy = {};
             for (let i = 1; i <= Math.max(quotesCount, 4); i++) {
                 newShowEconomy[`item${i}`] = false;
             }
             setShowEconomy(newShowEconomy);
-
-            // Only navigate to proceed page if explicitly requested
             if (navigateToProceed) {
                 navigate("/get-a-quote-travel/proceed");
             } else {
-                // Move to step 5 to show quotes
                 setCurrentStep(4);
             }
         } catch (error) {
@@ -322,35 +309,28 @@ export const TravelQuote = () => {
     return (
         <main>
             <QuoteHeader />
-
-            {/* Progress Bar */}
             <section className="Inter_font border-t-2 mx-5 md:mx-0 my-2 flex flex-col justify-center items-center">
                 <div className="flex flex-col justify-center items-center my-10">
                     <div className="flex items-center gap-3 relative w-full">
-                        {/* Progress Bar Steps */}
                         {Array.from({ length: totalSteps - 1 }).map((_, index) => (
                             <div
                                 key={index}
                                 className={`w-14 vsm:w-20 sm:w-32 md:w-[170px] lg:w-[214px] h-[15px] rounded-[5px]
-                    ${index < currentStep ? "bg-orange-400" : "bg-gray-300"}
-                    ${index === currentStep ? "ml-[70px] md:ml-16" : ""}`}
+          ${index < currentStep ? "bg-orange-400" : "bg-gray-300"}
+          ${index === currentStep ? "ml-[70px] md:ml-16" : ""}`}
                             ></div>
                         ))}
-                        {/* Plane Icon with Animation */}
                         <span
                             className={`${currentStep < 4 ? "absolute" : ""} transition_all`}
                             style={{
-                                left: `calc(${currentStep * 23.5}%)`, // Adjusts plane"s position dynamically based on the current step
+                                left: `calc(${currentStep * 23.5}%)`,
                             }}
                         >
                             <Icons.QuotePlaneIcon />
                         </span>
                     </div>
                 </div>
-
-                {/* Step Forms */}
-                <div className={`${currentStep == 4 ? "my-0" : "my-14"} flex flex-wrap justify-center items-center gap-5`}>
-                    {/* Step 1: Countries */}
+                <div className={`${currentStep === 4 ? "my-0" : "my-14"} flex flex-wrap justify-center items-center gap-5`}>
                     {currentStep === 0 && (
                         <Fragment>
                             <TravelSelect
@@ -373,8 +353,6 @@ export const TravelQuote = () => {
                             />
                         </Fragment>
                     )}
-
-                    {/* Step 2: Dates */}
                     {currentStep === 1 && (
                         <div className="flex flex-col justify-center items-center gap-10">
                             <Icons.QuoteDurationIcon />
@@ -405,8 +383,6 @@ export const TravelQuote = () => {
                             </span>
                         </div>
                     )}
-
-                    {/* Step 3: Insured Type */}
                     {currentStep === 2 && (
                         <div className="flex flex-col justify-center items-center gap-10">
                             <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
@@ -421,8 +397,6 @@ export const TravelQuote = () => {
                                 isInvalid={isInvalid && !userData.step3.insuredType}
                                 options={apiData.types.map(type => type.name)}
                             />
-
-                            {/* Person count for family/group */}
                             {["Οικογένεια", "Family", "Ομάδα (Group)", "Group"].includes(userData.step3.insuredType) && (
                                 <div className="flex flex-col justify-center items-center gap-5">
                                     <h2 className="text-xl font-semibold">Number of Persons</h2>
@@ -441,21 +415,16 @@ export const TravelQuote = () => {
                             )}
                         </div>
                     )}
-
-                    {/* Step 4: Person Details */}
                     {currentStep === 3 && (
                         <div className="flex flex-col justify-center items-center gap-10">
                             <Icons.QuoteBirthIcon />
                             <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
                                 {t('travel_quote_page.steps.step4.title')}
                             </h1>
-
                             <div className={`grid gap-6 w-full ${userData.step4.persons.length === 1 ? 'grid-cols-1' : 'md:grid-cols-2'}`}>
                                 {userData.step4.persons.map((person, index) => {
-                                    // Determine if we should show person label
                                     const shouldShowLabel = !["Ένα Άτομο", "Individual"].includes(userData.step3.insuredType);
                                     const personLabel = shouldShowLabel ? `Person ${index + 1}` : "";
-
                                     return (
                                         <div key={index} className="flex flex-col gap-4">
                                             {shouldShowLabel && (
@@ -498,15 +467,12 @@ export const TravelQuote = () => {
                             </div>
                         </div>
                     )}
-
-                    {/* Step 5: Economy Selection */}
                     {currentStep === 4 && (
                         <section>
                             <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold mb-6 vsm:mb-10">
                                 {t('travel_quote_page.steps.step5.title')}
                             </h1>
                             <div className="w-80 tiny:w-[350px] vsm:w-[420px] sm:w-[600px] md:w-[708px] bg-[#FDE5DE] rounded-[15px]">
-                                {/* Display quotes from API */}
                                 {(() => {
                                     const storedData = JSON.parse(localStorage.getItem('travelQuoteData') || '{}');
                                     const quotes = storedData.quotes || [];
@@ -528,7 +494,7 @@ export const TravelQuote = () => {
                                             background={index % 2 === 0 ? "#FDE5DE" : "white"}
                                             quote={quote}
                                             index={index}
-                                        />
+                                            A />
                                     ));
                                 })()}
                             </div>
@@ -536,7 +502,6 @@ export const TravelQuote = () => {
                     )}
                 </div>
 
-                {/* Action Buttons */}
                 {currentStep < 4 && (
                     <div className="flex justify-center items-center gap-3 vsm:gap-10 my-5">
                         <ActionButton
@@ -544,7 +509,7 @@ export const TravelQuote = () => {
                             iconPosition="left"
                             onClick={handlePrevious}
                             isDisabled={currentStep === 0}
-                        />
+                            _ />
                         <ActionButton
                             text={t('travel_quote_page.buttons.next')}
                             iconPosition="right"
@@ -558,7 +523,6 @@ export const TravelQuote = () => {
     );
 };
 
-// Reusable Input Component with Dynamic Border
 const TravelInput = ({ placeholder, value, onChange, isInvalid, type = "text", min, max, fullWidth = false }) => (
     <input
         type={type}
@@ -568,20 +532,19 @@ const TravelInput = ({ placeholder, value, onChange, isInvalid, type = "text", m
         min={min}
         max={max}
         className={`w-full ${fullWidth ? '' : 'max-w-80 vsm:max-w-96 sm:w-[400px]'} h-[75px] px-4 border rounded-[10px] text-[#C3C3C3] font-medium focus:outline-none
-            ${isInvalid ? "border-secondaryColor border-2  animate-pulse" : "border-[#C3C3C3]"}
-            ${value ? "text-black border-black" : "text-[#C3C3C3]"}
-            `}
+      ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
+      ${value ? "text-black border-black" : "text-[#C3C3C3]"}
+      `}
     />
 );
 
-// Reusable Select Component for Dropdown
 const TravelSelect = ({ placeholder, value, onChange, options, isInvalid }) => (
     <select
         value={value}
         onChange={onChange}
         className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none 
-            ${isInvalid ? "border-secondaryColor border-2  animate-pulse" : "border-[#C3C3C3]"}
-            ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
+      ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
+      ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
     >
         <option value="" disabled hidden>{placeholder}</option>
         {options.map((option, idx) => (
@@ -590,20 +553,19 @@ const TravelSelect = ({ placeholder, value, onChange, options, isInvalid }) => (
     </select>
 );
 
-// Reusable Button Component
 const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
     <button
         onClick={onClick}
         disabled={isDisabled}
         className={`group flex items-center justify-between px-5 sm:px-3 
-        ${isNext ? "sm:pl-16" : "sm:pr-14"} w-36 sm:w-[220px] h-12 sm:h-[59px] text-sm vsm:text-base sm:text-lg font-medium 
-        border rounded-[27.5px] shadow-md transition-all
-        ${isDisabled ? "text-gray-400" : "text-black"}`}
+    ${isNext ? "sm:pl-16" : "sm:pr-14"} w-36 sm:w-[220px] h-12 sm:h-[59px] text-sm vsm:text-base sm:text-lg font-medium 
+    border rounded-[27.5px] shadow-md transition-all
+    ${isDisabled ? "text-gray-400" : "text-black"}`}
     >
         {iconPosition === "left" && (
             <span
                 className={`flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform -rotate-90 group-hover:-rotate-[135deg] 
-                ${isDisabled ? "bg-gray-300" : "bg-black"}`} // Change background to black when not disabled
+        ${isDisabled ? "bg-gray-300" : "bg-black"}`}
             >
                 <Icons.QuoteArrowIcon />
             </span>

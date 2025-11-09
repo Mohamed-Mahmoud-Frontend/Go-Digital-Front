@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
-// Components
 import { QuoteHeader, LoadingSpinner } from "@/components";
-// Icons
 import * as Icons from "@/utils/icons.util";
 import { useTranslation } from "react-i18next";
 
@@ -12,10 +10,10 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const IntermediariesQuote = () => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
-    const totalSteps = 4; // Total number of steps
-    const [currentStep, setCurrentStep] = useState(0); // Current active step
-    const [isInvalid, setIsInvalid] = useState(false); // Track invalid inputs
-    const [isLoading, setIsLoading] = useState(false);
+    const totalSteps = 4;
+    const [currentStep, setCurrentStep] = useState(0);
+    const [isInvalid, setIsInvalid] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [apiData, setApiData] = useState({
         questions: [],
@@ -30,42 +28,75 @@ export const IntermediariesQuote = () => {
         step4: { questions: [] },
     });
 
-    // Fetch API data on component mount
     useEffect(() => {
-        fetchApiData();
-    }, []);
+        const fetchApiData = async () => {
+            setIsLoading(true);
+            setError('');
+            try {
+                const response = await fetch(`${API_BASE_URL}/user/intermediaryInsurance/getArguments`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept-Language': i18n.language
+                    }
+                });
 
-    const fetchApiData = async () => {
-        setIsLoading(true);
-        setError('');
-        try {
-            const response = await fetch(`${API_BASE_URL}/user/intermediaryInsurance/getArguments`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept-Language': i18n.language
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
                 }
-            });
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch data');
+                const data = await response.json();
+                setApiData(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                setError('Failed to load data. Please try again.');
+            } finally {
+                setIsLoading(false);
             }
+        };
+        fetchApiData();
+    }, [i18n.language]);
 
-            const data = await response.json();
-            setApiData(data);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            setError('Failed to load data. Please try again.');
-        } finally {
-            setIsLoading(false);
+    useEffect(() => {
+        const prefilledName = localStorage.getItem("intermediaries_type_prefill");
+
+        if (prefilledName && apiData.types.length > 0) {
+            const selectedType = apiData.types.find(t => t.name === prefilledName);
+
+            if (selectedType) {
+                setUserData(prev => ({
+                    ...prev,
+                    step2: {
+                        ...prev.step2,
+                        type: selectedType.name,
+                        typeId: selectedType.id.toString()
+                    }
+                }));
+
+                setCurrentStep(1); // الانتقال للخطوة 2 حيث يوجد الحقل
+                localStorage.removeItem("intermediaries_type_prefill");
+            }
         }
-    };
+    }, [apiData.types]);
 
-    // Handle input change for specific fields in each step
+    useEffect(() => {
+        if (currentStep === 3 && apiData.questions.length > 0 && userData.step4.questions.length === 0) {
+            const initialQuestions = apiData.questions.map(question => ({
+                id: question.id,
+                answer: "",
+                textarea: ""
+            }));
+            setUserData(prevData => ({
+                ...prevData,
+                step4: { questions: initialQuestions }
+            }));
+        }
+    }, [currentStep, apiData.questions, userData.step4.questions.length]);
+
+
     const handleInputChange = (step, field, value) => {
         setIsInvalid(false);
 
-        // Special handling for agent type to store both name and ID
         if (step === "step1" && field === "agentType") {
             const selectedCategory = apiData.categories.find(cat => cat.name === value);
             setUserData((prevData) => ({
@@ -77,7 +108,6 @@ export const IntermediariesQuote = () => {
                 },
             }));
         } else if (step === "step2" && field === "type") {
-            // Special handling for type to store both name and ID
             const selectedType = apiData.types.find(type => type.name === value);
             setUserData((prevData) => ({
                 ...prevData,
@@ -95,7 +125,6 @@ export const IntermediariesQuote = () => {
         }
     };
 
-    // Handle question answer change
     const handleQuestionAnswerChange = (questionId, answer) => {
         setUserData((prevData) => ({
             ...prevData,
@@ -108,7 +137,6 @@ export const IntermediariesQuote = () => {
         }));
     };
 
-    // Handle question textarea change
     const handleQuestionTextareaChange = (questionId, value) => {
         setUserData((prevData) => ({
             ...prevData,
@@ -121,31 +149,14 @@ export const IntermediariesQuote = () => {
         }));
     };
 
-    // Initialize questions when step 4 is reached
-    useEffect(() => {
-        if (currentStep === 3 && apiData.questions.length > 0) {
-            const initialQuestions = apiData.questions.map(question => ({
-                id: question.id,
-                answer: "",
-                textarea: ""
-            }));
-            setUserData(prevData => ({
-                ...prevData,
-                step4: { questions: initialQuestions }
-            }));
-        }
-    }, [currentStep, apiData.questions]);
-
-    // Validate input for the current step
     const isStepValid = (step) => {
         const stepData = userData[`step${step + 1}`];
 
         if (step === 0) {
-            // Step 1: Validate date of birth must be today or in the past
             const dateBirthday = stepData.dateBirthday;
             if (dateBirthday) {
                 const today = new Date();
-                today.setHours(0, 0, 0, 0); // Set to start of day
+                today.setHours(0, 0, 0, 0);
                 const birthDate = new Date(dateBirthday);
                 if (birthDate > today) {
                     return false;
@@ -154,11 +165,10 @@ export const IntermediariesQuote = () => {
         }
 
         if (step === 1) {
-            // Step 2: Validate firm established date must be today or in the past
             const firmEstablished = stepData.firmEstablished;
             if (firmEstablished) {
                 const today = new Date();
-                today.setHours(0, 0, 0, 0); // Set to start of day
+                today.setHours(0, 0, 0, 0);
                 const firmDate = new Date(firmEstablished);
                 if (firmDate > today) {
                     return false;
@@ -167,7 +177,7 @@ export const IntermediariesQuote = () => {
         }
 
         if (step === 3) {
-            // Step 4: Validate questions
+            if (!stepData.questions || stepData.questions.length === 0) return false;
             return stepData.questions.every(question => {
                 if (!question.answer) return false;
 
@@ -185,23 +195,20 @@ export const IntermediariesQuote = () => {
         }
 
         return Object.values(stepData).every((value) => {
-            if (Array.isArray(value)) return value.length > 0;
+            if (Array.isArray(value)) return true; // Questions array can be empty initially
             if (typeof value === 'object' && value !== null) {
-                // For step1, check agentTypeId instead of agentType
-                if (step === 0 && value.agentTypeId) {
+                if (step === 0 && 'agentTypeId' in value) {
                     return value.agentTypeId.trim() !== "";
                 }
-                // For step2, check typeId instead of type
-                if (step === 1 && value.typeId) {
+                if (step === 1 && 'typeId' in value) {
                     return value.typeId.trim() !== "";
                 }
-                return Object.values(value).every(v => v && v.toString().trim() !== "");
+                return Object.values(value).every(v => v !== null && v.toString().trim() !== "");
             }
-            return value && value.toString().trim() !== "";
+            return value !== null && value.toString().trim() !== "";
         });
     };
 
-    // Proceed to the next step after validation
     const handleNext = () => {
         if (isStepValid(currentStep)) {
             setCurrentStep((prev) => prev + 1);
@@ -211,13 +218,11 @@ export const IntermediariesQuote = () => {
         }
     };
 
-    // Return to the previous step
     const handlePrevious = () => {
         setCurrentStep((prev) => Math.max(prev - 1, 0));
         setIsInvalid(false);
     };
 
-    // Submit the data and get quotes
     const handleSubmit = async () => {
         if (!isStepValid(currentStep)) {
             setIsInvalid(true);
@@ -228,22 +233,20 @@ export const IntermediariesQuote = () => {
         setError('');
 
         try {
-            // Prepare questions data
             const questionsData = userData.step4.questions.map(question => ({
                 id: question.id.toString(),
                 answer: question.answer || "no",
                 textarea: question.textarea || ""
             }));
 
-            // Prepare submission data
             const submissionData = {
                 firm_established: userData.step2.firmEstablished,
                 agent_type: userData.step1.agentTypeId,
                 type: userData.step2.typeId,
-                agent_count: 1, // Always 1 as specified
+                agent_count: 1,
                 gross_insured: parseInt(userData.step3.grossInsured) || 50000,
                 gross_insured_current: parseInt(userData.step3.grossInsuredCurrent) || 50000,
-                insured_type: "individual", // Default value
+                insured_type: "individual",
                 start_date: userData.step1.startDate,
                 questions: questionsData,
                 dates_of_birthday: [userData.step1.dateBirthday]
@@ -265,15 +268,13 @@ export const IntermediariesQuote = () => {
 
             const result = await response.json();
 
-            // Store the data in localStorage for the next step
             localStorage.setItem('intermediariesQuoteData', JSON.stringify({
                 userData,
                 apiData,
                 quotes: result.quotes || []
             }));
 
-            // Navigate to the proceed page
-        navigate("/get-a-quote-intermediaries/proceed");
+            navigate("/get-a-quote-intermediaries/proceed");
         } catch (error) {
             console.error('Error submitting quote:', error);
             setError(error.message || 'Failed to get quotes. Please try again.');
@@ -282,7 +283,6 @@ export const IntermediariesQuote = () => {
         }
     };
 
-    // Check if textarea should be shown for a question
     const shouldShowTextarea = (question) => {
         const apiQuestion = apiData.questions.find(q => q.id === question.id);
         if (!apiQuestion) return false;
@@ -315,27 +315,22 @@ export const IntermediariesQuote = () => {
 
     return (
         <main>
-            {/* Header */}
             <QuoteHeader />
-
-            {/* Progress Bar */}
             <section className="border-t-2 mx-5 md:mx-0 my-2 flex flex-col justify-center items-center">
                 <div className="flex flex-col justify-center items-center my-10">
                     <div className="flex items-center gap-3 relative w-full">
-                        {/* Progress Bar Steps */}
                         {Array.from({ length: totalSteps }).map((_, index) => (
                             <div
                                 key={index}
                                 className={`w-14 vsm:w-20 sm:w-32 md:w-[170px] lg:w-[214px] h-[15px] rounded-[5px]
-                    ${index < currentStep ? "bg-orange-400" : "bg-gray-300"}
-                    ${index === currentStep ? "ml-[70px] md:ml-16" : ""}`}
+     ${index < currentStep ? "bg-orange-400" : "bg-gray-300"}
+     ${index === currentStep ? "ml-[70px] md:ml-16" : ""}`}
                             ></div>
                         ))}
-                        {/* Plane Icon with Animation */}
                         <span
                             className="absolute transition_all"
                             style={{
-                                left: `calc(${currentStep * 24}%)`, // Adjusts plane's position dynamically based on the current step
+                                left: `calc(${currentStep * 24}%)`,
                             }}
                         >
                             <Icons.QuotePersonIcon />
@@ -343,9 +338,7 @@ export const IntermediariesQuote = () => {
                     </div>
                 </div>
 
-                {/* Step Forms */}
                 <div className="my-10 flex flex-wrap justify-center items-center gap-5">
-                    {/* Step 1 */}
                     {currentStep === 0 && (
                         <div className="flex flex-col justify-center items-center gap-5 sm:gap-10">
                             <Icons.QuoteProfileIcon />
@@ -389,7 +382,6 @@ export const IntermediariesQuote = () => {
                         </div>
                     )}
 
-                    {/* Step 2 */}
                     {currentStep === 1 && (
                         <div className="flex flex-col justify-center items-center gap-5 sm:gap-10">
                             <Icons.QuoteCardIcon />
@@ -421,7 +413,6 @@ export const IntermediariesQuote = () => {
                         </div>
                     )}
 
-                    {/* Step 3 */}
                     {currentStep === 2 && (
                         <div className="flex flex-col justify-center items-center gap-5 sm:gap-10">
                             <Icons.QuoteBirthIcon />
@@ -452,11 +443,8 @@ export const IntermediariesQuote = () => {
                         </div>
                     )}
 
-                    {/* Step 4 - Questions */}
                     {currentStep === 3 && (
                         <div className="flex flex-col justify-center items-center gap-5 sm:gap-10 max-w-4xl">
-
-
                             {apiData.questions.map((apiQuestion, index) => {
                                 const question = userData.step4.questions.find(q => q.id === apiQuestion.id);
                                 if (!question) return null;
@@ -467,8 +455,6 @@ export const IntermediariesQuote = () => {
                                             <h3 className="text-lg font-semibold mb-3">
                                                 {index + 1}. <span dangerouslySetInnerHTML={{ __html: apiQuestion.question }} />
                                             </h3>
-
-                                            {/* Answer buttons */}
                                             <div className="flex gap-4 mb-3">
                                                 <button
                                                     type="button"
@@ -488,7 +474,6 @@ export const IntermediariesQuote = () => {
                                                 </button>
                                             </div>
 
-                                            {/* Conditional textarea */}
                                             {shouldShowTextarea(question) && (
                                                 <textarea
                                                     value={question.textarea || ""}
@@ -506,9 +491,7 @@ export const IntermediariesQuote = () => {
                     )}
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex justify-center items-center gap-3 vsm:gap-10 my-5">
-                    {/* Previous Button */}
                     <ActionButton
                         text={t('intermediaries_quote_page.buttons.previous')}
                         iconPosition="left"
@@ -516,7 +499,6 @@ export const IntermediariesQuote = () => {
                         isDisabled={currentStep === 0}
                     />
 
-                    {/* Next or Submit Button */}
                     {currentStep < totalSteps - 1 ? (
                         <ActionButton
                             text={t('intermediaries_quote_page.buttons.next')}
@@ -535,7 +517,6 @@ export const IntermediariesQuote = () => {
                     )}
                 </div>
 
-                {/* Error Message */}
                 {error && (
                     <div className="text-red-600 text-center mt-4">
                         {error}
@@ -546,7 +527,6 @@ export const IntermediariesQuote = () => {
     );
 };
 
-// Reusable Input Component with Dynamic Border
 const TravelInput = ({ placeholder, value, onChange, isInvalid, type = "text", max }) => (
     <input
         type={type}
@@ -554,21 +534,20 @@ const TravelInput = ({ placeholder, value, onChange, isInvalid, type = "text", m
         value={value}
         onChange={onChange}
         className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] text-[#C3C3C3] font-semibold focus:outline-none
-            ${isInvalid ? "border-secondaryColor border-2  animate-pulse" : "border-[#C3C3C3]"}
-            ${value ? "text-black border-black" : "text-[#C3C3C3]"}
-            `}
+ ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
+ ${value ? "text-black border-black" : "text-[#C3C3C3]"}
+ `}
         max={max}
     />
 );
 
-// Reusable Select Component for Dropdown
 const TravelSelect = ({ placeholder, value, onChange, options, isInvalid }) => (
     <select
         value={value}
         onChange={onChange}
         className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] font-semibold focus:outline-none 
-            ${isInvalid ? "border-secondaryColor border-2  animate-pulse" : "border-[#C3C3C3]"}
-            ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
+ ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
+ ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
     >
         <option value="" disabled hidden>{placeholder}</option>
         {options.map((option, idx) => (
@@ -577,20 +556,19 @@ const TravelSelect = ({ placeholder, value, onChange, options, isInvalid }) => (
     </select>
 );
 
-// Reusable Button Component
 const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
     <button
         onClick={onClick}
         disabled={isDisabled}
         className={`group flex items-center justify-between px-5 sm:px-3 
-        ${isNext ? "sm:pl-16" : "sm:pr-14"} w-36 sm:w-[220px] h-12 sm:h-[59px] text-sm vsm:text-base sm:text-lg font-medium 
-        border rounded-[27.5px] shadow-md transition-all
-        ${isDisabled ? "text-gray-400" : "text-black"}`}
+    ${isNext ? "sm:pl-16" : "sm:pr-14"} w-36 sm:w-[220px] h-12 sm:h-[59px] text-sm vsm:text-base sm:text-lg font-medium 
+    border rounded-[27.5px] shadow-md transition-all
+    ${isDisabled ? "text-gray-400" : "text-black"}`}
     >
         {iconPosition === "left" && (
             <span
                 className={`flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform -rotate-90 group-hover:-rotate-[135deg] 
-                ${isDisabled ? "bg-gray-300" : "bg-black"}`} // Change background to black when not disabled
+   ${isDisabled ? "bg-gray-300" : "bg-black"}`}
             >
                 <Icons.QuoteArrowIcon />
             </span>
@@ -604,7 +582,6 @@ const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
     </button>
 );
 
-// PropTypes validation
 TravelInput.propTypes = {
     placeholder: PropTypes.string,
     value: PropTypes.string,
