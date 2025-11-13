@@ -17,6 +17,10 @@ export const ForeignersQuote = () => {
   const [isInvalid, setIsInvalid] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  
+  // نقلناه للأعلى - مهم جدًا
+  const [errors, setErrors] = useState({});
+
   const [apiData, setApiData] = useState({
     questions: [],
     countries: [],
@@ -59,6 +63,7 @@ export const ForeignersQuote = () => {
     }
   });
 
+  // حفظ البيانات في localStorage
   useEffect(() => {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
@@ -67,6 +72,7 @@ export const ForeignersQuote = () => {
     }
   }, [userData]);
 
+  // جلب بيانات الـ API
   useEffect(() => {
     const fetchApiData = async () => {
       try {
@@ -111,6 +117,7 @@ export const ForeignersQuote = () => {
     fetchApiData();
   }, [i18n.language, t]);
 
+  // تعبئة تلقائية من تجديد عقد
   useEffect(() => {
     const renewDataStr = localStorage.getItem("renewContractData");
     if (renewDataStr && apiData.countries.length > 0 && apiData.genders.length > 0) {
@@ -156,6 +163,7 @@ export const ForeignersQuote = () => {
     }
   }, [apiData.countries, apiData.genders]);
 
+  // تعبئة رقم الهوية مسبقًا
   useEffect(() => {
     const prefilledId = localStorage.getItem("foreigners_id_prefill");
     if (prefilledId && apiData.countries.length > 0) {
@@ -215,6 +223,7 @@ export const ForeignersQuote = () => {
     }));
   };
 
+  // دالة التحقق - لا تعمل setState هنا أبدًا
   const validateStep = (step) => {
     const data = userData[`step${step + 1}`];
     const newErrors = {};
@@ -290,16 +299,17 @@ export const ForeignersQuote = () => {
       }
     }
 
-    setErrors(newErrors);
-    return isValid;
+    return { isValid, errors: newErrors };
   };
 
-  const [errors, setErrors] = useState({});
-
   const handleNext = () => {
-    if (validateStep(currentStep)) {
+    const { isValid, errors: stepErrors } = validateStep(currentStep);
+    setErrors(stepErrors);
+
+    if (isValid) {
       setCurrentStep((p) => p + 1);
       setIsInvalid(false);
+      setErrors({}); // تنظيف الأخطاء عند الانتقال
     } else {
       setIsInvalid(true);
     }
@@ -308,10 +318,14 @@ export const ForeignersQuote = () => {
   const handlePrevious = () => {
     setCurrentStep((p) => Math.max(p - 1, 0));
     setIsInvalid(false);
+    setErrors({}); // تنظيف الأخطاء عند الرجوع
   };
 
   const handleSubmit = async () => {
-    if (!validateStep(totalSteps - 1)) {
+    const { isValid, errors: stepErrors } = validateStep(totalSteps - 1);
+    setErrors(stepErrors);
+
+    if (!isValid) {
       setIsInvalid(true);
       return;
     }
@@ -349,9 +363,9 @@ export const ForeignersQuote = () => {
 
       if (!res.ok) {
         const err = await res.json();
-        console.error("API Error:", err);
+        console.error("Submit error response:", err);
         throw new Error(
-          err.message ||
+          err.error ||
             t("common.error.failed_fetch_quotes") ||
             "Failed to fetch quotes"
         );
@@ -382,7 +396,6 @@ export const ForeignersQuote = () => {
   };
 
   const getMaxBirthDate = () => new Date().toISOString().split("T")[0];
-
   const getMinInsuranceDate = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -421,9 +434,9 @@ export const ForeignersQuote = () => {
     <main>
       <QuoteHeader />
 
-      <section className="border-t-2  mx-5 md:mx-0 my-2 flex flex-col justify-center items-center">
+      <section className="border-t-2 mx-5 md:mx-0 my-2 flex flex-col justify-center items-center">
         <div className="flex flex-col justify-center items-center my-10">
-            <div className="flex items-center gap-3 relative w-full">
+          <div className="flex items-center gap-3 relative w-full">
             {Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
@@ -452,7 +465,7 @@ export const ForeignersQuote = () => {
                 placeholder={t("foreigners_quote_page.steps.step1.placeholder_name")}
                 value={userData.step1.firstName}
                 onChange={(e) => handleInputChange("step1", "firstName", e.target.value)}
-                isInvalid={isInvalid && !userData.step1.firstName.trim()}
+                isInvalid={isInvalid && !!errors.firstName}
                 error={errors.firstName}
               />
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
@@ -462,7 +475,7 @@ export const ForeignersQuote = () => {
                 placeholder={t("foreigners_quote_page.steps.step1.placeholder_lastname")}
                 value={userData.step1.lastName}
                 onChange={(e) => handleInputChange("step1", "lastName", e.target.value)}
-                isInvalid={isInvalid && !userData.step1.lastName.trim()}
+                isInvalid={isInvalid && !!errors.lastName}
                 error={errors.lastName}
               />
             </div>
@@ -480,7 +493,7 @@ export const ForeignersQuote = () => {
                 selectedCountry={userData.step2.nationality}
                 onSelectCountry={handleNationalitySelect}
                 onClear={handleNationalityClear}
-                isInvalid={isInvalid && userData.step2.nationalityId === null}
+                isInvalid={isInvalid && !!errors.nationality}
                 error={errors.nationality}
               />
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
@@ -490,7 +503,7 @@ export const ForeignersQuote = () => {
                 placeholder={t("foreigners_quote_page.steps.step2.placeholder_identification")}
                 value={userData.step2.identification}
                 onChange={(e) => handleInputChange("step2", "identification", e.target.value)}
-                isInvalid={isInvalid && !userData.step2.identification.trim()}
+                isInvalid={isInvalid && !!errors.identification}
                 error={errors.identification}
               />
             </div>
@@ -506,7 +519,7 @@ export const ForeignersQuote = () => {
                 type="date"
                 value={userData.step3.birthday}
                 onChange={(e) => handleInputChange("step3", "birthday", e.target.value)}
-                isInvalid={isInvalid && !userData.step3.birthday}
+                isInvalid={isInvalid && !!errors.birthday}
                 max={getMaxBirthDate()}
                 error={errors.birthday}
               />
@@ -517,7 +530,7 @@ export const ForeignersQuote = () => {
                 placeholder={t("foreigners_quote_page.steps.step3.placeholder_gender")}
                 value={userData.step3.gender}
                 onChange={(e) => handleInputChange("step3", "gender", e.target.value)}
-                isInvalid={isInvalid && !userData.step3.gender}
+                isInvalid={isInvalid && !!errors.gender}
                 options={apiData.genders.map((g) => g.name)}
                 error={errors.gender}
               />
@@ -534,7 +547,7 @@ export const ForeignersQuote = () => {
                 type="date"
                 value={userData.step4.insurancePeriod}
                 onChange={(e) => handleInputChange("step4", "insurancePeriod", e.target.value)}
-                isInvalid={isInvalid && !userData.step4.insurancePeriod}
+                isInvalid={isInvalid && !!errors.insurancePeriod}
                 min={getMinInsuranceDate()}
                 error={errors.insurancePeriod}
               />
@@ -568,7 +581,7 @@ export const ForeignersQuote = () => {
               iconPosition="right"
               onClick={handleSubmit}
               isNext
-              isDisabled={isLoading || !validateStep(totalSteps - 1)}
+              isDisabled={isLoading}
             />
           )}
         </div>
@@ -582,6 +595,9 @@ export const ForeignersQuote = () => {
     </main>
   );
 };
+
+// باقي الكومبوننتس (TravelInput, TravelSelect, SingleCountrySelect, ActionButton) زي ما هي تمامًا
+// لأنها سليمة وما فيهاش مشاكل
 
 const TravelInput = ({
   placeholder,
@@ -731,10 +747,9 @@ const ActionButton = ({
   <button
     onClick={onClick}
     disabled={isDisabled}
-   className={`group flex items-center justify-between px-5 sm:px-3 
-      ${
-        isNext ? "sm:pl-16" : "sm:pr-14"
-      } w-36 sm:w-[220px] h-12 sm:h-[59px] text-sm vsm:text-base sm:text-lg font-medium 
+    className={`group flex items-center justify-between px-5 sm:px-3 
+      ${isNext ? "sm:pl-16" : "sm:pr-14"} 
+      w-36 sm:w-[220px] h-12 sm:h-[59px] text-sm vsm:text-base sm:text-lg font-medium 
       border rounded-[27.5px] shadow-md transition-all
       ${isDisabled ? "text-gray-400 cursor-not-allowed" : "text-black"}`}
   >
@@ -749,9 +764,8 @@ const ActionButton = ({
     {text}
     {iconPosition === "right" && (
       <span
-        className={`flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform group-hover:rotate-45 ${
-          isDisabled ? "bg-gray-300" : "bg-secondaryColor"
-        }`}
+        className={`flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform group-hover:rotate-45 
+          ${isDisabled ? "bg-gray-300" : "bg-secondaryColor"}`}
       >
         <Icons.QuoteArrowIcon />
       </span>
@@ -759,6 +773,7 @@ const ActionButton = ({
   </button>
 );
 
+// PropTypes
 TravelInput.propTypes = {
   placeholder: PropTypes.string,
   value: PropTypes.string.isRequired,
