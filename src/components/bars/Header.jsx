@@ -32,7 +32,7 @@ export const Header = () => {
     const { isAuthenticated, user } = useAuth();
     const submenuRef = useRef(null);
     const langMenuRef = useRef(null); 
-
+console.log(i18n.language);
     const [isMenuOpen, setIsMenuOpen] = useState(false); 
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false); 
     const [isLangMenuOpen, setIsLangMenuOpen] = useState(false); 

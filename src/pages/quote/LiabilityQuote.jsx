@@ -1,48 +1,65 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-import { QuoteHeader } from "@/components";
+import { QuoteHeader, LoadingSpinner } from "@/components";
 import * as Icons from "@/utils/icons.util";
 import { useTranslation } from "react-i18next";
+
+const LOCAL_STORAGE_KEY = "liabilityVehicles";
 
 export const LiabilityQuote = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState(() => {
-    const savedVehicles = localStorage.getItem("liabilityVehicles");
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
     return {
-      vehicles: savedVehicles ? JSON.parse(savedVehicles) : [],
+      vehicles: saved ? JSON.parse(saved) : [],
     };
   });
 
   const [vehicleInput, setVehicleInput] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    localStorage.setItem(
-      "liabilityVehicles",
-      JSON.stringify(userData.vehicles)
-    );
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData.vehicles));
   }, [userData.vehicles]);
 
   const handleVehicleInputChange = (e) => {
-    setVehicleInput(e.target.value);
-  };
-
-  const addVehicle = () => {
-    if (vehicleInput.trim() !== "") {
-      setUserData((prevData) => ({
-        ...prevData,
-        vehicles: [...prevData.vehicles, vehicleInput.trim()],
-      }));
-      setVehicleInput("");
+    const value = e.target.value;
+    setVehicleInput(value);
+    if (error && value.trim()) {
+      setError("");
     }
   };
 
+  const addVehicle = () => {
+    const trimmed = vehicleInput.trim();
+    if (!trimmed) {
+      setError(t("validation.enter_vehicle"));
+      return;
+    }
+    if (trimmed.length < 2) {
+      setError(t("validation.vehicle_too_short"));
+      return;
+    }
+    if (userData.vehicles.includes(trimmed)) {
+      setError(t("validation.vehicle_exists"));
+      return;
+    }
+
+    setUserData((prev) => ({
+      ...prev,
+      vehicles: [...prev.vehicles, trimmed],
+    }));
+    setVehicleInput("");
+    setError("");
+  };
+
   const removeVehicle = (index) => {
-    setUserData((prevData) => ({
-      ...prevData,
-      vehicles: prevData.vehicles.filter((_, i) => i !== index),
+    setUserData((prev) => ({
+      ...prev,
+      vehicles: prev.vehicles.filter((_, i) => i !== index),
     }));
   };
 
@@ -53,15 +70,18 @@ export const LiabilityQuote = () => {
     }
   };
 
-  const isInputValid = () => {
-    return userData.vehicles.length > 0;
-  };
+  const isInputValid = () => userData.vehicles.length > 0;
 
   const handleSubmit = () => {
+    if (!isInputValid()) {
+      setError(t("validation.add_at_least_one"));
+      return;
+    }
     navigate("/get-a-quote-liability/proceed");
   };
 
   const handleBack = () => {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
     window.history.back();
   };
 
@@ -84,35 +104,35 @@ export const LiabilityQuote = () => {
                   value={vehicleInput}
                   onChange={handleVehicleInputChange}
                   onKeyPress={handleVehicleKeyPress}
-                  placeholder={
-                    t("liability_quote_page.form.vehicles_placeholder") ||
-                    "Enter vehicle name"
-                  }
-                  className="flex-1 h-[55px] px-4 border border-[#C3C3C3] rounded-[10px] font-semibold focus:outline-none focus:border-black"
+                  placeholder={t("liability_quote_page.form.vehicles_placeholder")}
+                  className={`flex-1 h-[55px] px-4 border rounded-[10px] font-semibold focus:outline-none transition-all
+                    ${error ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3] focus:border-black"}`}
                 />
                 <button
                   onClick={addVehicle}
                   className="px-5 h-[55px] bg-secondaryColor text-white rounded-[10px] font-semibold hover:bg-secondaryColor/80 transition-all"
                 >
-                  {t("liability_quote_page.form.add_button") || "Add"}
+                  {t("liability_quote_page.form.add_button")}
                 </button>
               </div>
+
+              {error && (
+                <p className="text-red-600 text-sm mt-2 text-center">{error}</p>
+              )}
 
               {userData.vehicles.length > 0 && (
                 <div className="mt-4 w-full flex flex-wrap gap-2">
                   {userData.vehicles.map((vehicle, index) => (
                     <div
                       key={index}
-                      className="flex w-full items-center justify-between bg-gray-200 py-2 px-3 rounded-full"
+                      className="flex items-center justify-between bg-gray-200 py-2 px-3 rounded-full animate-fadeIn"
                     >
-                      <span className="text-sm font-medium mr-2">
-                        {vehicle}
-                      </span>
+                      <span className="text-sm font-medium mr-2">{vehicle}</span>
                       <button
                         onClick={() => removeVehicle(index)}
                         className="flex items-center justify-center w-5 h-5 p-1 bg-gray-400 rounded-full hover:bg-red-500 transition-all"
                       >
-                        <Icons.CloseIcon className="w-1 h-1 text-white" />
+                        <Icons.CloseIcon className="w-3 h-3 text-white" />
                       </button>
                     </div>
                   ))}
@@ -142,64 +162,43 @@ export const LiabilityQuote = () => {
   );
 };
 
-const TravelSelect = ({ placeholder, value, onChange, options, isInvalid }) => (
-  <select
-    value={value}
-    onChange={onChange}
-    className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] font-semibold focus:outline-none 
-      ${
-      isInvalid
-        ? "border-secondaryColor border-2 animate-pulse"
-        : "border-[#C3C3C3]"
-    }
-      ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
-  >
-    <option value="" disabled hidden>
-      {placeholder}
-    </option>
-    {options.map((option, idx) => (
-      <option key={idx} value={option} className="font-semibold">
-        {option}
-      </option>
-    ))}
-  </select>
-);
-
-TravelSelect.propTypes = {
-  placeholder: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  options: PropTypes.arrayOf(PropTypes.string).isRequired,
-  isInvalid: PropTypes.bool,
-};
+/* -------------------------------------------------------------------------- */
+/*                               ACTION BUTTON                                */
+/* -------------------------------------------------------------------------- */
 
 const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
   <button
     onClick={onClick}
     disabled={isDisabled}
     className={`group flex items-center justify-between px-5 sm:px-3 
-    ${
-      isNext ? "sm:pl-16" : "sm:pr-14"
-    } w-36 sm:w-[220px] h-12 sm:h-[59px] text-sm vsm:text-base sm:text-lg font-medium 
-    border rounded-[27.5px] shadow-md transition-all
-    ${isDisabled ? "text-gray-400" : "text-black"}`}
+      ${isNext ? "sm:pl-16" : "sm:pr-14"} 
+      w-36 sm:w-[220px] h-12 sm:h-[59px] text-sm vsm:text-base sm:text-lg font-medium 
+      border rounded-[27.5px] shadow-md transition-all
+      ${isDisabled ? "text-gray-400 cursor-not-allowed" : "text-black"}`}
   >
     {iconPosition === "left" && (
       <span
-        className={`flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform -rotate-90 group-hover:-rotate-[135deg] 
-        ${isDisabled ? "bg-gray-300" : "bg-black"}`}
+        className={`flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform -rotate-90 group-hover:-rotate-[135deg]
+          ${isDisabled ? "bg-gray-300" : "bg-black"}`}
       >
         <Icons.QuoteArrowIcon />
       </span>
     )}
     {text}
     {iconPosition === "right" && (
-      <span className="flex justify-center items-center bg-secondaryColor w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform group-hover:rotate-45">
+      <span
+        className={`flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform group-hover:rotate-45
+          ${isDisabled ? "bg-gray-300" : "bg-secondaryColor"}`}
+      >
         <Icons.QuoteArrowIcon />
       </span>
     )}
   </button>
 );
+
+/* -------------------------------------------------------------------------- */
+/*                                 PROPTYPES                                  */
+/* -------------------------------------------------------------------------- */
 
 ActionButton.propTypes = {
   text: PropTypes.string.isRequired,

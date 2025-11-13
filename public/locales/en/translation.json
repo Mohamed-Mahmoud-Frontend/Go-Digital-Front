@@ -1,1090 +1,1159 @@
 {
-    "nav": {
-        "home": "Home",
-        "products": "Products",
-        "blog": "Blog",
-        "contact": "Contact"
-    },"common.error.failed_load_data": "Failed to load data. Please try again.",
-"common.button.retry": "Retry",
-    "products": {
-        "travel": "Travel Insurance",
-        "guarantees": "Guarantees Insurance",
-        "roadCarrier": "Road Carrier Liability",
-        "medicalForeigners": "Personal Accidents for Foreigners",
-        "liabilityIntermediaries": "Insurance Intermediaries Liability"
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "blog": "Blog",
+    "contact": "Contact"
+  },
+
+  "common": {
+    "yes": "Yes",
+    "no": "No",
+    "error": {
+      "failed_load_data": "Failed to load data. Please try again."
     },
+    "button": {
+      "retry": "Retry"
+    }
+  },
+
+  "validation": {
+    "select_agent_type": "Please select an agent type",
+    "enter_date_of_birth": "Please enter your date of birth",
+    "birth_date_future": "Date of birth cannot be in the future",
+    "birth_date_too_old": "Date of birth cannot be before 1900",
+    "enter_start_date": "Please enter start date",
+    "start_date_past": "Start date cannot be in the past",
+    "enter_firm_established": "Please enter firm established date",
+    "firm_date_future": "Firm established date cannot be in the future",
+    "select_type": "Please select a type",
+    "enter_gross_insured": "Please enter gross insured amount",
+    "gross_insured_invalid": "Gross insured must be a positive number",
+    "enter_gross_insured_current": "Please enter current gross insured",
+    "gross_insured_current_invalid": "Current gross insured must be a positive number",
+    "answer_question": "Please answer this question",
+    "provide_details": "Please provide additional details",
+    "select_departure": "Please select departure country",
+    "select_destination": "Please select at least one destination",
+    "enter_end_date": "Please enter end date",
+    "end_before_start": "End date cannot be before start date",
+    "select_insured_type": "Please select insured type",
+    "person_count_range": "Number of persons must be between 1 and 20",
+    "enter_full_name": "Please enter full name",
+    "enter_identification": "Please enter identification",
+    "enter_vehicle": "Please enter a vehicle name",
+    "vehicle_too_short": "Vehicle name must be at least 2 characters",
+    "vehicle_exists": "This vehicle is already added",
+    "add_at_least_one": "Please add at least one vehicle"
+  },
+
+  "errors": {
+    "load_failed": "Failed to load data. Please try again.",
+    "invalid_data": "Invalid data provided",
+    "submit_failed": "Failed to submit. Please try again."
+  },
+
+  "products": {
+    "travel": "Travel Insurance",
+    "guarantees": "Guarantees Insurance",
+    "roadCarrier": "Road Carrier Liability",
+    "medicalForeigners": "Personal Accidents for Foreigners",
+    "liabilityIntermediaries": "Insurance Intermediaries Liability"
+  },
+
+  "hero_section": {
+    "title": "Insurance just became digital... simple!",
+    "subtitle": "Welcome to GoDigital! The insurance platform that makes the process easier and simpler than ever! At GoDigital, insurance adapts to your needs, in a modern way that fits your demanding lifestyle!",
+    "travel_insurance": "Travel Insurance",
+    "medical_insurance_foreigners": "Personal Accidents for Foreigners",
+    "professional_liability_insurance_intermediaries": "Insurance Intermediaries Liability",
+    "road_carrier_professional_liability": "Road Carrier Liability",
+    "guarantees": "Guarantee Letters"
+  },
+
+  "how_works_section": {
+    "title": "How it works",
+    "step1": "Provide the necessary information",
+    "step2": "View available packages",
+    "step3": "Pay online",
+    "step4": "Receive the contract instantly"
+  },
+
+  "why_digital_section": {
+    "title": "Why GoDigital?",
+    "subtitle": "At GoDigital, we simplify insurance digitally and bring innovative products to your screen that meet specialized needs!",
+    "feature1": "Easy Quote & Purchase Process",
+    "feature2": "Innovative Products",
+    "feature3": "Comprehensive Coverage",
+    "feature4": "Instant Policy Issuance",
+    "get_quote": "Get Quote"
+  },
+
+  "hero_blog_section": {
+    "title": "Our Blog",
+    "subtitle": "Discover articles and useful tips to improve your insurance and property protection, and more."
+  },
+
+  "hero_products_section": {
+    "get_quote_button": "Get Quote",
+    "total": "Total"
+  },
+
+  "contact_section": {
+    "title": "Have questions?",
+    "subtitle": "We'd love to hear from you! We're here to help with any questions you may have!",
+    "description": "Don't hesitate to contact us!",
+    "policy_text": "Privacy Policy",
+    "terms_text": "Terms of Use",
+    "complaints_text": "Complaints Form",
+    "form": {
+      "name": "Name",
+      "surname": "Surname",
+      "email": "Email",
+      "phone": "Phone",
+      "city": "City",
+      "customer": "Are you already a GoDigital customer?",
+      "yes": "YES",
+      "no": "NO",
+      "request_type": "Request Type",
+      "message": "Message",
+      "submit": "Submit Request"
+    }
+  },
+
+  "article_slider": {
+    "title": "Articles",
+    "subTitle": "Useful articles about insurance that help you make the right decisions!",
+    "more_button": "More"
+  },
+
+  "get_quote_popup": {
+    "title": "Get a Quote",
+    "products": {
+      "travel": "Travel Insurance",
+      "foreigners": "Personal Accidents for Foreigners",
+      "intermediaries": "Insurance Intermediaries Liability",
+      "liability": "Road Carrier Liability",
+      "guarantee": "Guarantees Insurance"
+    }
+  },
+
+  "slides_section": {
+    "latest_articles": {
+      "title": "Latest Articles",
+      "subTitle": "Useful articles about insurance that help you make the right decisions!"
+    },
+    "travel": {
+      "title": "Travel Insurance",
+      "subTitle": "Learn more about travel insurance and trips"
+    },
+    "guarantees": {
+      "title": "Guarantees Insurance",
+      "subTitle": "Learn more about insurance and guarantee letters."
+    },
+    "road_carrier": {
+      "title": "Road Carrier Liability",
+      "subTitle": "Learn more about insurance and transportation."
+    },
+    "medical_foreigners": {
+      "title": "Personal Accidents for Foreigners",
+      "subTitle": "Learn more about insurance and health."
+    },
+    "liability_intermediaries": {
+      "title": "Insurance Intermediaries Liability",
+      "subTitle": "Learn more about insurance and intermediation."
+    }
+  },
+
+  "warranties_section": {
+    "title": "GoDigital offers the following types of Guarantees",
+    "warranties": [
+      "Participation Guarantee",
+      "Advance Payment Guarantee",
+      "Performance Guarantee",
+      "Payment Guarantee",
+      "Good Operation and Maintenance Guarantee",
+      "Customs Guarantee",
+      "Immigration Department Guarantee",
+      "Energy Regulatory Authority (R.A.E.)"
+    ]
+  },
+
+  "active_contract": {
+    "title": "Personal Accidents for Foreigners",
+    "insurance_company": "Insurance Company",
+    "insurance_period": "Insurance Period",
+    "insured_person": "Insured Person",
+    "nationality": "Nationality",
+    "identity_card": "ID / Passport",
+    "birth_date": "Date of Birth",
+    "gender": "Gender",
+    "coverages": "Coverages",
+    "amount_payed": "Amount Paid",
+    "back_button": "Back",
+    "details": {
+      "death": "Death by Accident",
+      "total_disability": "Total/Partial/Permanent Disability from Accident",
+      "hospitalization": "Inpatient Care due to Accident or Illness",
+      "medical_expenses": "Medical Expenses due to Illness or Accident"
+    }
+  },
+
+  "foreigners_detail": {
     "hero_section": {
-        "title": "Insurance just became digital... simple!",
-        "subtitle": "Welcome to GoDigital! The insurance platform that makes the process easier and simpler than ever! At GoDigital, insurance adapts to your needs, in a modern way that fits your demanding lifestyle!",
-        "travel_insurance": "Travel Insurance",
-        "medical_insurance_foreigners": "Personal Accidents for Foreigners",
-        "professional_liability_insurance_intermediaries": "Insurance Intermediaries Liability",
-        "road_carrier_professional_liability": "Road Carrier Liability",
-        "guarantees": "Guarantee Letters"
+      "title": "Our Blog",
+      "travel_insurance_title": "Medical Insurance for Foreigners",
+      "travel_insurance_subtitle": "Discover articles and useful tips about insurance and health"
+    },
+    "footer_section": {
+      "title": "Personal Accidents for Foreigners",
+      "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "list": [
+        "Lorem ipsum dolor sit amet, consectetur",
+        "adipiscing elit, sed do eiusmod tempor",
+        "incididunt ut labore et dolore magna aliqua."
+      ],
+      "get_quote_button": "Get Quote",
+      "more_info_button": "More Information"
+    },
+    "read_more": "Read More"
+  },
+
+  "guarantees_detail": {
+    "hero_section": {
+      "title": "Our Blog",
+      "insurance_title": "Professional Liability Insurance for Insurance Intermediaries",
+      "insurance_subtitle": "Discover articles and useful tips about insurance and intermediation."
+    },
+    "footer_section": {
+      "title": "Guarantees Insurance",
+      "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "list": [
+        "Lorem ipsum dolor sit amet, consectetur",
+        "adipiscing elit, sed do eiusmod tempor",
+        "incididunt ut labore et dolore magna aliqua."
+      ],
+      "get_quote_button": "Get Quote",
+      "more_info_button": "More Information"
+    },
+    "read_more": "Read More"
+  },
+
+  "intermediaries_detail": {
+    "hero_section": {
+      "title": "Our Blog",
+      "insurance_title": "Medical Insurance for Foreigners",
+      "insurance_subtitle": "Discover articles and useful tips about insurance and health"
+    },
+    "footer_section": {
+      "title": "Insurance Intermediaries Liability",
+      "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "list": [
+        "Lorem ipsum dolor sit amet, consectetur",
+        "adipiscing elit, sed do eiusmod tempor",
+        "incididunt ut labore et dolore magna aliqua."
+      ],
+      "get_quote_button": "Get Quote",
+      "more_info_button": "More Information"
+    },
+    "read_more": "Read More"
+  },
+
+  "liability_detail": {
+    "hero_section": {
+      "title": "Our Blog",
+      "insurance_title": "Professional Liability Insurance for Road Carriers",
+      "insurance_subtitle": "Discover articles and useful tips about insurance and transportation."
+    },
+    "footer_section": {
+      "title": "Road Carrier Liability",
+      "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "list": [
+        "Lorem ipsum dolor sit amet, consectetur",
+        "adipiscing elit, sed do eiusmod tempor",
+        "incididunt ut labore et dolore magna aliqua."
+      ],
+      "get_quote_button": "Get Quote",
+      "more_info_button": "More Information"
+    },
+    "read_more": "Read More"
+  },
+
+  "travel_detail": {
+    "hero_section": {
+      "title": "Our Blog",
+      "insurance_title": "Travel Insurance",
+      "insurance_subtitle": "Discover articles and useful tips about travel insurance and trips"
+    },
+    "footer_section": {
+      "title": "Travel Insurance",
+      "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "list": [
+        "Lorem ipsum dolor sit amet, consectetur",
+        "adipiscing elit, sed do eiusmod tempor",
+        "incididunt ut labore et dolore magna aliqua."
+      ],
+      "get_quote_button": "Get Quote",
+      "more_info_button": "More Information"
+    },
+    "read_more": "Read More"
+  },
+
+  "article_page": {
+    "header": {
+      "title": "See more articles"
+    },
+    "products": {
+      "travel": "Travel Insurance",
+      "foreigners": "Personal Accidents for Foreigners",
+      "intermediaries": "Insurance Intermediaries Liability",
+      "liability": "Road Carrier Liability",
+      "guarantee": "Guarantees Insurance"
+    },
+    "article": {
+      "title": "Lorem ipsum dolor sit amet",
+      "content": [
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
+      ],
+      "date": "08/12/2024"
+    },
+    "slider": {
+      "title": "Travels",
+      "subTitle": "Learn more about travel insurance and trips"
+    },
+    "footer": {
+      "title": "Travel Insurance",
+      "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "list": [
+        "Lorem ipsum dolor sit amet, consectetur",
+        "adipiscing elit, sed do eiusmod tempor",
+        "incididunt ut labore et dolore magna aliqua."
+      ],
+      "get_quote_button": "Get Quote",
+      "more_info_button": "More Info"
+    }
+  },
+
+  "home_page": {
+    "services_section": {
+      "title": "Services",
+      "description": "At GoDigital, we make sure to offer top-quality services that make your experience unique.",
+      "slides": [
+        {
+          "title": "Quick Quote",
+          "description": "Get a travel insurance quote in less than 1 minute."
+        },
+        {
+          "title": "Human Support",
+          "description": "Got questions? Leave us your details and we’ll get back to you immediately."
+        },
+        {
+          "title": "Claims Assistance",
+          "description": "In difficult times, you have someone by your side to support you."
+        },
+        {
+          "title": "Immediate Claims Settlement",
+          "description": "We ensure that you are compensated fairly and promptly."
+        }
+      ]
+    }
+  },
+
+  "travel_page": {
+    "hero_section": {
+      "headTitle": "Travel Insurance ... digitally simple!",
+      "subtitle": "Travel insurance finally simpler than ever!",
+      "destination_title": "Where are you travelling?",
+      "destination_subtitle": "Tell us your destination and get a quote!",
+      "select_placeholder": "Country",
+      "select_options": {
+        "greece": "Greece",
+        "egypt": "Egypt",
+        "france": "France"
+      }
     },
     "how_works_section": {
-        "title": "How it works",
-        "step1": "Provide the necessary information",
-        "step2": "View available packages",
-        "step3": "Pay online",
-        "step4": "Receive the contract instantly"
+      "title": "How it Works",
+      "steps": [
+        "Tell us where and when you’re going",
+        "Choose the plan that suits you",
+        "Pay online",
+        "Receive your policy instantly"
+      ]
     },
-    "why_digital_section": {
-        "title": "Why GoDigital?",
-        "subtitle": "At GoDigital, we simplify insurance digitally and bring innovative products to your screen that meet specialized needs!",
-        "feature1": "Easy Quote & Purchase Process",
-        "feature2": "Innovative Products",
-        "feature3": "Comprehensive Coverage",
-        "feature4": "Instant Policy Issuance",
-        "get_quote": "Get Quote"
-    },
-    "hero_blog_section": {
-        "title": "Our Blog",
-        "subtitle": "Discover articles and useful tips to improve your insurance and property protection, and more."
-    },
-    "hero_products_section": {
-        "get_quote_button": "Get Quote",
-        "total": "Total"
-    },
-    "contact_section": {
-        "title": "Have questions?",
-        "subtitle": "We'd love to hear from you! We're here to help with any questions you may have!",
-        "description": "Don't hesitate to contact us!",
-        "policy_text": "Privacy Policy",
-        "terms_text": "Terms of Use",
-        "complaints_text": "Complaints Form",
-        "form": {
-            "name": "Name",
-            "surname": "Surname",
-            "email": "Email",
-            "phone": "Phone",
-            "city": "City",
-            "customer": "Are you already a GoDigital customer?",
-            "yes": "YES",
-            "no": "NO",
-            "request_type": "Request Type",
-            "message": "Message",
-            "submit": "Submit Request"
+    "coverages_section": {
+      "title": "Our Coverages",
+      "description": "The coverages offered by GoDigital's Travel Insurance packages ensure maximum protection according to your needs. Always make sure which coverages are included in the package you have chosen.",
+      "slides": [
+        {
+          "title": "Medical Care",
+          "description": "So you don’t worry about sudden illnesses or accidents while abroad."
+        },
+        {
+          "title": "Baggage Loss",
+          "description": "Lost your luggage at the airport? We are here to compensate you so you can continue your trip hassle-free."
+        },
+        {
+          "title": "Trip Cancellation",
+          "description": "Flight cancellations and unexpected events happen. With this coverage, you don’t need to worry about the financial impact."
+        },
+        {
+          "title": "Flight Delays",
+          "description": "Flight delays are common. In this case, we’ve got you covered."
+        },
+        {
+          "title": "Personal Accidents",
+          "description": "Ensure your financial protection against personal accidents that may occur while travelling."
+        },
+        {
+          "title": "Personal Liability",
+          "description": "This coverage protects you from legal liabilities for injuries or property damage you may cause to others while travelling."
         }
+      ]
+    },
+    "services_section": {
+      "title": "Services",
+      "description": "At GoDigital, we make sure to offer top-quality services that make your experience unique.",
+      "services": [
+        {
+          "title": "Quick Quote",
+          "description": "Get a travel insurance quote in less than 1 minute."
+        },
+        {
+          "title": "Human Support",
+          "description": "Got questions? Leave us your details and we’ll get back to you immediately."
+        },
+        {
+          "title": "24/7 Assistance",
+          "description": "An international call center at your disposal for immediate assistance while abroad."
+        },
+        {
+          "title": "Immediate Claims Settlement",
+          "description": "We ensure that you are compensated fairly and promptly."
+        }
+      ]
+    },
+    "why_section": {
+      "title": "Why GoDigital?",
+      "subtitle": "At Go Digital, we simplify insurance digitally and bring you the best travel insurance options right to your screen.",
+      "features": [
+        "Easy Purchase Process",
+        "Different Options",
+        "Instant Policy Issuance",
+        "24/7 Support Worldwide"
+      ]
     },
     "article_slider": {
-        "title": "Articles",
-        "subTitle": "Useful articles about insurance that help you make the right decisions!",
-        "more_button": "More"
+      "subTitle": "Learn more about travel insurance and trips"
     },
-    "get_quote_popup": {
-        "title": "Get a Quote",
-        "products": {
-            "travel": "Travel Insurance",
-            "foreigners": "Personal Accidents for Foreigners",
-            "intermediaries": "Insurance Intermediaries Liability",
-            "liability": "Road Carrier Liability",
-            "guarantee": "Guarantees Insurance"
+    "get_quote_button": "Get Quote"
+  },
+
+  "liability_page": {
+    "hero_section": {
+      "headTitle": "Professional Liability Insurance for Road Carriers!",
+      "subtitle": "Secure your work no matter what happens ... digitally and simply!",
+      "input_placeholder": "Vehicle Registration Number",
+      "cta_text": "Tell us your vehicle registration number and get a quote!"
+    },
+    "how_works_section": {
+      "title": "How it Works",
+      "steps": [
+        "Provide the necessary information",
+        "View your plan",
+        "Pay online",
+        "Receive your policy instantly"
+      ]
+    },
+    "coverages_section": {
+      "title": "Our Coverages",
+      "description": "The coverages offered by GoDigital's Professional Liability Insurance for Road Carriers policy ensure maximum protection for you to practice your profession in the best way. Always make sure which coverages are included in your policy.",
+      "slides": [
+        {
+          "title": "Professional Liability Coverage",
+          "description": "Covers claims raised against the insured concerning breach of duty due to negligence, erroneous actions or omissions, arising from the exercise and conduct of the professional activity."
         }
+      ]
     },
-    "slides_section": {
-        "latest_articles": {
-            "title": "Latest Articles",
-            "subTitle": "Useful articles about insurance that help you make the right decisions!"
+    "services_section": {
+      "title": "Services",
+      "description": "At GoDigital, we make sure to offer top-quality services that make your experience unique.",
+      "services": [
+        {
+          "title": "Quick Quote",
+          "description": "Get a travel insurance quote in less than 1 minute."
         },
-        "travel": {
-            "title": "Travel Insurance",
-            "subTitle": "Learn more about travel insurance and trips"
+        {
+          "title": "Human Support",
+          "description": "Got questions? Leave us your details and we’ll get back to you immediately."
         },
-        "guarantees": {
-            "title": "Guarantees Insurance",
-            "subTitle": "Learn more about insurance and guarantee letters."
-        },
-        "road_carrier": {
-            "title": "Road Carrier Liability",
-            "subTitle": "Learn more about insurance and transportation."
-        },
-        "medical_foreigners": {
-            "title": "Personal Accidents for Foreigners",
-            "subTitle": "Learn more about insurance and health."
-        },
-        "liability_intermediaries": {
-            "title": "Insurance Intermediaries Liability",
-            "subTitle": "Learn more about insurance and intermediation."
+        {
+          "title": "Immediate Claims Settlement",
+          "description": "We ensure that you are compensated fairly and promptly."
         }
+      ]
     },
-    "warranties_section": {
-        "title": "GoDigital offers the following types of Guarantees",
-        "warranties": [
-            "Participation Guarantee",
-            "Advance Payment Guarantee",
-            "Performance Guarantee",
-            "Payment Guarantee",
-            "Good Operation and Maintenance Guarantee",
-            "Customs Guarantee",
-            "Immigration Department Guarantee",
-            "Energy Regulatory Authority (R.A.E.)"
+    "why_section": {
+      "title": "Why GoDigital?",
+      "subtitle": "At Go Digital, we simplify insurance digitally and bring you the best Road Carrier Professional Liability proposal right to your screen.",
+      "features": [
+        "Easy Purchase Process",
+        "All necessary coverages",
+        "Instant Policy Issuance"
+      ]
+    },
+    "article_slider": {
+      "subTitle": "Learn more about insurance and transportation."
+    },
+    "get_quote_button": "Get Quote"
+  },
+
+  "intermediaries_page": {
+    "hero_section": {
+      "headTitle": "Professional Liability Insurance for Insurance Intermediaries!",
+      "subtitle": "Secure your career no matter what happens ... digitally and simply!",
+      "cta_text": "Natural or Legal person? Choose and get a quote!",
+      "select_placeholder": "Type",
+      "select_options": {
+        "person": "Person",
+        "legal": "Legal Entity"
+      }
+    },
+    "how_works_section": {
+      "title": "How it Works",
+      "steps": [
+        "Provide the necessary information",
+        "View your plan",
+        "Pay online",
+        "Receive your policy instantly"
+      ]
+    },
+    "coverages_section": {
+      "title": "Our Coverages",
+      "description": "The coverages offered by GoDigital's Professional Liability Insurance for Insurance Intermediaries policy ensure maximum protection for you to practice your profession in the best way. Always make sure which coverages are included in your policy.",
+      "slides": [
+        {
+          "title": "Professional Liability Coverage",
+          "description": "Covers claims raised against the insured concerning breach of duty due to negligence, erroneous actions or omissions, arising from the exercise and conduct of the professional activity."
+        },
+        {
+          "title": "Defense Expenses",
+          "description": "Covers the defense expenses of the insured in case of a claim due to negligence, erroneous actions or omissions."
+        }
+      ]
+    },
+    "services_section": {
+      "title": "Services",
+      "description": "At GoDigital, we make sure to offer top-quality services that make your experience unique.",
+      "services": [
+        {
+          "title": "Quick Quote",
+          "description": "Get a travel insurance quote in less than 1 minute."
+        },
+        {
+          "title": "Human Support",
+          "description": "Got questions? Leave us your details and we’ll get back to you immediately."
+        },
+        {
+          "title": "Immediate Claims Settlement",
+          "description": "We ensure that you are compensated fairly and promptly."
+        }
+      ]
+    },
+    "why_section": {
+      "title": "Why GoDigital?",
+      "subtitle": "At Go Digital, we simplify insurance digitally and bring you the best Professional Liability Insurance for Insurance Intermediaries proposal right to your screen.",
+      "features": [
+        "Easy Purchase Process",
+        "All necessary coverages",
+        "Instant Policy Issuance"
+      ]
+    },
+    "article_slider": {
+      "subTitle": "Learn more about insurance and intermediation."
+    },
+    "get_quote_button": "Get Quote"
+  },
+
+  "guarantees_page": {
+    "hero_section": {
+      "headTitle": "Guarantees Insurance ... digitally simple!",
+      "subtitle": "Secure the guarantee letter you need without committing capital!",
+      "cta_text": "Choose the type of guarantee to start the quote process!",
+      "select_placeholder": "Guarantee Type",
+      "select_options": {
+        "option1": "Option 1",
+        "option2": "Option 2",
+        "option3": "Option 3"
+      }
+    },
+    "how_works_section": {
+      "title": "How it Works",
+      "steps": [
+        "Provide the necessary information",
+        "Fill in your details",
+        "Get the quote in your email in a few days"
+      ]
+    },
+    "coverages_section": {
+      "title": "Advantages of Guarantee Letters",
+      "description": "Guarantees Insurance offers multiple advantages to businesses and organizations participating in tenders and undertaking projects.",
+      "slides": [
+        {
+          "title": "Avoid blocking significant funds"
+        },
+        {
+          "title": "Increased working capital and liquidity"
+        },
+        {
+          "title": "Participation in more tenders"
+        },
+        {
+          "title": "Claiming more tenders with potential for more project assignments"
+        },
+        {
+          "title": "Increased revenue and profitability"
+        }
+      ]
+    },
+    "services_section": {
+      "title": "Services",
+      "description": "At GoDigital, we make sure to offer top-quality services that make your experience unique.",
+      "services": [
+        {
+          "title": "Quick Quote",
+          "description": "Get a travel insurance quote in less than 1 minute."
+        },
+        {
+          "title": "Human Support",
+          "description": "Got questions? Leave us your details and we’ll get back to you immediately."
+        },
+        {
+          "title": "Immediate Claims Settlement",
+          "description": "We ensure that you are compensated fairly and promptly."
+        }
+      ]
+    },
+    "why_section": {
+      "title": "Why GoDigital?",
+      "subtitle": "At Go Digital, we simplify insurance digitally and bring you the best proposal for issuing Guarantee Letters right to your screen.",
+      "features": [
+        "Easy Quote Process",
+        "No Capital Commitment",
+        "Quick Issuance of Guarantee Letter"
+      ]
+    },
+    "article_slider": {
+      "subTitle": "Learn more about insurance and guarantee letters."
+    },
+    "get_quote_button": "Get Quote"
+  },
+
+  "foreigners_page": {
+    "hero_section": {
+      "headTitle": "Medical Insurance for Foreigners ... digitally simple!",
+      "subtitle": "Secure the most necessary coverages for your health!",
+      "cta_text": "Ready? Enter your ID and get a quote!",
+      "input_placeholder": "ID Card"
+    },
+    "how_works_section": {
+      "title": "How it Works",
+      "steps": [
+        "Provide your personal details",
+        "View your plan",
+        "Pay online",
+        "Receive your policy instantly"
+      ]
+    },
+    "coverages_section": {
+      "title": "Our Coverages",
+      "description": "The coverages offered by GoDigital's Medical Insurance for Foreigners policy ensure maximum protection for your health. Always make sure which coverages are included in your policy.",
+      "slides": [
+        {
+          "title": "Death by Accident",
+          "description": "Covers the death of the insured by accident with the heirs receiving the insured amount."
+        },
+        {
+          "title": "Total, partial and permanent disability from accident",
+          "description": "The insured receives the coverage amount in case of Permanent Total Disability or Permanent Partial Disability from Accident."
+        },
+        {
+          "title": "Inpatient Care due to accident or illness",
+          "description": "Covers the care expenses of the insured in a public hospital, due to accident or illness."
+        },
+        {
+          "title": "Medical expenses due to accident or illness",
+          "description": "Covers the medical expenses of the insured in a public hospital, due to accident or illness."
+        }
+      ]
+    },
+    "services_section": {
+      "title": "Services",
+      "description": "At GoDigital, we make sure to offer top-quality services that make your experience unique.",
+      "services": [
+        {
+          "title": "Quick Quote",
+          "description": "Get a travel insurance quote in less than 1 minute."
+        },
+        {
+          "title": "Human Support",
+          "description": "Got questions? Leave us your details and we’ll get back to you immediately."
+        },
+        {
+          "title": "Immediate Claims Settlement",
+          "description": "We ensure that you are compensated fairly and promptly."
+        }
+      ]
+    },
+    "why_section": {
+      "title": "Why GoDigital?",
+      "subtitle": "At Go Digital, we simplify insurance digitally and bring you the best Medical Insurance for Foreigners proposal right to your screen.",
+      "features": [
+        "Easy Purchase Process",
+        "Comprehensive Coverage",
+        "Instant Policy Issuance"
+      ]
+    },
+    "article_slider": {
+      "subTitle": "Learn more about insurance and health."
+    },
+    "get_quote_button": "Get Quote"
+  },
+
+  "profile_page": {
+    "hero_section": {
+      "email_placeholder": "Email",
+      "phone_placeholder": "Phone Number",
+      "password_placeholder": "Password"
+    },
+    "contracts_button": "Contracts"
+  },
+
+  "profile_contracts_page": {
+    "buttons": {
+      "active_contracts": "Active Contracts",
+      "inactive_contracts": "Inactive Contracts",
+      "contact": "Contact"
+    },
+    "products": {
+      "travel": "Travel Insurance",
+      "intermediaries_liability": "Insurance Intermediaries Liability",
+      "medical_insurance_foreigners": "Medical Insurance for Foreigners",
+      "guarantees": "Guarantees Insurance"
+    },
+    "view_button": "VIEW",
+    "contract_dates": "21/08/24-25/08/2024",
+    "no_contracts": "No contracts found",
+    "no_contracts_for_product": "No contracts found for this product type",
+    "error_loading": "An error occurred while loading contracts. Please try again later."
+  },
+
+  "foreigners_quote_page": {
+    "steps": {
+      "step1": {
+        "title1": "What is your first name?",
+        "title2": "What is your last name?",
+        "placeholder_name": "Name",
+        "placeholder_lastname": "Last Name",
+        "placeholder_departure": "Where are you travelling from?",
+        "placeholder_arrival": "Where are you travelling to?"
+      },
+      "step2": {
+        "title1": "What is your nationality?",
+        "title2": "Enter your ID or passport number:",
+        "placeholder_nationality": "Nationality",
+        "placeholder_identification": "ID / Passport Number"
+      },
+      "step3": {
+        "title1": "When is your date of birth?",
+        "title2": "Please select your gender:",
+        "placeholder_gender": "Gender",
+        "options": [
+          "Economy",
+          "Business",
+          "First Class"
         ]
+      },
+      "step4": {
+        "title": "Select the start date of insurance:",
+        "placeholder_date": "Date"
+      }
     },
-    "active_contract": {
-        "title": "Personal Accidents for Foreigners",
-        "insurance_company": "Insurance Company",
-        "insurance_period": "Insurance Period",
-        "insured_person": "Insured Person",
-        "nationality": "Nationality",
-        "identity_card": "ID / Passport",
-        "birth_date": "Date of Birth",
-        "gender": "Gender",
-        "coverages": "Coverages",
-        "amount_payed": "Amount Paid",
-        "back_button": "Back",
-        "details": {
-            "death": "Death by Accident",
-            "total_disability": "Total/Partial/Permanent Disability from Accident",
-            "hospitalization": "Inpatient Care due to Accident or Illness",
-            "medical_expenses": "Medical Expenses due to Illness or Accident"
-        }
-    },
-    "foreigners_detail": {
-        "hero_section": {
-            "title": "Our Blog",
-            "travel_insurance_title": "Medical Insurance for Foreigners",
-            "travel_insurance_subtitle": "Discover articles and useful tips about insurance and health"
-        },
-        "footer_section": {
-            "title": "Personal Accidents for Foreigners",
-            "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-            "list": [
-                "Lorem ipsum dolor sit amet, consectetur",
-                "adipiscing elit, sed do eiusmod tempor",
-                "incididunt ut labore et dolore magna aliqua."
-            ],
-            "get_quote_button": "Get Quote",
-            "more_info_button": "More Information"
-        },
-        "read_more": "Read More"
-    },
-    "guarantees_detail": {
-        "hero_section": {
-            "title": "Our Blog",
-            "insurance_title": "Professional Liability Insurance for Insurance Intermediaries",
-            "insurance_subtitle": "Discover articles and useful tips about insurance and intermediation."
-        },
-        "footer_section": {
-            "title": "Guarantees Insurance",
-            "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-            "list": [
-                "Lorem ipsum dolor sit amet, consectetur",
-                "adipiscing elit, sed do eiusmod tempor",
-                "incididunt ut labore et dolore magna aliqua."
-            ],
-            "get_quote_button": "Get Quote",
-            "more_info_button": "More Information"
-        },
-        "read_more": "Read More"
-    },
-    "intermediaries_detail": {
-        "hero_section": {
-            "title": "Our Blog",
-            "insurance_title": "Medical Insurance for Foreigners",
-            "insurance_subtitle": "Discover articles and useful tips about insurance and health"
-        },
-        "footer_section": {
-            "title": "Insurance Intermediaries Liability",
-            "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-            "list": [
-                "Lorem ipsum dolor sit amet, consectetur",
-                "adipiscing elit, sed do eiusmod tempor",
-                "incididunt ut labore et dolore magna aliqua."
-            ],
-            "get_quote_button": "Get Quote",
-            "more_info_button": "More Information"
-        },
-        "read_more": "Read More"
-    },
-    "liability_detail": {
-        "hero_section": {
-            "title": "Our Blog",
-            "insurance_title": "Professional Liability Insurance for Road Carriers",
-            "insurance_subtitle": "Discover articles and useful tips about insurance and transportation."
-        },
-        "footer_section": {
-            "title": "Road Carrier Liability",
-            "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-            "list": [
-                "Lorem ipsum dolor sit amet, consectetur",
-                "adipiscing elit, sed do eiusmod tempor",
-                "incididunt ut labore et dolore magna aliqua."
-            ],
-            "get_quote_button": "Get Quote",
-            "more_info_button": "More Information"
-        },
-        "read_more": "Read More"
-    },
-    "travel_detail": {
-        "hero_section": {
-            "title": "Our Blog",
-            "insurance_title": "Travel Insurance",
-            "insurance_subtitle": "Discover articles and useful tips about travel insurance and trips"
-        },
-        "footer_section": {
-            "title": "Travel Insurance",
-            "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-            "list": [
-                "Lorem ipsum dolor sit amet, consectetur",
-                "adipiscing elit, sed do eiusmod tempor",
-                "incididunt ut labore et dolore magna aliqua."
-            ],
-            "get_quote_button": "Get Quote",
-            "more_info_button": "More Information"
-        },
-        "read_more": "Read More"
-    },
-    "article_page": {
-        "header": {
-            "title": "See more articles"
-        },
-        "products": {
-            "travel": "Travel Insurance",
-            "foreigners": "Personal Accidents for Foreigners",
-            "intermediaries": "Insurance Intermediaries Liability",
-            "liability": "Road Carrier Liability",
-            "guarantee": "Guarantees Insurance"
-        },
-        "article": {
-            "title": "Lorem ipsum dolor sit amet",
-            "content": [
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-                "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
-            ],
-            "date": "08/12/2024"
-        },
-        "slider": {
-            "title": "Travels",
-            "subTitle": "Learn more about travel insurance and trips"
-        },
-        "footer": {
-            "title": "Travel Insurance",
-            "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-            "list": [
-                "Lorem ipsum dolor sit amet, consectetur",
-                "adipiscing elit, sed do eiusmod tempor",
-                "incididunt ut labore et dolore magna aliqua."
-            ],
-            "get_quote_button": "Get Quote",
-            "more_info_button": "More Info"
-        }
-    },
-    "home_page": {
-        "services_section": {
-            "title": "Services",
-            "description": "At GoDigital, we make sure to offer top-quality services that make your experience unique.",
-            "slides": [
-                {
-                    "title": "Quick Quote",
-                    "description": "Get a travel insurance quote in less than 1 minute."
-                },
-                {
-                    "title": "Human Support",
-                    "description": "Got questions? Leave us your details and we’ll get back to you immediately."
-                },
-                {
-                    "title": "Claims Assistance",
-                    "description": "In difficult times, you have someone by your side to support you."
-                },
-                {
-                    "title": "Immediate Claims Settlement",
-                    "description": "We ensure that you are compensated fairly and promptly."
-                }
-            ]
-        }
-    },
-    "travel_page": {
-        "hero_section": {
-            "headTitle": "Travel Insurance ... digitally simple!",
-            "subtitle": "Travel insurance finally simpler than ever!",
-            "destination_title": "Where are you travelling?",
-            "destination_subtitle": "Tell us your destination and get a quote!",
-            "select_placeholder": "Country",
-            "select_options": {
-                "greece": "Greece",
-                "egypt": "Egypt",
-                "france": "France"
-            }
-        },
-        "how_works_section": {
-            "title": "How it Works",
-            "steps": [
-                "Tell us where and when you’re going",
-                "Choose the plan that suits you",
-                "Pay online",
-                "Receive your policy instantly"
-            ]
-        },
-        "coverages_section": {
-            "title": "Our Coverages",
-            "description": "The coverages offered by GoDigital's Travel Insurance packages ensure maximum protection according to your needs. Always make sure which coverages are included in the package you have chosen.",
-            "slides": [
-                {
-                    "title": "Medical Care",
-                    "description": "So you don’t worry about sudden illnesses or accidents while abroad."
-                },
-                {
-                    "title": "Baggage Loss",
-                    "description": "Lost your luggage at the airport? We are here to compensate you so you can continue your trip hassle-free."
-                },
-                {
-                    "title": "Trip Cancellation",
-                    "description": "Flight cancellations and unexpected events happen. With this coverage, you don’t need to worry about the financial impact."
-                },
-                {
-                    "title": "Flight Delays",
-                    "description": "Flight delays are common. In this case, we’ve got you covered."
-                },
-                {
-                    "title": "Personal Accidents",
-                    "description": "Ensure your financial protection against personal accidents that may occur while travelling."
-                },
-                {
-                    "title": "Personal Liability",
-                    "description": "This coverage protects you from legal liabilities for injuries or property damage you may cause to others while travelling."
-                }
-            ]
-        },
-        "services_section": {
-            "title": "Services",
-            "description": "At GoDigital, we make sure to offer top-quality services that make your experience unique.",
-            "services": [
-                {
-                    "title": "Quick Quote",
-                    "description": "Get a travel insurance quote in less than 1 minute."
-                },
-                {
-                    "title": "Human Support",
-                    "description": "Got questions? Leave us your details and we’ll get back to you immediately."
-                },
-                {
-                    "title": "24/7 Assistance",
-                    "description": "An international call center at your disposal for immediate assistance while abroad."
-                },
-                {
-                    "title": "Immediate Claims Settlement",
-                    "description": "We ensure that you are compensated fairly and promptly."
-                }
-            ]
-        },
-        "why_section": {
-            "title": "Why GoDigital?",
-            "subtitle": "At Go Digital, we simplify insurance digitally and bring you the best travel insurance options right to your screen.",
-            "features": [
-                "Easy Purchase Process",
-                "Different Options",
-                "Instant Policy Issuance",
-                "24/7 Support Worldwide"
-            ]
-        },
-        "article_slider": {
-            "subTitle": "Learn more about travel insurance and trips"
-        },
-        "get_quote_button": "Get Quote"
-    },
-    "liability_page": {
-        "hero_section": {
-            "headTitle": "Professional Liability Insurance for Road Carriers!",
-            "subtitle": "Secure your work no matter what happens ... digitally and simply!",
-            "input_placeholder": "Vehicle Registration Number",
-            "cta_text": "Tell us your vehicle registration number and get a quote!"
-        },
-        "how_works_section": {
-            "title": "How it Works",
-            "steps": [
-                "Provide the necessary information",
-                "View your plan",
-                "Pay online",
-                "Receive your policy instantly"
-            ]
-        },
-        "coverages_section": {
-            "title": "Our Coverages",
-            "description": "The coverages offered by GoDigital's Professional Liability Insurance for Road Carriers policy ensure maximum protection for you to practice your profession in the best way. Always make sure which coverages are included in your policy.",
-            "slides": [
-                {
-                    "title": "Professional Liability Coverage",
-                    "description": "Covers claims raised against the insured concerning breach of duty due to negligence, erroneous actions or omissions, arising from the exercise and conduct of the professional activity."
-                }
-            ]
-        },
-        "services_section": {
-            "title": "Services",
-            "description": "At GoDigital, we make sure to offer top-quality services that make your experience unique.",
-            "services": [
-                {
-                    "title": "Quick Quote",
-                    "description": "Get a travel insurance quote in less than 1 minute."
-                },
-                {
-                    "title": "Human Support",
-                    "description": "Got questions? Leave us your details and we’ll get back to you immediately."
-                },
-                {
-                    "title": "Immediate Claims Settlement",
-                    "description": "We ensure that you are compensated fairly and promptly."
-                }
-            ]
-        },
-        "why_section": {
-            "title": "Why GoDigital?",
-            "subtitle": "At Go Digital, we simplify insurance digitally and bring you the best Road Carrier Professional Liability proposal right to your screen.",
-            "features": [
-                "Easy Purchase Process",
-                "All necessary coverages",
-                "Instant Policy Issuance"
-            ]
-        },
-        "article_slider": {
-            "subTitle": "Learn more about insurance and transportation."
-        },
-        "get_quote_button": "Get Quote"
-    },
-    "intermediaries_page": {
-        "hero_section": {
-            "headTitle": "Professional Liability Insurance for Insurance Intermediaries!",
-            "subtitle": "Secure your career no matter what happens ... digitally and simply!",
-            "cta_text": "Natural or Legal person? Choose and get a quote!",
-            "select_placeholder": "Type",
-            "select_options": {
-                "person": "Person",
-                "legal": "Legal Entity"
-            }
-        },
-        "how_works_section": {
-            "title": "How it Works",
-            "steps": [
-                "Provide the necessary information",
-                "View your plan",
-                "Pay online",
-                "Receive your policy instantly"
-            ]
-        },
-        "coverages_section": {
-            "title": "Our Coverages",
-            "description": "The coverages offered by GoDigital's Professional Liability Insurance for Insurance Intermediaries policy ensure maximum protection for you to practice your profession in the best way. Always make sure which coverages are included in your policy.",
-            "slides": [
-                {
-                    "title": "Professional Liability Coverage",
-                    "description": "Covers claims raised against the insured concerning breach of duty due to negligence, erroneous actions or omissions, arising from the exercise and conduct of the professional activity."
-                },
-                {
-                    "title": "Defense Expenses",
-                    "description": "Covers the defense expenses of the insured in case of a claim due to negligence, erroneous actions or omissions."
-                }
-            ]
-        },
-        "services_section": {
-            "title": "Services",
-            "description": "At GoDigital, we make sure to offer top-quality services that make your experience unique.",
-            "services": [
-                {
-                    "title": "Quick Quote",
-                    "description": "Get a travel insurance quote in less than 1 minute."
-                },
-                {
-                    "title": "Human Support",
-                    "description": "Got questions? Leave us your details and we’ll get back to you immediately."
-                },
-                {
-                    "title": "Immediate Claims Settlement",
-                    "description": "We ensure that you are compensated fairly and promptly."
-                }
-            ]
-        },
-        "why_section": {
-            "title": "Why GoDigital?",
-            "subtitle": "At Go Digital, we simplify insurance digitally and bring you the best Professional Liability Insurance for Insurance Intermediaries proposal right to your screen.",
-            "features": [
-                "Easy Purchase Process",
-                "All necessary coverages",
-                "Instant Policy Issuance"
-            ]
-        },
-        "article_slider": {
-            "subTitle": "Learn more about insurance and intermediation."
-        },
-        "get_quote_button": "Get Quote"
-    },
-    "guarantees_page": {
-        "hero_section": {
-            "headTitle": "Guarantees Insurance ... digitally simple!",
-            "subtitle": "Secure the guarantee letter you need without committing capital!",
-            "cta_text": "Choose the type of guarantee to start the quote process!",
-            "select_placeholder": "Guarantee Type",
-            "select_options": {
-                "option1": "Option 1",
-                "option2": "Option 2",
-                "option3": "Option 3"
-            }
-        },
-        "how_works_section": {
-            "title": "How it Works",
-            "steps": [
-                "Provide the necessary information",
-                "Fill in your details",
-                "Get the quote in your email in a few days"
-            ]
-        },
-        "coverages_section": {
-            "title": "Advantages of Guarantee Letters",
-            "description": "Guarantees Insurance offers multiple advantages to businesses and organizations participating in tenders and undertaking projects.",
-            "slides": [
-                {
-                    "title": "Avoid blocking significant funds"
-                },
-                {
-                    "title": "Increased working capital and liquidity"
-                },
-                {
-                    "title": "Participation in more tenders"
-                },
-                {
-                    "title": "Claiming more tenders with potential for more project assignments"
-                },
-                {
-                    "title": "Increased revenue and profitability"
-                }
-            ]
-        },
-        "services_section": {
-            "title": "Services",
-            "description": "At GoDigital, we make sure to offer top-quality services that make your experience unique.",
-            "services": [
-                {
-                    "title": "Quick Quote",
-                    "description": "Get a travel insurance quote in less than 1 minute."
-                },
-                {
-                    "title": "Human Support",
-                    "description": "Got questions? Leave us your details and we’ll get back to you immediately."
-                },
-                {
-                    "title": "Immediate Claims Settlement",
-                    "description": "We ensure that you are compensated fairly and promptly."
-                }
-            ]
-        },
-        "why_section": {
-            "title": "Why GoDigital?",
-            "subtitle": "At Go Digital, we simplify insurance digitally and bring you the best proposal for issuing Guarantee Letters right to your screen.",
-            "features": [
-                "Easy Quote Process",
-                "No Capital Commitment",
-                "Quick Issuance of Guarantee Letter"
-            ]
-        },
-        "article_slider": {
-            "subTitle": "Learn more about insurance and guarantee letters."
-        },
-        "get_quote_button": "Get Quote"
-    },
-    "foreigners_page": {
-        "hero_section": {
-            "headTitle": "Medical Insurance for Foreigners ... digitally simple!",
-            "subtitle": "Secure the most necessary coverages for your health!",
-            "cta_text": "Ready? Enter your ID and get a quote!",
-            "input_placeholder": "ID Card"
-        },
-        "how_works_section": {
-            "title": "How it Works",
-            "steps": [
-                "Provide your personal details",
-                "View your plan",
-                "Pay online",
-                "Receive your policy instantly"
-            ]
-        },
-        "coverages_section": {
-            "title": "Our Coverages",
-            "description": "The coverages offered by GoDigital's Medical Insurance for Foreigners policy ensure maximum protection for your health. Always make sure which coverages are included in your policy.",
-            "slides": [
-                {
-                    "title": "Death by Accident",
-                    "description": "Covers the death of the insured by accident with the heirs receiving the insured amount."
-                },
-                {
-                    "title": "Total, partial and permanent disability from accident",
-                    "description": "The insured receives the coverage amount in case of Permanent Total Disability or Permanent Partial Disability from Accident."
-                },
-                {
-                    "title": "Inpatient Care due to accident or illness",
-                    "description": "Covers the care expenses of the insured in a public hospital, due to accident or illness."
-                },
-                {
-                    "title": "Medical expenses due to accident or illness",
-                    "description": "Covers the medical expenses of the insured in a public hospital, due to accident or illness."
-                }
-            ]
-        },
-        "services_section": {
-            "title": "Services",
-            "description": "At GoDigital, we make sure to offer top-quality services that make your experience unique.",
-            "services": [
-                {
-                    "title": "Quick Quote",
-                    "description": "Get a travel insurance quote in less than 1 minute."
-                },
-                {
-                    "title": "Human Support",
-                    "description": "Got questions? Leave us your details and we’ll get back to you immediately."
-                },
-                {
-                    "title": "Immediate Claims Settlement",
-                    "description": "We ensure that you are compensated fairly and promptly."
-                }
-            ]
-        },
-        "why_section": {
-            "title": "Why GoDigital?",
-            "subtitle": "At Go Digital, we simplify insurance digitally and bring you the best Medical Insurance for Foreigners proposal right to your screen.",
-            "features": [
-                "Easy Purchase Process",
-                "Comprehensive Coverage",
-                "Instant Policy Issuance"
-            ]
-        },
-        "article_slider": {
-            "subTitle": "Learn more about insurance and health."
-        },
-        "get_quote_button": "Get Quote"
-    },
-    "profile_page": {
-        "hero_section": {
-            "email_placeholder": "Email",
-            "phone_placeholder": "Phone Number",
-            "password_placeholder": "Password"
-        },
-        "contracts_button": "Contracts"
-    },
-    "profile_contracts_page": {
-        "buttons": {
-            "active_contracts": "Active Contracts",
-            "inactive_contracts": "Inactive Contracts",
-            "contact": "Contact"
-        },
-        "products": {
-            "travel": "Travel Insurance",
-            "intermediaries_liability": "Insurance Intermediaries Liability",
-            "medical_insurance_foreigners": "Medical Insurance for Foreigners",
-            "guarantees": "Guarantees Insurance"
-        },
-        "view_button": "VIEW",
-        "contract_dates": "21/08/24-25/08/2024",
-        "no_contracts": "No contracts found",
-        "no_contracts_for_product": "No contracts found for this product type",
-        "error_loading": "An error occurred while loading contracts. Please try again later."
-    },
-    "foreigners_quote_page": {
-        "steps": {
-            "step1": {
-                "title1": "What is your first name?",
-                "title2": "What is your last name?",
-                "placeholder_name": "Name",
-                "placeholder_lastname": "Last Name",
-                "placeholder_departure": "Where are you travelling from?",
-                "placeholder_arrival": "Where are you travelling to?"
-            },
-            "step2": {
-                "title1": "What is your nationality?",
-                "title2": "Enter your ID or passport number:",
-                "placeholder_nationality": "Nationality",
-                "placeholder_identification": "ID / Passport Number"
-            },
-            "step3": {
-                "title1": "When is your date of birth?",
-                "title2": "Please select your gender:",
-                "placeholder_gender": "Φύλο",
-                "options": [
-                    "Economy",
-                    "Business",
-                    "First Class"
-                ]
-            },
-            "step4": {
-                "title": "Select the start date of insurance:",
-                "placeholder_date": "Date"
-            }
-        },
-        "buttons": {
-            "previous": "Previous",
-            "next": "Next",
-            "submit": "Submit"
-        }
-    },
-    "guarantee_quote_page": {
-        "steps": {
-            "step1": {
-                "title1": "Guarantee Type",
-                "title2": "Start Date",
-                "title3": "End Date",
-                "placeholder_departure": "Where are you travelling to?",
-                "placeholder_arrival": "Where are you travelling to?"
-            },
-            "step2": {
-                "title1": "Person Selection",
-                "title2": "Insured/Policy Holder",
-                "placeholder_nationality": "Nationality",
-                "placeholder_id": "ID / Passport Number"
-            },
-            "step3": {
-                "title": "Fill in the policy holder's details",
-                "placeholders": {
-                    "website": "Website",
-                    "email": "Email",
-                    "primary_phone": "Contact Phone",
-                    "secondary_phone": "Alternative Phone",
-                    "address": "Address",
-                    "tax_id": "Tax Identification Number (TIN)",
-                    "tax_office": "Tax Office"
-                }
-            },
-            "step4": {
-                "title": "Fill in the beneficiary's details",
-                "placeholders": {
-                    "name": "First Name",
-                    "email": "Email",
-                    "primary_phone": "Contact Phone",
-                    "secondary_phone": "Alternative Phone",
-                    "address": "Address",
-                    "tax_id": "Tax Identification Number (TIN)",
-                    "tax_office": "Tax Office"
-                }
-            },
-            "step5": {
-                "title": "Fill in the guarantee details",
-                "placeholders": {
-                    "tender_number": "Tender Number",
-                    "tender_title": "Title or Purpose of the Tender",
-                    "project_value": "Project / Tender Value",
-                    "guarantee_amount": "Guarantee Amount"
-                }
-            }
-        },
-        "buttons": {
-            "previous": "Previous",
-            "next": "Next",
-            "submit": "Submit"
-        }
-    },
-    "guarantee_proceed": {
-        "header": "Guarantee",
-        "select_quote": "Select Guarantee",
-        "accept_button": "Accept Guarantee",
-        "nav_modal": {
-            "title": "Navigation Options",
-            "home": "Go to Home",
-            "products": "View Products",
-            "contact": "Contact Us",
-            "cancel": "Cancel"
-        },
-        "success_modal": {
-            "title": "Final Step!",
-            "message": "Your application has been submitted successfully! We will contact you soon."
-        }
-    },
-    "intermediaries_quote_page": {
-        "steps": {
-            "step1": {
-                "title1": "Insurance Intermediary Category",
-                "title2": "When did you start practicing your profession?",
-                "placeholder_departure": "Select category",
-                "placeholder_arrival": "Select date"
-            },
-            "step2": {
-                "title1": "Insurance Start",
-                "title2": "Person Selection",
-                "placeholder_nationality": "Nationality",
-                "placeholder_id": "ID / Passport Number"
-            },
-            "step3": {
-                "title1": "Last Financial Year",
-                "title2": "Current Financial Year, Estimate for Your Business",
-                "placeholder_preference": "Selection"
-            }
-        },
-        "buttons": {
-            "previous": "Previous",
-            "next": "Next",
-            "submit": "Submit"
-        }
-    },
-   "liability_quote_page": {
-   "form": {
-     "title": "License Plate Number (VRM)",
-     "placeholder_departure": "Where are you travelling from?",
-     "vehicles_placeholder": "Enter vehicle name",
-     "add_button": "Add"
-   },
-   "buttons": {
-     "previous": "Previous",
-     "next": "Next"
-   }
- },
-    "travel_quote_page": {
-        "steps": {
-            "step1": {
-                "title1": "Where are you travelling from?",
-                "title2": "Where are you travelling to?",
-                "placeholder_departure": "Select departure location",
-                "placeholder_arrival": "Select destination location"
-            },
-            "step2": {
-                "title": "Trip Duration",
-                "placeholder_start_date": "Trip Start Date",
-                "placeholder_end_date": "Trip End Date"
-            },
-            "step3": {
-                "title": "Who do you want the insurance to cover?",
-                "placeholder_preference": "Selection"
-            },
-            "step4": {
-                "title": "What is the main traveler's date of birth?",
-                "placeholder_date": "Date"
-            },
-            "step5": {
-                "title": "Travel Insurance Plans"
-            }
-        },
-        "buttons": {
-            "previous": "Previous",
-            "next": "Next",
-            "submit": "Submit"
-        }
-    },
-    "travel_form": {
-        "step1": {
-            "header": "Final Step!",
-            "subheader": "Fill in the following to get your insurance!",
-            "progress": {
-                "personal_details": "Insured Person Details"
-            },
-            "placeholders": {
-                "name": "First Name",
-                "surname": "Last Name",
-                "country_code": "Select Country Code",
-                "phone": "Contact Phone",
-                "email": "E-mail",
-                "city": "City",
-                "postal_code": "Postal Code",
-                "address": "Address"
-            },
-            "next_button": "Next"
-        },
-        "step2": {
-            "header": "Final Step!",
-            "subheader": "Fill in the following to get your insurance!",
-            "progress": {
-                "medical_history": "Medical History"
-            },
-            "medical_question": "Does any traveler have or had a pre-existing medical condition or is on a waiting list for treatment or examination?",
-            "buttons": {
-                "yes": "YES",
-                "no": "NO"
-            },
-            "note_placeholder": "Note",
-            "submit_button": "Submit"
-        }
-    },
-    "liability_form": {
-        "header": "Final Step!",
-        "subheader": "Fill in the following to get your insurance!",
-        "progress": {
-            "personal_details": "Insured Person Details"
-        },
-        "placeholders": {
-            "id_passport": "ID / Passport Number",
-            "name": "First Name",
-            "surname": "Last Name",
-            "email": "Email",
-            "primary_phone": "Contact Phone",
-            "secondary_phone": "Alternative Phone",
-            "address": "Address",
-            "tax_id": "Tax Identification Number (TIN)",
-            "tax_office": "Tax Office",
-            "country_code": "Select Country Code"
-        },
-        "submit_button": "Submit"
-    },
-    "intermediaries_form": {
-        "header": "Final Step!",
-        "subheader": "Fill in the following to get your insurance!",
-        "placeholders": {
-            "id_passport": "Company Registration Number",
-            "name": "Policy Holder",
-            "email": "Email",
-            "primary_phone": "Contact Phone",
-            "secondary_phone": "Alternative Phone",
-            "address": "Address",
-            "tax_id": "Tax Identification Number (TIN)",
-            "tax_office": "Tax Office",
-            "chamber": "Chamber",
-            "registration_number": "Registration Number",
-            "note": "Note",
-            "country_code": "Select Country Code"
-        },
-        "questions": {
-            "question1": "Have any claims been raised against you or your office in the last 5 years?",
-            "question2": "Has any application of yours been rejected in the past or has any insurance company requested increased premiums or special terms, or terminated or refused to renew your policy?",
-            "question3": "Are you or your company aware of any situations or incidents that may lead to a claim or claims against you or your company?"
-        },
-        "buttons": {
-            "yes": "YES",
-            "no": "NO",
-            "next": "Next",
-            "submit": "Submit"
-        }
-    },
-    "foreigners_form": {
-        "header": "Final Step!",
-        "subheader": "Fill in the following to get your insurance!",
-        "se_subheader": "Insured Person Details",
-        "th_subheader": "Medical History",
-        "fo_subheader": "If you answer yes to any of the following questions, provide all the information below.",
-        "placeholders": {
-            "insurance_start_date": "Insurance Start Date",
-            "id_passport": "ID / Passport Number",
-            "name": "First Name",
-            "surname": "Last Name",
-            "email": "Email",
-            "primary_phone": "Contact Phone",
-            "secondary_phone": "Alternative Phone",
-            "address": "Address",
-            "tax_id": "Tax Identification Number (TIN)",
-            "tax_office": "Tax Office",
-            "note": "Note",
-            "start_date": "Start of Insurance",
-            "mobile_number": "Mobile Number",
-            "additionalDetails": "Please provide additional details"
-        },
-        "step3": {
-            "subheader": "Policy Holder or Employer",
-            "se_subheader": "Select here to enter the insured person's details."
-        },
-        "questions": {
-            "question1": "Have you been provided with medication in the last 5 years or are you currently taking any medication?",
-            "question2": "Have you been admitted to a hospital, clinic or rehabilitation center in the last 5 years?",
-            "question3": "Do you suffer from any chronic condition or disability or recurring injury or illness?"
-        },
-        "buttons": {
-            "yes": "YES",
-            "no": "NO",
-            "next": "Next",
-            "submit": "Submit"
-        }
-    },
-    "model": {
-        "contact_button": "Contact"
-    },
-    "foreigners_proceed": {
-        "header": "Personal Accidents for Foreigners",
-        "insurance_company": "Insurance Company",
-        "insurance_period": "Insurance Period",
-        "ins_period": "12-month",
-        "insured_person": "Insured Person",
-        "ins_person": "Insured Person",
-        "nationality": "Nationality",
-        "nation": "Saint Martin",
-        "id_passport": "ID / Passport",
-        "birth_date": "Date of Birth",
-        "date": "04/05/1980 (44 years old)",
-        "gender": "Gender",
-        "gen": "Male",
-        "cover": "Coverages",
-        "total": "Total",
-        "proceed_button": "Continue",
-        "details": {
-            "death": "Death by Accident",
-            "dth": "PART B",
-            "disability": {
-                "amount": "15.000€",
-                "title": "Total/Partial/Permanent Disability from Accident",
-                "description": "Insured's participation 20% for each claim",
-                "list": [
-                    "Permanent total disability from accident",
-                    "Permanent partial disability from accident (percentage based on the policy's compensation table)"
-                ]
-            },
-            "hospitalization": {
-                "amount": "10.000€",
-                "title": "Inpatient care due to accident or illness (PART A)",
-                "description": "Only within public hospital. Maximum limit per incident and annually up to 10.000€. (insured's participation 20% for each claim)"
-            },
-            "medical_expenses": {
-                "amount": "1.500€",
-                "title": "Medical expenses due to illness or accident (PART A)",
-                "description": "Only within public hospital. Maximum limit per incident and annually up to 1.500€. (insured's participation 20% for each claim)"
-            }
-        }
-    },
-    "liability_proceed": {
-        "header": "Coverages",
-        "details": {
-            "amount": "9000€",
-            "title": "Professional Liability Coverage:",
-            "description": "Covers claims raised against the insured concerning breach of duty due to negligence, erroneous actions or omissions, arising from the exercise and conduct of the professional activity."
-        },
-        "total": "Total",
-        "proceed_button": "Continue",
-        "back_button": "Go Back"
-    },
-    "travel_proceed": {
-        "header": {
-            "desktop": "Gold Single Trip Worldwide All Countries",
-            "mobile": "Economy"
-        },
-        "insurance_company": "Insurance Company",
-        "insurance_period": "Insurance Period",
-        "travelling_from": "Where are you travelling from?",
-        "travelling_to": "Where are you travelling to?",
-        "traveler": "1 Traveler",
-        "traveler_age": "22 years old",
-        "total": "Total",
-        "proceed_button": "Continue",
-        "cover": "Coverages",
-        "covers": {
-            "cancellation": "Cancellation",
-            "medical": "Medical",
-            "baggage": "Baggage",
-            "personal_accident": "Personal Accident",
-            "travel_delay": "Travel Delay",
-            "personal_possessions": "Personal Possessions",
-            "personal_money": "Personal Money",
-            "personal_liability": "Personal Liability",
-            "legal_expenses": "Legal Expenses"
-        }
-    },
-    "intermediaries_proceed": {
-        "header": "Coverages",
-        "details": {
-            "professional_liability": {
-                "amount": "500€",
-                "title": "Professional Liability Coverage:",
-                "description": "Covers claims raised against the insured concerning breach of duty due to negligence, erroneous actions or omissions, arising from the exercise and conduct of the professional activity."
-            },
-            "defense_expenses": {
-                "amount": "10.000€",
-                "title": "Defense Expenses",
-                "description": "Only within public hospital. Maximum limit per incident and annually up to 10.000€. (insured's participation 20% for each claim)"
-            }
-        },
-        "total": "Total",
-        "proceed_button": "Continue"
-    },
-    "guarantee_finish": {
-        "header": "Answer the following questions",
-        "questions": [
-            "Have any claims been raised against you or your office in the last 5 years?",
-            "Has any application of yours been rejected in the past or has any insurance company requested increased premiums or special terms, or terminated or refused to renew your policy?",
-            "Are you or your company aware of any situations or incidents that may lead to a claim or claims against you or your company?"
-        ],
-        "yes": "YES",
-        "no": "NO",
-        "last_step": "Final Step!",
-        "confirmation_message": "We have received your information and the responsible person will contact you!",
-        "previous": "Previous",
-        "next": "Next",
-        "submit": "Submit"
+    "buttons": {
+      "previous": "Previous",
+      "next": "Next",
+      "submit": "Submit"
     }
+  },
+
+  "guarantee_quote_page": {
+    "steps": {
+      "step1": {
+        "title_agent_type": "Agent Type",
+        "title_date_of_birth": "Date of Birth",
+        "title_start_date": "Start Date",
+        "select_agent_type": "Select Agent Type"
+      },
+      "step2": {
+        "title_firm_established": "Firm Established",
+        "title_type": "Type",
+        "select_type": "Select Type"
+      },
+      "step3": {
+        "title_gross_insured": "Gross Insured",
+        "title_gross_insured_current": "Gross Insured Current",
+        "placeholder_gross_insured": "Enter Gross Insured Amount",
+        "placeholder_gross_insured_current": "Enter Gross Insured Current Amount"
+      },
+      "step4": {
+        "title": "Final Questions",
+        "placeholder_details": "Please provide additional details..."
+      }
+    },
+    "buttons": {
+      "previous": "Previous",
+      "next": "Next",
+      "submit": "Get Quotes"
+    }
+  },
+
+  "guarantee_proceed": {
+    "header": "Guarantee",
+    "select_quote": "Select Guarantee",
+    "accept_button": "Accept Guarantee",
+    "nav_modal": {
+      "title": "Navigation Options",
+      "home": "Go to Home",
+      "products": "View Products",
+      "contact": "Contact Us",
+      "cancel": "Cancel"
+    },
+    "success_modal": {
+      "title": "Final Step!",
+      "message": "Your application has been submitted successfully! We will contact you soon."
+    }
+  },
+
+  "intermediaries_quote_page": {
+    "steps": {
+      "step1": {
+        "title_agent_type": "Agent Type",
+        "title_date_of_birth": "Date of Birth",
+        "title_start_date": "Start Date",
+        "select_agent_type": "Select Agent Type"
+      },
+      "step2": {
+        "title_firm_established": "Firm Established",
+        "title_type": "Type",
+        "select_type": "Select Type"
+      },
+      "step3": {
+        "title_gross_insured": "Gross Insured",
+        "title_gross_insured_current": "Gross Insured Current",
+        "placeholder_gross_insured": "Enter Gross Insured Amount",
+        "placeholder_gross_insured_current": "Enter Gross Insured Current Amount"
+      },
+      "step4": {
+        "title": "Final Questions",
+        "placeholder_details": "Please provide additional details..."
+      }
+    },
+    "buttons": {
+      "previous": "Previous",
+      "next": "Next",
+      "submit": "Get Quotes"
+    }
+  },
+
+  "liability_quote_page": {
+    "form": {
+      "title": "Add Your Vehicles",
+      "vehicles_placeholder": "Enter vehicle name or license plate",
+      "add_button": "Add"
+    },
+    "buttons": {
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
+
+  "travel_quote_page": {
+    "steps": {
+      "step1": {
+        "title1": "Where are you travelling from?",
+        "title2": "Where are you travelling to?",
+        "placeholder_departure": "Select departure location",
+        "placeholder_arrival": "Select destination location"
+      },
+      "step2": {
+        "title": "Trip Duration",
+        "placeholder_start_date": "Trip Start Date",
+        "placeholder_end_date": "Trip End Date"
+      },
+      "step3": {
+        "title": "Who do you want the insurance to cover?",
+        "placeholder_preference": "Selection"
+      },
+      "step4": {
+        "title": "What is the main traveler's date of birth?",
+        "placeholder_date": "Date"
+      },
+      "step5": {
+        "title": "Travel Insurance Plans"
+      }
+    },
+    "buttons": {
+      "previous": "Previous",
+      "next": "Next",
+      "submit": "Submit"
+    }
+  },
+
+  "travel_form": {
+    "step1": {
+      "header": "Final Step!",
+      "subheader": "Fill in the following to get your insurance!",
+      "progress": {
+        "personal_details": "Insured Person Details"
+      },
+      "placeholders": {
+        "name": "First Name",
+        "surname": "Last Name",
+        "country_code": "Select Country Code",
+        "phone": "Contact Phone",
+        "email": "E-mail",
+        "city": "City",
+        "postal_code": "Postal Code",
+        "address": "Address"
+      },
+      "next_button": "Next"
+    },
+    "step2": {
+      "header": "Final Step!",
+      "subheader": "Fill in the following to get your insurance!",
+      "progress": {
+        "medical_history": "Medical History"
+      },
+      "medical_question": "Does any traveler have or had a pre-existing medical condition or is on a waiting list for treatment or examination?",
+      "buttons": {
+        "yes": "YES",
+        "no": "NO"
+      },
+      "note_placeholder": "Note",
+      "submit_button": "Submit"
+    }
+  },
+
+  "liability_form": {
+    "header": "Final Step!",
+    "subheader": "Fill in the following to get your insurance!",
+    "progress": {
+      "personal_details": "Insured Person Details"
+    },
+    "placeholders": {
+      "id_passport": "ID / Passport Number",
+      "name": "First Name",
+      "surname": "Last Name",
+      "email": "Email",
+      "primary_phone": "Contact Phone",
+      "secondary_phone": "Alternative Phone",
+      "address": "Address",
+      "tax_id": "Tax Identification Number (TIN)",
+      "tax_office": "Tax Office",
+      "country_code": "Select Country Code"
+    },
+    "submit_button": "Submit"
+  },
+
+  "intermediaries_form": {
+    "header": "Final Step!",
+    "subheader": "Fill in the following to get your insurance!",
+    "placeholders": {
+      "id_passport": "Company Registration Number",
+      "name": "Policy Holder",
+      "email": "Email",
+      "primary_phone": "Contact Phone",
+      "secondary_phone": "Alternative Phone",
+      "address": "Address",
+      "tax_id": "Tax Identification Number (TIN)",
+      "tax_office": "Tax Office",
+      "chamber": "Chamber",
+      "registration_number": "Registration Number",
+      "note": "Note",
+      "country_code": "Select Country Code"
+    },
+    "questions": {
+      "question1": "Have any claims been raised against you or your office in the last 5 years?",
+      "question2": "Has any application of yours been rejected in the past or has any insurance company requested increased premiums or special terms, or terminated or refused to renew your policy?",
+      "question3": "Are you or your company aware of any situations or incidents that may lead to a claim or claims against you or your company?"
+    },
+    "buttons": {
+      "yes": "YES",
+      "no": "NO",
+      "next": "Next",
+      "submit": "Submit"
+    }
+  },
+
+  "foreigners_form": {
+    "header": "Final Step!",
+    "subheader": "Fill in the following to get your insurance!",
+    "se_subheader": "Insured Person Details",
+    "th_subheader": "Medical History",
+    "fo_subheader": "If you answer yes to any of the following questions, provide all the information below.",
+    "placeholders": {
+      "insurance_start_date": "Insurance Start Date",
+      "id_passport": "ID / Passport Number",
+      "name": "First Name",
+      "surname": "Last Name",
+      "email": "Email",
+      "primary_phone": "Contact Phone",
+      "secondary_phone": "Alternative Phone",
+      "address": "Address",
+      "tax_id": "Tax Identification Number (TIN)",
+      "tax_office": "Tax Office",
+      "note": "Note",
+      "start_date": "Start of Insurance",
+      "mobile_number": "Mobile Number",
+      "additionalDetails": "Please provide additional details"
+    },
+    "step3": {
+      "subheader": "Policy Holder or Employer",
+      "se_subheader": "Select here to enter the insured person's details."
+    },
+    "questions": {
+      "question1": "Have you been provided with medication in the last 5 years or are you currently taking any medication?",
+      "question2": "Have you been admitted to a hospital, clinic or rehabilitation center in the last 5 years?",
+      "question3": "Do you suffer from any chronic condition or disability or recurring injury or illness?"
+    },
+    "buttons": {
+      "yes": "YES",
+      "no": "NO",
+      "next": "Next",
+      "submit": "Submit"
+    }
+  },
+
+  "model": {
+    "contact_button": "Contact"
+  },
+
+  "foreigners_proceed": {
+    "header": "Personal Accidents for Foreigners",
+    "insurance_company": "Insurance Company",
+    "insurance_period": "Insurance Period",
+    "ins_period": "12-month",
+    "insured_person": "Insured Person",
+    "ins_person": "Insured Person",
+    "nationality": "Nationality",
+    "nation": "Saint Martin",
+    "id_passport": "ID / Passport",
+    "birth_date": "Date of Birth",
+    "date": "04/05/1980 (44 years old)",
+    "gender": "Gender",
+    "gen": "Male",
+    "cover": "Coverages",
+    "total": "Total",
+    "proceed_button": "Continue",
+    "details": {
+      "death": "Death by Accident",
+      "dth": "PART B",
+      "disability": {
+        "amount": "15.000€",
+        "title": "Total/Partial/Permanent Disability from Accident",
+        "description": "Insured's participation 20% for each claim",
+        "list": [
+          "Permanent total disability from accident",
+          "Permanent partial disability from accident (percentage based on the policy's compensation table)"
+        ]
+      },
+      "hospitalization": {
+        "amount": "10.000€",
+        "title": "Inpatient care due to accident or illness (PART A)",
+        "description": "Only within public hospital. Maximum limit per incident and annually up to 10.000€. (insured's participation 20% for each claim)"
+      },
+      "medical_expenses": {
+        "amount": "1.500€",
+        "title": "Medical expenses due to illness or accident (PART A)",
+        "description": "Only within public hospital. Maximum limit per incident and annually up to 1.500€. (insured's participation 20% for each claim)"
+      }
+    }
+  },
+
+  "liability_proceed": {
+    "header": "Coverages",
+    "details": {
+      "amount": "9000€",
+      "title": "Professional Liability Coverage:",
+      "description": "Covers claims raised against the insured concerning breach of duty due to negligence, erroneous actions or omissions, arising from the exercise and conduct of the professional activity."
+    },
+    "total": "Total",
+    "proceed_button": "Continue",
+    "back_button": "Go Back"
+  },
+
+  "travel_proceed": {
+    "header": {
+      "desktop": "Gold Single Trip Worldwide All Countries",
+      "mobile": "Economy"
+    },
+    "common": {
+      "person": "Person"
+    },
+    "insurance_company": "Insurance Company",
+    "insurance_period": "Insurance Period",
+    "travelling_from": "Where are you travelling from?",
+    "travelling_to": "Where are you travelling to?",
+    "traveler": "1 Traveler",
+    "traveler_age": "22 years old",
+    "total": "Total",
+    "proceed_button": "Continue",
+    "cover": "Coverages",
+    "covers": {
+      "cancellation": "Cancellation",
+      "medical": "Medical",
+      "baggage": "Baggage",
+      "personal_accident": "Personal Accident",
+      "travel_delay": "Travel Delay",
+      "personal_possessions": "Personal Possessions",
+      "personal_money": "Personal Money",
+      "personal_liability": "Personal Liability",
+      "legal_expenses": "Legal Expenses"
+    }
+  },
+
+  "intermediaries_proceed": {
+    "header": "Coverages",
+    "details": {
+      "professional_liability": {
+        "amount": "500€",
+        "title": "Professional Liability Coverage:",
+        "description": "Covers claims raised against the insured concerning breach of duty due to negligence, erroneous actions or omissions, arising from the exercise and conduct of the professional activity."
+      },
+      "defense_expenses": {
+        "amount": "10.000€",
+        "title": "Defense Expenses",
+        "description": "Only within public hospital. Maximum limit per incident and annually up to 10.000€. (insured's participation 20% for each claim)"
+      }
+    },
+    "total": "Total",
+    "proceed_button": "Continue"
+  },
+
+  "guarantee_finish": {
+    "header": "Answer the following questions",
+    "questions": [
+      "Have any claims been raised against you or your office in the last 5 years?",
+      "Has any application of yours been rejected in the past or has any insurance company requested increased premiums or special terms, or terminated or refused to renew your policy?",
+      "Are you or your company aware of any situations or incidents that may lead to a claim or claims against you or your company?"
+    ],
+    "yes": "YES",
+    "no": "NO",
+    "last_step": "Final Step!",
+    "confirmation_message": "We have received your information and the responsible person will contact you!",
+    "previous": "Previous",
+    "next": "Next",
+    "submit": "Submit"
+  }
 }

@@ -4,9 +4,10 @@ import PropTypes from "prop-types";
 import { QuoteHeader, LoadingSpinner } from "@/components";
 import * as Icons from "@/utils/icons.util";
 import { useTranslation } from "react-i18next";
+import { toast, Toaster } from "react-hot-toast";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const LOCAL_STORAGE_KEY = "intermediariesQuoteForm"; // مفتاح الحفظ
+const LOCAL_STORAGE_KEY = "intermediariesQuoteForm";
 
 export const IntermediariesQuote = () => {
   const { t, i18n } = useTranslation();
@@ -14,16 +15,14 @@ export const IntermediariesQuote = () => {
 
   const totalSteps = 4;
   const [currentStep, setCurrentStep] = useState(0);
-  const [isInvalid, setIsInvalid] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
   const [apiData, setApiData] = useState({
     questions: [],
     categories: [],
     types: [],
   });
+  const [errors, setErrors] = useState({});
 
-  // 1. قراءة من localStorage أو تهيئة جديدة
   const [userData, setUserData] = useState(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
     return saved
@@ -36,17 +35,14 @@ export const IntermediariesQuote = () => {
         };
   });
 
-  // 2. حفظ تلقائي في localStorage
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
   }, [userData]);
 
-  // 3. جلب بيانات API
   useEffect(() => {
     const fetchApiData = async () => {
       try {
         setIsLoading(true);
-        setError("");
         const response = await fetch(`${API_BASE_URL}/user/intermediaryInsurance/getArguments`, {
           method: "GET",
           headers: {
@@ -60,17 +56,15 @@ export const IntermediariesQuote = () => {
         const data = await response.json();
         setApiData(data);
       } catch (err) {
-        console.error("Error fetching data:", err);
-        setError("Failed to load data. Please try again.");
+        toast.error(t("errors.load_failed") || "Failed to load data");
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchApiData();
-  }, [i18n.language]);
+  }, [i18n.language, t]);
 
-  // 4. استقبال نوع الوسيط من الصفحة السابقة
   useEffect(() => {
     const prefilledName = localStorage.getItem("intermediaries_type_prefill");
     if (prefilledName && apiData.types.length > 0) {
@@ -90,7 +84,6 @@ export const IntermediariesQuote = () => {
     }
   }, [apiData.types]);
 
-  // 5. تهيئة الأسئلة في الخطوة 4
   useEffect(() => {
     if (currentStep === 3 && apiData.questions.length > 0 && userData.step4.questions.length === 0) {
       const initialQuestions = apiData.questions.map((q) => ({
@@ -106,7 +99,7 @@ export const IntermediariesQuote = () => {
   }, [currentStep, apiData.questions, userData.step4.questions.length]);
 
   const handleInputChange = (step, field, value) => {
-    setIsInvalid(false);
+    setErrors((prev) => ({ ...prev, [field]: "" }));
 
     if (step === "step1" && field === "agentType") {
       const selectedCategory = apiData.categories.find((cat) => cat.name === value);
@@ -137,6 +130,7 @@ export const IntermediariesQuote = () => {
   };
 
   const handleQuestionAnswerChange = (questionId, answer) => {
+    setErrors((prev) => ({ ...prev, [`q_${questionId}`]: "", [`q_${questionId}_text`]: "" }));
     setUserData((prev) => ({
       ...prev,
       step4: {
@@ -149,6 +143,7 @@ export const IntermediariesQuote = () => {
   };
 
   const handleQuestionTextareaChange = (questionId, value) => {
+    setErrors((prev) => ({ ...prev, [`q_${questionId}_text`]: "" }));
     setUserData((prev) => ({
       ...prev,
       step4: {
@@ -160,74 +155,118 @@ export const IntermediariesQuote = () => {
     }));
   };
 
-  const isStepValid = (step) => {
-    const stepData = userData[`step${step + 1}`];
-
-    // خطوة 1
+  const validateField = (step, field, value) => {
     if (step === 0) {
-      if (!stepData.agentTypeId || !stepData.dateBirthday || !stepData.startDate) return false;
-
-      const birthDate = new Date(stepData.dateBirthday);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (birthDate > today) return false;
+      if (field === "agentType" && !value) return t("validation.select_agent_type");
+      if (field === "dateBirthday") {
+        if (!value) return t("validation.enter_date_of_birth");
+        const date = new Date(value);
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        if (date > today) return t("validation.birth_date_future");
+        if (date.getFullYear() < 1900) return t("validation.birth_date_too_old");
+      }
+      if (field === "startDate") {
+        if (!value) return t("validation.enter_start_date");
+        const date = new Date(value);
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        if (date < today) return t("validation.start_date_past");
+      }
     }
 
-    // خطوة 2
     if (step === 1) {
-      if (!stepData.firmEstablished || !stepData.typeId) return false;
-
-      const firmDate = new Date(stepData.firmEstablished);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (firmDate > today) return false;
+      if (field === "firmEstablished") {
+        if (!value) return t("validation.enter_firm_established");
+        const date = new Date(value);
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        if (date > today) return t("validation.firm_date_future");
+      }
+      if (field === "type" && !value) return t("validation.select_type");
     }
 
-    // خطوة 3
     if (step === 2) {
-      if (!stepData.grossInsured || !stepData.grossInsuredCurrent) return false;
-      if (isNaN(stepData.grossInsured) || isNaN(stepData.grossInsuredCurrent)) return false;
+      if (field === "grossInsured") {
+        if (!value) return t("validation.enter_gross_insured");
+        if (isNaN(value) || parseFloat(value) < 0) return t("validation.gross_insured_invalid");
+      }
+      if (field === "grossInsuredCurrent") {
+        if (!value) return t("validation.enter_gross_insured_current");
+        if (isNaN(value) || parseFloat(value) < 0) return t("validation.gross_insured_current_invalid");
+      }
     }
 
-    // خطوة 4
+    return "";
+  };
+
+  const validateStep = (step) => {
+    const newErrors = {};
+    let isValid = true;
+
+    if (step === 0) {
+      const s = userData.step1;
+      const agentTypeError = validateField(0, "agentType", s.agentType);
+      const dobError = validateField(0, "dateBirthday", s.dateBirthday);
+      const startError = validateField(0, "startDate", s.startDate);
+
+      if (agentTypeError) { newErrors.agentType = agentTypeError; isValid = false; }
+      if (dobError) { newErrors.dateBirthday = dobError; isValid = false; }
+      if (startError) { newErrors.startDate = startError; isValid = false; }
+    }
+
+    if (step === 1) {
+      const s = userData.step2;
+      const firmError = validateField(1, "firmEstablished", s.firmEstablished);
+      const typeError = validateField(1, "type", s.type);
+
+      if (firmError) { newErrors.firmEstablished = firmError; isValid = false; }
+      if (typeError) { newErrors.type = typeError; isValid = false; }
+    }
+
+    if (step === 2) {
+      const s = userData.step3;
+      const grossError = validateField(2, "grossInsured", s.grossInsured);
+      const currentError = validateField(2, "grossInsuredCurrent", s.grossInsuredCurrent);
+
+      if (grossError) { newErrors.grossInsured = grossError; isValid = false; }
+      if (currentError) { newErrors.grossInsuredCurrent = currentError; isValid = false; }
+    }
+
     if (step === 3) {
-      if (!stepData.questions || stepData.questions.length === 0) return false;
-      return stepData.questions.every((q) => {
-        if (!q.answer) return false;
+      userData.step4.questions.forEach((q) => {
         const apiQ = apiData.questions.find((aq) => aq.id === q.id);
-        if (!apiQ) return true;
-        if (q.answer === "yes" && apiQ.mustTextareaYes && !q.textarea?.trim()) return false;
-        if (q.answer === "no" && apiQ.mustTextareaNo && !q.textarea?.trim()) return false;
-        return true;
+        if (!q.answer) {
+          newErrors[`q_${q.id}`] = t("validation.answer_question");
+          isValid = false;
+        } else {
+          const needsDetails =
+            (q.answer === "yes" && apiQ?.mustTextareaYes) ||
+            (q.answer === "no" && apiQ?.mustTextareaNo);
+          if (needsDetails && !q.textarea?.trim()) {
+            newErrors[`q_${q.id}_text`] = t("validation.provide_details");
+            isValid = false;
+          }
+        }
       });
     }
 
-    return true;
+    setErrors(newErrors);
+    return isValid;
   };
 
   const handleNext = () => {
-    if (isStepValid(currentStep)) {
+    if (validateStep(currentStep)) {
       setCurrentStep((prev) => prev + 1);
-      setIsInvalid(false);
-    } else {
-      setIsInvalid(true);
     }
   };
 
   const handlePrevious = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
-    setIsInvalid(false);
+    setErrors({});
   };
 
   const handleSubmit = async () => {
-    if (!isStepValid(currentStep)) {
-      setIsInvalid(true);
-      return;
-    }
+    if (!validateStep(currentStep)) return;
 
     setIsLoading(true);
-    setError("");
-
     try {
       const questionsData = userData.step4.questions.map((q) => ({
         id: q.id.toString(),
@@ -257,10 +296,14 @@ export const IntermediariesQuote = () => {
         body: JSON.stringify(submissionData),
       });
 
-      if (!response.ok) {
+      if (response.status === 400) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to get quotes");
+        toast.error(errorData.error || t("errors.invalid_data"));
+        setIsLoading(false);
+        return;
       }
+
+      if (!response.ok) throw new Error("Failed to get quotes");
 
       const result = await response.json();
 
@@ -273,11 +316,10 @@ export const IntermediariesQuote = () => {
         })
       );
 
-      localStorage.removeItem(LOCAL_STORAGE_KEY); // مسح بعد الإرسال
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
       navigate("/get-a-quote-intermediaries/proceed");
     } catch (err) {
-      console.error("Error submitting quote:", err);
-      setError(err.message || "Failed to get quotes. Please try again.");
+      toast.error(err.message || t("errors.submit_failed"));
     } finally {
       setIsLoading(false);
     }
@@ -292,6 +334,8 @@ export const IntermediariesQuote = () => {
     );
   };
 
+  const today = new Date().toISOString().split("T")[0];
+
   if (isLoading && currentStep === 0) {
     return (
       <main>
@@ -303,22 +347,25 @@ export const IntermediariesQuote = () => {
     );
   }
 
-  if (error && currentStep === 0) {
-    return (
-      <main>
-        <QuoteHeader />
-        <div className="flex justify-center items-center min-h-screen">
-          <div className="text-lg font-semibold text-red-600">{error}</div>
-        </div>
-      </main>
-    );
-  }
-
   return (
     <main>
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 5000,
+          style: {
+            background: "#fef2f2",
+            color: "#dc2626",
+            fontWeight: "500",
+            border: "1px solid #fecaca",
+            borderRadius: "8px",
+          },
+        }}
+      />
       <QuoteHeader />
+
       <section className="border-t-2 mx-5 md:mx-0 my-2 flex flex-col justify-center items-center">
-        {/* شريط التقدم */}
+        {/* Progress Bar */}
         <div className="flex flex-col justify-center items-center my-10">
           <div className="flex items-center gap-3 relative w-full">
             {Array.from({ length: totalSteps }).map((_, index) => (
@@ -338,91 +385,132 @@ export const IntermediariesQuote = () => {
           </div>
         </div>
 
-        {/* النماذج */}
+        {/* Forms */}
         <div className="my-10 flex flex-wrap justify-center items-center gap-5 w-full max-w-2xl">
-          {/* خطوة 1 */}
+          {/* Step 1 */}
           {currentStep === 0 && (
             <div className="flex flex-col items-center gap-6 w-full">
               <Icons.QuoteProfileIcon />
-              <h1 className="text-2xl sm:text-4xl font-semibold text-center">Agent Type</h1>
-              <TravelSelect
-                placeholder="Select Agent Type"
-                value={userData.step1.agentType}
-                onChange={(e) => handleInputChange("step1", "agentType", e.target.value)}
-                isInvalid={isInvalid && !userData.step1.agentTypeId}
-                options={apiData.categories.map((cat) => cat.name)}
-              />
-              <h1 className="text-2xl sm:text-4xl font-semibold text-center">Date of Birth</h1>
-              <TravelInput
-                type="date"
-                placeholder="Select Date of Birth"
-                value={userData.step1.dateBirthday}
-                onChange={(e) => handleInputChange("step1", "dateBirthday", e.target.value)}
-                isInvalid={isInvalid && !userData.step1.dateBirthday}
-                max={new Date().toISOString().split("T")[0]}
-              />
-              <h1 className="text-2xl sm:text-4xl font-semibold text-center">Start Date</h1>
-              <TravelInput
-                type="date"
-                placeholder="Select Start Date"
-                value={userData.step1.startDate}
-                onChange={(e) => handleInputChange("step1", "startDate", e.target.value)}
-                isInvalid={isInvalid && !userData.step1.startDate}
-                min={new Date().toISOString().split("T")[0]}
-              />
+              <h1 className="text-2xl sm:text-4xl font-semibold text-center">
+                {t("intermediaries_quote_page.steps.step1.title_agent_type")}
+              </h1>
+              <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
+                <TravelSelect
+                  placeholder={t("intermediaries_quote_page.steps.step1.select_agent_type")}
+                  value={userData.step1.agentType}
+                  onChange={(e) => handleInputChange("step1", "agentType", e.target.value)}
+                  options={apiData.categories.map((cat) => ({
+                    value: cat.name,
+                    label: cat.name,
+                  }))}
+                  error={errors.agentType}
+                />
+              </div>
+
+              <h1 className="text-2xl sm:text-4xl font-semibold text-center">
+                ✨ {t("intermediaries_quote_page.steps.step1.title_date_of_birth")}
+              </h1>
+              <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
+                <TravelInput
+                  type="date"
+                  placeholder=""
+                  value={userData.step1.dateBirthday}
+                  onChange={(e) => handleInputChange("step1", "dateBirthday", e.target.value)}
+                  max={today}
+                  error={errors.dateBirthday}
+                />
+              </div>
+
+              <h1 className="text-2xl sm:text-4xl font-semibold text-center">
+                {t("intermediaries_quote_page.steps.step1.title_start_date")}
+              </h1>
+              <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
+                <TravelInput
+                  type="date"
+                  placeholder=""
+                  value={userData.step1.startDate}
+                  onChange={(e) => handleInputChange("step1", "startDate", e.target.value)}
+                  min={today}
+                  error={errors.startDate}
+                />
+              </div>
             </div>
           )}
 
-          {/* خطوة 2 */}
+          {/* Step 2 */}
           {currentStep === 1 && (
             <div className="flex flex-col items-center gap-6 w-full">
               <Icons.QuoteCardIcon />
-              <h1 className="text-2xl sm:text-4xl font-semibold text-center">Firm Established</h1>
-              <TravelInput
-                type="date"
-                placeholder="Select Firm Established Date"
-                value={userData.step2.firmEstablished}
-                onChange={(e) => handleInputChange("step2", "firmEstablished", e.target.value)}
-                isInvalid={isInvalid && !userData.step2.firmEstablished}
-                max={new Date().toISOString().split("T")[0]}
-              />
-              <h1 className="text-2xl sm:text-4xl font-semibold text-center">Type</h1>
-              <TravelSelect
-                placeholder="Select Type"
-                value={userData.step2.type}
-                onChange={(e) => handleInputChange("step2", "type", e.target.value)}
-                isInvalid={isInvalid && !userData.step2.typeId}
-                options={apiData.types.map((type) => type.name)}
-              />
+              <h1 className="text-2xl sm:text-4xl font-semibold text-center">
+                {t("intermediaries_quote_page.steps.step2.title_firm_established")}
+              </h1>
+              <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
+                <TravelInput
+                  type="date"
+                  placeholder=""
+                  value={userData.step2.firmEstablished}
+                  onChange={(e) => handleInputChange("step2", "firmEstablished", e.target.value)}
+                  max={today}
+                  error={errors.firmEstablished}
+                />
+              </div>
+
+              <h1 className="text-2xl sm:text-4xl font-semibold text-center">
+                {t("intermediaries_quote_page.steps.step2.title_type")}
+              </h1>
+              <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
+                <TravelSelect
+                  placeholder={t("intermediaries_quote_page.steps.step2.select_type")}
+                  value={userData.step2.type}
+                  onChange={(e) => handleInputChange("step2", "type", e.target.value)}
+                  options={apiData.types.map((type) => ({
+                    value: type.name,
+                    label: type.name,
+                  }))}
+                  error={errors.type}
+                />
+              </div>
             </div>
           )}
 
-          {/* خطوة 3 */}
+          {/* Step 3 */}
           {currentStep === 2 && (
             <div className="flex flex-col items-center gap-6 w-full">
               <Icons.QuoteBirthIcon />
-              <h1 className="text-2xl sm:text-4xl font-semibold text-center">Gross Insured</h1>
-              <TravelInput
-                type="number"
-                placeholder="Enter Gross Insured Amount"
-                value={userData.step3.grossInsured}
-                onChange={(e) => handleInputChange("step3", "grossInsured", e.target.value)}
-                isInvalid={isInvalid && !userData.step3.grossInsured}
-              />
-              <h1 className="text-2xl sm:text-4xl font-semibold text-center">Gross Insured Current</h1>
-              <TravelInput
-                type="number"
-                placeholder="Enter Gross Insured Current Amount"
-                value={userData.step3.grossInsuredCurrent}
-                onChange={(e) => handleInputChange("step3", "grossInsuredCurrent", e.target.value)}
-                isInvalid={isInvalid && !userData.step3.grossInsuredCurrent}
-              />
+              <h1 className="text-2xl sm:text-4xl font-semibold text-center">
+                {t("intermediaries_quote_page.steps.step3.title_gross_insured")}
+              </h1>
+              <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
+                <TravelInput
+                  type="number"
+                  placeholder={t("intermediaries_quote_page.steps.step3.placeholder_gross_insured")}
+                  value={userData.step3.grossInsured}
+                  onChange={(e) => handleInputChange("step3", "grossInsured", e.target.value)}
+                  error={errors.grossInsured}
+                />
+              </div>
+
+              <h1 className="text-2xl sm:text-4xl font-semibold text-center">
+                {t("intermediaries_quote_page.steps.step3.title_gross_insured_current")}
+              </h1>
+              <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
+                <TravelInput
+                  type="number"
+                  placeholder={t("intermediaries_quote_page.steps.step3.placeholder_gross_insured_current")}
+                  value={userData.step3.grossInsuredCurrent}
+                  onChange={(e) => handleInputChange("step3", "grossInsuredCurrent", e.target.value)}
+                  error={errors.grossInsuredCurrent}
+                />
+              </div>
             </div>
           )}
 
-          {/* خطوة 4 */}
+          {/* Step 4 */}
           {currentStep === 3 && (
             <div className="flex flex-col items-center gap-8 w-full max-w-4xl">
+              <h1 className="text-2xl sm:text-4xl font-semibold text-center">
+                {t("intermediaries_quote_page.steps.step4.title")}
+              </h1>
               {apiData.questions.map((apiQuestion, index) => {
                 const question = userData.step4.questions.find((q) => q.id === apiQuestion.id);
                 if (!question) return null;
@@ -439,7 +527,7 @@ export const IntermediariesQuote = () => {
                         className={`flex-1 h-12 border rounded-full font-medium transition-all
                           ${question.answer === "yes" ? "bg-secondaryColor text-white border-secondaryColor" : "bg-white border-gray-300"}`}
                       >
-                        Yes
+                        {t("common.yes")}
                       </button>
                       <button
                         type="button"
@@ -447,17 +535,25 @@ export const IntermediariesQuote = () => {
                         className={`flex-1 h-12 border rounded-full font-medium transition-all
                           ${question.answer === "no" ? "bg-secondaryColor text-white border-secondaryColor" : "bg-white border-gray-300"}`}
                       >
-                        No
+                        {t("common.no")}
                       </button>
                     </div>
+                    {errors[`q_${question.id}`] && (
+                      <p className="text-red-600 text-sm mb-2 text-center">{errors[`q_${question.id}`]}</p>
+                    )}
                     {shouldShowTextarea(question) && (
-                      <textarea
-                        value={question.textarea || ""}
-                        onChange={(e) => handleQuestionTextareaChange(apiQuestion.id, e.target.value)}
-                        placeholder="Please provide additional details..."
-                        className={`w-full h-28 p-4 border rounded-lg resize-none focus:outline-none transition-all
-                          ${isInvalid && !question.textarea?.trim() ? "border-red-500 animate-pulse" : "border-gray-300"}`}
-                      />
+                      <div className="mt-3">
+                        <textarea
+                          value={question.textarea || ""}
+                          onChange={(e) => handleQuestionTextareaChange(apiQuestion.id, e.target.value)}
+                          placeholder={t("intermediaries_quote_page.steps.step4.placeholder_details")}
+                          className={`w-full h-28 p-4 border rounded-lg resize-none focus:outline-none
+                            ${errors[`q_${question.id}_text`] ? "border-secondaryColor border-2 animate-pulse" : "border-gray-300"}`}
+                        />
+                        {errors[`q_${question.id}_text`] && (
+                          <p className="text-red-600 text-sm mt-1 text-center">{errors[`q_${question.id}_text`]}</p>
+                        )}
+                      </div>
                     )}
                   </div>
                 );
@@ -466,7 +562,7 @@ export const IntermediariesQuote = () => {
           )}
         </div>
 
-        {/* الأزرار */}
+        {/* Navigation Buttons */}
         <div className="flex justify-center items-center gap-6 my-8">
           <ActionButton
             text={t("intermediaries_quote_page.buttons.previous")}
@@ -483,52 +579,65 @@ export const IntermediariesQuote = () => {
             />
           ) : (
             <ActionButton
-              text={isLoading ? "Loading..." : t("intermediaries_quote_page.buttons.submit")}
+              text={isLoading ? <LoadingSpinner size="sm" /> : t("intermediaries_quote_page.buttons.submit")}
               iconPosition="right"
               onClick={handleSubmit}
               isNext
-              isDisabled={isLoading || !isStepValid(currentStep)}
+              isDisabled={isLoading}
             />
           )}
         </div>
-
-        {error && <div className="text-red-600 text-center mt-4">{error}</div>}
       </section>
     </main>
   );
 };
 
-// مكونات موحدة
-const TravelInput = ({ placeholder, value, onChange, isInvalid, type = "text", max, className = "" }) => (
-  <input
-    type={type}
-    placeholder={placeholder}
-    value={value || ""}
-    onChange={onChange}
-    max={max}
-    className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none
-      ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
-      ${value ? "text-black border-black" : "text-[#C3C3C3]"} ${className}`}
-  />
-);
+/* -------------------------------------------------------------------------- */
+/*                               INPUT COMPONENTS                               */
+/* -------------------------------------------------------------------------- */
 
-const TravelSelect = ({ placeholder, value, onChange, options, isInvalid }) => (
-  <select
-    value={value || ""}
-    onChange={onChange}
-    className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none
-      ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
-      ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
-  >
-    <option value="" disabled hidden>
-      {placeholder}
-    </option>
-    {options.map((option, idx) => (
-      <option key={idx} value={option}>
-        {option}
+const TravelInput = ({ placeholder, value, onChange, type = "text", max, min, error }) => {
+  const isDate = type === "date";
+  const valueClass = (value || isDate) ? "text-black border-black" : "text-[#C3C3C3]";
+
+  return (
+    <div className="flex flex-col items-center w-full">
+      <input
+        type={type}
+        placeholder={isDate ? "" : placeholder}
+        value={value || ""}
+        onChange={onChange}
+        max={max}
+        min={min}
+        className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none
+          ${error ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
+          ${valueClass}`}
+      />
+      {error && <p className="text-red-600 text-sm mt-1 text-center">{error}</p>}
+    </div>
+  );
+};
+
+const TravelSelect = ({ placeholder, value, onChange, options, error }) => (
+  <div className="flex flex-col items-center w-full">
+    <select
+      value={value || ""}
+      onChange={onChange}
+      className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none
+        ${error ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
+        ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
+    >
+      <option value="" disabled hidden>
+        {placeholder}
       </option>
-    ))}
-  </select>
+      {options.map((opt) => (
+        <option key={opt.value} value={opt.value}>
+          {opt.label}
+        </option>
+      ))}
+    </select>
+    {error && <p className="text-red-600 text-sm mt-1 text-center">{error}</p>}
+  </div>
 );
 
 const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
@@ -550,22 +659,26 @@ const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
     )}
     {text}
     {iconPosition === "right" && (
-      <span className="flex justify-center items-center bg-secondaryColor w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform group-hover:rotate-45">
+      <span className={`flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform group-hover:rotate-45
+        ${isDisabled ? "bg-gray-300" : "bg-secondaryColor"}`}>
         <Icons.QuoteArrowIcon />
       </span>
     )}
   </button>
 );
 
-// PropTypes
+/* -------------------------------------------------------------------------- */
+/*                                 PROPTYPES                                  */
+/* -------------------------------------------------------------------------- */
+
 TravelInput.propTypes = {
   placeholder: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
-  isInvalid: PropTypes.bool,
   type: PropTypes.string,
   max: PropTypes.string,
-  className: PropTypes.string,
+  min: PropTypes.string,
+  error: PropTypes.string,
 };
 
 TravelSelect.propTypes = {
@@ -573,11 +686,11 @@ TravelSelect.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   options: PropTypes.array.isRequired,
-  isInvalid: PropTypes.bool,
+  error: PropTypes.string,
 };
 
 ActionButton.propTypes = {
-  text: PropTypes.string.isRequired,
+  text: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
   iconPosition: PropTypes.oneOf(["left", "right"]).isRequired,
   onClick: PropTypes.func.isRequired,
   isDisabled: PropTypes.bool,

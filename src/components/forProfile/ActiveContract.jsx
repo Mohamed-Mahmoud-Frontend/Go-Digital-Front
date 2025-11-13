@@ -513,21 +513,19 @@ export const ActiveContract = () => {
                   : "€175.00"}
               </h1>
 
-              {/* Renew Button (only for active contracts) */}
-              {contractData &&
-                (contractData.status?.toLowerCase() === "active" ||
-                  contractData.contract_status?.toLowerCase() === "active") && (
-                  <button
-                    className="text-center sm:text-xl font-bold bg-green-600 hover:bg-green-700 text-white rounded-[30px] py-3 w-full transition-all mb-3"
-                    style={{ boxShadow: "0px -2px 4px 0px #FFEFEA" }}
-                    onClick={handleRenew}
-                    disabled={isRenewing}
-                  >
-                    {isRenewing
-                      ? t("active_contract.renewing") || "Renewing..."
-                      : t("active_contract.renew_button") || "Renew Contract"}
-                  </button>
-                )}
+              {/* Renew Button (only if is_renewable === true) */}
+              {contractData?.is_renewable === true && (
+                <button
+                  className="text-center sm:text-xl font-bold bg-green-600 hover:bg-green-700 text-white rounded-[30px] py-3 w-full transition-all mb-3"
+                  style={{ boxShadow: "0px -2px 4px 0px #FFEFEA" }}
+                  onClick={handleRenew}
+                  disabled={isRenewing}
+                >
+                  {isRenewing
+                    ? t("active_contract.renewing") || "Renewing..."
+                    : t("active_contract.renew_button") || "Renew Contract"}
+                </button>
+              )}
 
               {/* Back Button */}
               <button

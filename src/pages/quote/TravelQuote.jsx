@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 import { QuoteHeader, Economy, LoadingSpinner } from "@/components";
 import * as Icons from "@/utils/icons.util";
+import { toast, Toaster } from "react-hot-toast";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const LOCAL_STORAGE_KEY = "travelQuoteForm";
@@ -28,47 +29,16 @@ export const TravelQuote = () => {
 
   const totalSteps = 5;
   const [currentStep, setCurrentStep] = useState(0);
-  const [isInvalid, setIsInvalid] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
   const [apiData, setApiData] = useState({ countries: [], types: [] });
   const [showEconomy, setShowEconomy] = useState({});
+  const [errors, setErrors] = useState({});
 
-  // قراءة آمنة من localStorage
   const [userData, setUserData] = useState(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (!saved) return getDefaultUserData();
-
-      const parsed = JSON.parse(saved);
-
-      return {
-        step1: {
-          fromCountry: parsed.step1?.fromCountry || "",
-          toCountry: Array.isArray(parsed.step1?.toCountry) ? parsed.step1.toCountry : [],
-          fromCountryId: parsed.step1?.fromCountryId || "",
-          toCountryId: Array.isArray(parsed.step1?.toCountryId) ? parsed.step1.toCountryId : [],
-        },
-        step2: {
-          startDate: parsed.step2?.startDate || "",
-          endDate: parsed.step2?.endDate || "",
-        },
-        step3: {
-          insuredType: parsed.step3?.insuredType || "",
-          insuredTypeId: parsed.step3?.insuredTypeId || "",
-          personCount: parsed.step3?.personCount || "",
-        },
-        step4: {
-          persons: Array.isArray(parsed.step4?.persons)
-            ? parsed.step4.persons.map(p => ({
-                dateBirth: p.dateBirth || "",
-                name: p.name || "",
-                identification: p.identification || "",
-              }))
-            : [{ dateBirth: "", name: "", identification: "" }],
-        },
-        step5: { selectedQuote: null },
-      };
+      return JSON.parse(saved);
     } catch {
       return getDefaultUserData();
     }
@@ -84,21 +54,18 @@ export const TravelQuote = () => {
     };
   }
 
-  // حفظ تلقائي
   useEffect(() => {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
     } catch (err) {
-      console.error("Failed to save to localStorage:", err);
+      console.error("Failed to save:", err);
     }
   }, [userData]);
 
-  // جلب API
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        setError("");
         const res = await fetch(`${API_BASE_URL}/user/travelInsurance/getArguments`, {
           method: "GET",
           headers: {
@@ -110,15 +77,73 @@ export const TravelQuote = () => {
         const data = await res.json();
         setApiData({ countries: data.countries || [], types: data.types || [] });
       } catch (err) {
-        setError("Failed to load data");
+        toast.error(t("errors.load_failed"));
       } finally {
         setIsLoading(false);
       }
     };
     fetchData();
-  }, [i18n.language]);
+  }, [i18n.language, t]);
 
-  // استقبال وجهة السفر (to_country) - Multi
+  useEffect(() => {
+    const renewDataStr = localStorage.getItem("renewContractData");
+    if (renewDataStr && apiData.countries.length > 0 && apiData.types.length > 0) {
+      try {
+        const { contractData: renewData } = JSON.parse(renewDataStr);
+
+        const fromCountryObj = apiData.countries.find(c =>
+          c.id.toString() === renewData.from_country_id?.toString() ||
+          c.name === renewData.from_country
+        );
+        const toCountryIds = Array.isArray(renewData.to_country_ids)
+          ? renewData.to_country_ids.map(id => id.toString())
+          : [];
+        const toCountries = apiData.countries
+          .filter(c => toCountryIds.includes(c.id.toString()))
+          .map(c => c.name);
+
+        const startDate = renewData.start_date || "";
+        const endDate = renewData.end_date || "";
+
+        const insuredTypeObj = apiData.types.find(t =>
+          t.id.toString() === renewData.insured_type_id?.toString() ||
+          t.name === renewData.insured_type_name
+        );
+        const insuredTypeName = insuredTypeObj?.name || "";
+        const personCount = renewData.person_count || "";
+
+        const persons = Array.isArray(renewData.persons)
+          ? renewData.persons.map(p => ({
+              dateBirth: p.date_birth || p.dateBirth || "",
+              name: p.full_name || p.name || "",
+              identification: p.identification || p.id_number || ""
+            }))
+          : [{ dateBirth: "", name: "", identification: "" }];
+
+        setUserData(prev => ({
+          ...prev,
+          step1: {
+            fromCountry: fromCountryObj?.name || "",
+            fromCountryId: fromCountryObj?.id?.toString() || "",
+            toCountry: toCountries,
+            toCountryId: toCountryIds,
+          },
+          step2: { startDate, endDate },
+          step3: {
+            insuredType: insuredTypeName,
+            insuredTypeId: insuredTypeObj?.id?.toString() || "",
+            personCount: personCount
+          },
+          step4: { persons }
+        }));
+
+        localStorage.removeItem("renewContractData");
+      } catch (err) {
+        console.error("Failed to prefill from renew:", err);
+      }
+    }
+  }, [apiData.countries, apiData.types]);
+
   useEffect(() => {
     const prefilled = localStorage.getItem("travel_destination_prefill");
     if (prefilled && apiData.countries.length > 0) {
@@ -137,11 +162,104 @@ export const TravelQuote = () => {
     }
   }, [apiData.countries, userData.step1.toCountryId]);
 
-  // Departure: Single Select
+  const validateStep = (step) => {
+    const newErrors = {};
+    let isValid = true;
+
+    if (step === 0) {
+      if (!userData.step1.fromCountry) {
+        newErrors.fromCountry = t("validation.select_departure");
+        isValid = false;
+      }
+      if (userData.step1.toCountry.length === 0) {
+        newErrors.toCountry = t("validation.select_destination");
+        isValid = false;
+      }
+    }
+
+    if (step === 1) {
+      const today = new Date().toISOString().split("T")[0];
+      if (!userData.step2.startDate) {
+        newErrors.startDate = t("validation.enter_start_date");
+        isValid = false;
+      } else if (userData.step2.startDate < today) {
+        newErrors.startDate = t("validation.start_date_future");
+        isValid = false;
+      }
+
+      if (!userData.step2.endDate) {
+        newErrors.endDate = t("validation.enter_end_date");
+        isValid = false;
+      } else if (userData.step2.endDate < userData.step2.startDate) {
+        newErrors.endDate = t("validation.end_before_start");
+        isValid = false;
+      } else if (userData.step2.endDate < today) {
+        newErrors.endDate = t("validation.end_date_future");
+        isValid = false;
+      }
+    }
+
+    if (step === 2) {
+      if (!userData.step3.insuredType) {
+        newErrors.insuredType = t("validation.select_insured_type");
+        isValid = false;
+      }
+
+      const isFamilyOrGroup = ["Οικογένεια", "Family", "Ομάδα (Group)", "Group"].includes(userData.step3.insuredType);
+      if (isFamilyOrGroup) {
+        const count = parseInt(userData.step3.personCount);
+        if (!count || isNaN(count) || count < 1 || count > 20) {
+          newErrors.personCount = t("validation.person_count_range");
+          isValid = false;
+        }
+      }
+    }
+
+    if (step === 3) {
+      const today = new Date();
+      const minBirthDate = new Date();
+      minBirthDate.setFullYear(today.getFullYear() - 100);
+
+      userData.step4.persons.forEach((p, i) => {
+        const birth = p.dateBirth ? new Date(p.dateBirth) : null;
+
+        if (!p.dateBirth) {
+          newErrors[`person_${i}_dateBirth`] = t("validation.enter_date_of_birth");
+          isValid = false;
+        } else if (birth >= today) {
+          newErrors[`person_${i}_dateBirth`] = t("validation.birth_date_future");
+          isValid = false;
+        } else if (birth < minBirthDate) {
+          newErrors[`person_${i}_dateBirth`] = t("validation.birth_date_too_old");
+          isValid = false;
+        }
+
+        if (!p.name.trim()) {
+          newErrors[`person_${i}_name`] = t("validation.enter_full_name");
+          isValid = false;
+        } else if (p.name.trim().length < 2) {
+          newErrors[`person_${i}_name`] = t("validation.name_too_short");
+          isValid = false;
+        }
+
+        if (!p.identification.trim()) {
+          newErrors[`person_${i}_id`] = t("validation.enter_identification");
+          isValid = false;
+        } else if (!/^[A-Za-z0-9]{3,20}$/.test(p.identification.trim())) {
+          newErrors[`person_${i}_id`] = t("validation.id_invalid_format");
+          isValid = false;
+        }
+      });
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
   const handleFromCountrySelect = (name) => {
     const country = apiData.countries.find(c => c.name === name);
     if (country) {
-      setIsInvalid(false);
+      setErrors(prev => ({ ...prev, fromCountry: "" }));
       setUserData(prev => ({
         ...prev,
         step1: {
@@ -153,11 +271,10 @@ export const TravelQuote = () => {
     }
   };
 
-  // Destination: Multi Select
   const handleToCountryAdd = (name) => {
     const country = apiData.countries.find(c => c.name === name);
     if (country && !userData.step1.toCountryId.includes(country.id.toString())) {
-      setIsInvalid(false);
+      setErrors(prev => ({ ...prev, toCountry: "" }));
       setUserData(prev => ({
         ...prev,
         step1: {
@@ -182,6 +299,7 @@ export const TravelQuote = () => {
 
   const handleInsuredTypeSelection = (name) => {
     const type = apiData.types.find(t => t.name === name);
+    setErrors(prev => ({ ...prev, insuredType: "", personCount: "" }));
     setUserData(prev => ({
       ...prev,
       step3: {
@@ -193,32 +311,8 @@ export const TravelQuote = () => {
     }));
   };
 
-  const isStepValid = (step) => {
-    const data = userData[`step${step + 1}`];
-    switch (step) {
-      case 0:
-        return data.fromCountry && data.toCountry.length > 0;
-      case 1:
-        return data.startDate && data.endDate && data.startDate <= data.endDate;
-      case 2:
-        if (!data.insuredType) return false;
-        if (["Οικογένεια", "Family", "Ομάδα (Group)", "Group"].includes(data.insuredType)) {
-          const count = parseInt(data.personCount);
-          return count >= 1 && count <= 20;
-        }
-        return true;
-      case 3:
-        return data.persons.every(p => p.dateBirth && p.name.trim() && p.identification.trim());
-      default:
-        return true;
-    }
-  };
-
   const handleNext = () => {
-    if (!isStepValid(currentStep)) {
-      setIsInvalid(true);
-      return;
-    }
+    if (!validateStep(currentStep)) return;
 
     if (currentStep === 2) {
       const type = userData.step3.insuredType;
@@ -239,27 +333,20 @@ export const TravelQuote = () => {
     }
 
     setCurrentStep(prev => prev + 1);
-    setIsInvalid(false);
   };
 
   const handlePrevious = () => {
     setCurrentStep(prev => Math.max(prev - 1, 0));
-    setIsInvalid(false);
   };
 
   const handleSubmit = async (goToProceed = true) => {
-    if (!isStepValid(currentStep)) {
-      setIsInvalid(true);
-      return;
-    }
+    if (!validateStep(currentStep)) return;
 
     setIsLoading(true);
-    setError("");
-
     try {
       const payload = {
-        from_country: userData.step1.fromCountryId,     // string
-        to_country: userData.step1.toCountryId,         // array
+        from_country: userData.step1.fromCountryId,
+        to_country: userData.step1.toCountryId,
         persons: userData.step4.persons.map(p => ({ date_birth: p.dateBirth })),
         start_date: userData.step2.startDate,
         end_date: userData.step2.endDate,
@@ -275,10 +362,14 @@ export const TravelQuote = () => {
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) {
+      if (res.status === 400) {
         const err = await res.json();
-        throw new Error(err.message || "Failed to fetch quotes");
+        toast.error(err.error || t("errors.invalid_data"));
+        setIsLoading(false);
+        return;
       }
+
+      if (!res.ok) throw new Error("Failed to fetch quotes");
 
       const result = await res.json();
       const stored = { quotes: result.quotes || [], userData, submissionData: payload };
@@ -297,7 +388,7 @@ export const TravelQuote = () => {
         setCurrentStep(4);
       }
     } catch (err) {
-      setError(err.message || "حدث خطأ");
+      toast.error(err.message || t("errors.submit_failed"));
     } finally {
       setIsLoading(false);
     }
@@ -314,19 +405,21 @@ export const TravelQuote = () => {
     );
   }
 
-  if (error && currentStep === 0) {
-    return (
-      <main>
-        <QuoteHeader />
-        <div className="flex justify-center items-center min-h-screen text-red-600">
-          {error}
-        </div>
-      </main>
-    );
-  }
-
   return (
     <main>
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 5000,
+          style: {
+            background: "#fef2f2",
+            color: "#dc2626",
+            fontWeight: "500",
+            border: "1px solid #fecaca",
+            borderRadius: "8px",
+          },
+        }}
+      />
       <QuoteHeader />
       <section className="Inter_font border-t-2 mx-5 md:mx-0 my-2 flex flex-col justify-center items-center">
         <div className="flex flex-col justify-center items-center my-10">
@@ -349,27 +442,28 @@ export const TravelQuote = () => {
         </div>
 
         <div className={`${currentStep === 4 ? "my-0" : "my-14"} flex flex-wrap justify-center items-center gap-5 w-full`}>
-          {/* === خطوة 1: Departure (Single) + Destination (Multi) === */}
           {currentStep === 0 && (
             <Fragment>
-              {/* Departure: Single Select */}
-              <SearchableSelect
-                placeholder={t("travel_quote_page.steps.step1.placeholder_departure")}
-                options={apiData.countries.map(c => c.name)}
-                value={userData.step1.fromCountry}
-                onChange={handleFromCountrySelect}
-                isInvalid={isInvalid && !userData.step1.fromCountry}
-              />
+              <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
+                <SearchableSelect
+                  placeholder={t("travel_quote_page.steps.step1.placeholder_departure")}
+                  options={apiData.countries.map(c => c.name)}
+                  value={userData.step1.fromCountry}
+                  onChange={handleFromCountrySelect}
+                />
+                {errors.fromCountry && <p className="text-red-600 text-sm mt-1 text-center">{errors.fromCountry}</p>}
+              </div>
 
-              {/* Destination: Multi Select */}
-              <MultiCountrySelect
-                placeholder={t("travel_quote_page.steps.step1.placeholder_arrival")}
-                options={apiData.countries.map(c => c.name)}
-                selectedCountries={userData.step1.toCountry}
-                onAddCountry={handleToCountryAdd}
-                onRemoveCountry={handleToCountryRemove}
-                isInvalid={isInvalid && userData.step1.toCountry.length === 0}
-              />
+              <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
+                <MultiCountrySelect
+                  placeholder={t("travel_quote_page.steps.step1.placeholder_arrival")}
+                  options={apiData.countries.map(c => c.name)}
+                  selectedCountries={userData.step1.toCountry}
+                  onAddCountry={handleToCountryAdd}
+                  onRemoveCountry={handleToCountryRemove}
+                />
+                {errors.toCountry && <p className="text-red-600 text-sm mt-1 text-center">{errors.toCountry}</p>}
+              </div>
             </Fragment>
           )}
 
@@ -380,22 +474,26 @@ export const TravelQuote = () => {
                 {t("travel_quote_page.steps.step2.title")}
               </h1>
               <div className="flex flex-wrap justify-center gap-5">
-                <TravelInput
-                  type="date"
-                  placeholder={t("travel_quote_page.steps.step2.placeholder_start_date")}
-                  value={userData.step2.startDate}
-                  onChange={(e) => setUserData(prev => ({ ...prev, step2: { ...prev.step2, startDate: e.target.value } }))}
-                  isInvalid={isInvalid && !userData.step2.startDate}
-                  min={new Date().toISOString().split("T")[0]}
-                />
-                <TravelInput
-                  type="date"
-                  placeholder={t("travel_quote_page.steps.step2.placeholder_end_date")}
-                  value={userData.step2.endDate}
-                  onChange={(e) => setUserData(prev => ({ ...prev, step2: { ...prev.step2, endDate: e.target.value } }))}
-                  isInvalid={isInvalid && !userData.step2.endDate}
-                  min={userData.step2.startDate || new Date().toISOString().split("T")[0]}
-                />
+                <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
+                  <TravelInput
+                    type="date"
+                    placeholder={t("travel_quote_page.steps.step2.placeholder_start_date")}
+                    value={userData.step2.startDate}
+                    onChange={(e) => setUserData(prev => ({ ...prev, step2: { ...prev.step2, startDate: e.target.value } }))}
+                    min={new Date().toISOString().split("T")[0]}
+                  />
+                  {errors.startDate && <p className="text-red-600 text-sm mt-1 text-center">{errors.startDate}</p>}
+                </div>
+                <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
+                  <TravelInput
+                    type="date"
+                    placeholder={t("travel_quote_page.steps.step2.placeholder_end_date")}
+                    value={userData.step2.endDate}
+                    onChange={(e) => setUserData(prev => ({ ...prev, step2: { ...prev.step2, endDate: e.target.value } }))}
+                    min={userData.step2.startDate || new Date().toISOString().split("T")[0]}
+                  />
+                  {errors.endDate && <p className="text-red-600 text-sm mt-1 text-center">{errors.endDate}</p>}
+                </div>
               </div>
             </div>
           )}
@@ -405,27 +503,31 @@ export const TravelQuote = () => {
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
                 {t("travel_quote_page.steps.step3.title")}
               </h1>
-              <TravelSelect
-                placeholder={t("travel_quote_page.steps.step3.placeholder_preference")}
-                value={userData.step3.insuredType}
-                onChange={(e) => handleInsuredTypeSelection(e.target.value)}
-                isInvalid={isInvalid && !userData.step3.insuredType}
-                options={apiData.types.map(t => t.name)}
-              />
+              <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
+                <TravelSelect
+                  placeholder={t("travel_quote_page.steps.step3.placeholder_preference")}
+                  value={userData.step3.insuredType}
+                  onChange={(e) => handleInsuredTypeSelection(e.target.value)}
+                  options={apiData.types.map(t => t.name)}
+                />
+                {errors.insuredType && <p className="text-red-600 text-sm mt-1 text-center">{errors.insuredType}</p>}
+              </div>
               {["Οικογένεια", "Family", "Ομάδα (Group)", "Group"].includes(userData.step3.insuredType) && (
                 <div className="flex flex-col items-center gap-3">
                   <h2 className="text-lg font-semibold">
                     {t("travel_quote_page.steps.step3.person_count") || "Number of Persons"}
                   </h2>
-                  <TravelInput
-                    type="number"
-                    placeholder="1"
-                    value={userData.step3.personCount}
-                    onChange={(e) => setUserData(prev => ({ ...prev, step3: { ...prev.step3, personCount: e.target.value } }))}
-                    isInvalid={isInvalid && !userData.step3.personCount}
-                    min="1"
-                    max="20"
-                  />
+                  <div className="w-full max-w-80 vsm:max-w-96 sm:w-[200px]">
+                    <TravelInput
+                      type="number"
+                      placeholder="1"
+                      value={userData.step3.personCount}
+                      onChange={(e) => setUserData(prev => ({ ...prev, step3: { ...prev.step3, personCount: e.target.value } }))}
+                      min="1"
+                      max="20"
+                    />
+                    {errors.personCount && <p className="text-red-600 text-sm mt-1 text-center">{errors.personCount}</p>}
+                  </div>
                 </div>
               )}
             </div>
@@ -443,47 +545,53 @@ export const TravelQuote = () => {
                   return (
                     <div key={i} className="flex flex-col gap-4">
                       {showLabel && (
-                        <h3 className="text-lg font-semibold">
+                        <h3 className="text-lg font-semibold text-center">
                           {t("common.person")} {i + 1}
                         </h3>
                       )}
-                      <TravelInput
-                        type="date"
-                        placeholder={t("common.date_of_birth")}
-                        value={person.dateBirth}
-                        onChange={(e) => {
-                          const newPersons = [...userData.step4.persons];
-                          newPersons[i].dateBirth = e.target.value;
-                          setUserData(prev => ({ ...prev, step4: { persons: newPersons } }));
-                        }}
-                        isInvalid={isInvalid && !person.dateBirth}
-                        max={new Date().toISOString().split("T")[0]}
-                        fullWidth
-                      />
-                      <TravelInput
-                        type="text"
-                        placeholder={t("common.full_name")}
-                        value={person.name}
-                        onChange={(e) => {
-                          const newPersons = [...userData.step4.persons];
-                          newPersons[i].name = e.target.value;
-                          setUserData(prev => ({ ...prev, step4: { persons: newPersons } }));
-                        }}
-                        isInvalid={isInvalid && !person.name}
-                        fullWidth
-                      />
-                      <TravelInput
-                        type="text"
-                        placeholder={t("common.identification")}
-                        value={person.identification}
-                        onChange={(e) => {
-                          const newPersons = [...userData.step4.persons];
-                          newPersons[i].identification = e.target.value;
-                          setUserData(prev => ({ ...prev, step4: { persons: newPersons } }));
-                        }}
-                        isInvalid={isInvalid && !person.identification}
-                        fullWidth
-                      />
+                      <div>
+                        <TravelInput
+                          type="date"
+                          placeholder={t("common.date_of_birth")}
+                          value={person.dateBirth}
+                          onChange={(e) => {
+                            const newPersons = [...userData.step4.persons];
+                            newPersons[i].dateBirth = e.target.value;
+                            setUserData(prev => ({ ...prev, step4: { persons: newPersons } }));
+                          }}
+                          max={new Date().toISOString().split("T")[0]}
+                          fullWidth
+                        />
+                        {errors[`person_${i}_dateBirth`] && <p className="text-red-600 text-sm mt-1 text-center">{errors[`person_${i}_dateBirth`]}</p>}
+                      </div>
+                      <div>
+                        <TravelInput
+                          type="text"
+                          placeholder={t("common.full_name")}
+                          value={person.name}
+                          onChange={(e) => {
+                            const newPersons = [...userData.step4.persons];
+                            newPersons[i].name = e.target.value;
+                            setUserData(prev => ({ ...prev, step4: { persons: newPersons } }));
+                          }}
+                          fullWidth
+                        />
+                        {errors[`person_${i}_name`] && <p className="text-red-600 text-sm mt-1 text-center">{errors[`person_${i}_name`]}</p>}
+                      </div>
+                      <div>
+                        <TravelInput
+                          type="text"
+                          placeholder={t("common.identification")}
+                          value={person.identification}
+                          onChange={(e) => {
+                            const newPersons = [...userData.step4.persons];
+                            newPersons[i].identification = e.target.value;
+                            setUserData(prev => ({ ...prev, step4: { persons: newPersons } }));
+                          }}
+                          fullWidth
+                        />
+                        {errors[`person_${i}_id`] && <p className="text-red-600 text-sm mt-1 text-center">{errors[`person_${i}_id`]}</p>}
+                      </div>
                     </div>
                   );
                 })}
@@ -545,8 +653,7 @@ export const TravelQuote = () => {
   );
 };
 
-// مكونات
-const TravelInput = ({ placeholder, value, onChange, isInvalid, type = "text", min, max, fullWidth = false }) => (
+const TravelInput = ({ placeholder, value, onChange, type = "text", min, max, fullWidth = false }) => (
   <input
     type={type}
     placeholder={placeholder}
@@ -555,18 +662,16 @@ const TravelInput = ({ placeholder, value, onChange, isInvalid, type = "text", m
     min={min}
     max={max}
     className={`w-full ${fullWidth ? "max-w-none" : "max-w-80 vsm:max-w-96 sm:w-[400px]"} h-[75px] px-4 border rounded-[10px] text-[#C3C3C3] font-medium focus:outline-none
-      ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
-      ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
+      border-[#C3C3C3] ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
   />
 );
 
-const TravelSelect = ({ placeholder, value, onChange, options, isInvalid }) => (
+const TravelSelect = ({ placeholder, value, onChange, options }) => (
   <select
     value={value || ""}
     onChange={onChange}
     className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none
-      ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
-      ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
+      border-[#C3C3C3] ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
   >
     <option value="" disabled hidden>{placeholder}</option>
     {options.map((opt, i) => (
@@ -575,28 +680,19 @@ const TravelSelect = ({ placeholder, value, onChange, options, isInvalid }) => (
   </select>
 );
 
-const SearchableSelect = ({ placeholder, options, value, onChange, isInvalid }) => {
+const SearchableSelect = ({ placeholder, options, value, onChange }) => {
   const [filter, setFilter] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-
   const displayedValue = value || filter;
 
   const availableOptions = options.filter(
-    (opt) =>
-      opt.toLowerCase().includes(filter.toLowerCase()) && opt !== value
+    (opt) => opt.toLowerCase().includes(filter.toLowerCase()) && opt !== value
   );
 
-  const handleSelect = (countryName) => {
-    onChange(countryName);
+  const handleSelect = (name) => {
+    onChange(name);
     setFilter("");
     setIsOpen(false);
-  };
-
-  const handleInputChange = (e) => {
-    setFilter(e.target.value);
-    if (value) {
-      onChange("");
-    }
   };
 
   return (
@@ -605,12 +701,14 @@ const SearchableSelect = ({ placeholder, options, value, onChange, isInvalid }) 
         type="text"
         placeholder={placeholder}
         value={displayedValue}
-        onChange={handleInputChange}
+        onChange={(e) => {
+          setFilter(e.target.value);
+          if (value) onChange("");
+        }}
         onFocus={() => setIsOpen(true)}
         onBlur={() => setTimeout(() => setIsOpen(false), 200)}
         className={`w-full h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none
-          ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
-          ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
+          border-[#C3C3C3] ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
       />
       {isOpen && availableOptions.length > 0 && (
         <ul className="absolute z-10 w-full max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-[10px] shadow-lg mt-1">
@@ -632,11 +730,11 @@ const SearchableSelect = ({ placeholder, options, value, onChange, isInvalid }) 
   );
 };
 
-const MultiCountrySelect = ({ placeholder, options, selectedCountries = [], onAddCountry, onRemoveCountry, isInvalid }) => {
+const MultiCountrySelect = ({ placeholder, options, selectedCountries = [], onAddCountry, onRemoveCountry }) => {
   const [filter, setFilter] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-
   const safeSelected = Array.isArray(selectedCountries) ? selectedCountries : [];
+
   const availableOptions = options.filter(
     opt => !safeSelected.includes(opt) && opt.toLowerCase().includes(filter.toLowerCase())
   );
@@ -651,8 +749,7 @@ const MultiCountrySelect = ({ placeholder, options, selectedCountries = [], onAd
     <div className="relative w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
       <div
         className={`flex flex-wrap items-center gap-2 w-full min-h-[75px] px-4 py-2 border rounded-[10px] cursor-pointer
-          ${isInvalid ? "border-secondaryColor border-2 animate-pulse" : "border-[#C3C3C3]"}
-          ${safeSelected.length > 0 || filter ? "border-black" : "border-[#C3C3C3]"}`}
+          border-[#C3C3C3] ${safeSelected.length > 0 || filter ? "border-black" : "border-[#C3C3C3]"}`}
         onClick={() => setIsOpen(true)}
       >
         {safeSelected.map((country, i) => (
@@ -724,9 +821,8 @@ const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
   </button>
 );
 
-// PropTypes
-TravelInput.propTypes = { placeholder: PropTypes.string, value: PropTypes.string, onChange: PropTypes.func.isRequired, isInvalid: PropTypes.bool, type: PropTypes.string, min: PropTypes.string, max: PropTypes.string, fullWidth: PropTypes.bool };
-TravelSelect.propTypes = { placeholder: PropTypes.string, value: PropTypes.string, onChange: PropTypes.func.isRequired, options: PropTypes.array.isRequired, isInvalid: PropTypes.bool };
-SearchableSelect.propTypes = { placeholder: PropTypes.string, options: PropTypes.array.isRequired, value: PropTypes.string, onChange: PropTypes.func.isRequired, isInvalid: PropTypes.bool };
-MultiCountrySelect.propTypes = { placeholder: PropTypes.string, options: PropTypes.array.isRequired, selectedCountries: PropTypes.array, onAddCountry: PropTypes.func.isRequired, onRemoveCountry: PropTypes.func.isRequired, isInvalid: PropTypes.bool };
+TravelInput.propTypes = { placeholder: PropTypes.string, value: PropTypes.string, onChange: PropTypes.func.isRequired, type: PropTypes.string, min: PropTypes.string, max: PropTypes.string, fullWidth: PropTypes.bool };
+TravelSelect.propTypes = { placeholder: PropTypes.string, value: PropTypes.string, onChange: PropTypes.func.isRequired, options: PropTypes.array.isRequired };
+SearchableSelect.propTypes = { placeholder: PropTypes.string, options: PropTypes.array.isRequired, value: PropTypes.string, onChange: PropTypes.func.isRequired };
+MultiCountrySelect.propTypes = { placeholder: PropTypes.string, options: PropTypes.array.isRequired, selectedCountries: PropTypes.array, onAddCountry: PropTypes.func.isRequired, onRemoveCountry: PropTypes.func.isRequired };
 ActionButton.propTypes = { text: PropTypes.string.isRequired, iconPosition: PropTypes.oneOf(["left", "right"]).isRequired, onClick: PropTypes.func.isRequired, isDisabled: PropTypes.bool, isNext: PropTypes.bool };
