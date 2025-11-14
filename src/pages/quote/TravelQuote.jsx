@@ -85,65 +85,71 @@ export const TravelQuote = () => {
     fetchData();
   }, [i18n.language, t]);
 
-  useEffect(() => {
-    const renewDataStr = localStorage.getItem("renewContractData");
-    if (renewDataStr && apiData.countries.length > 0 && apiData.types.length > 0) {
-      try {
-        const { contractData: renewData } = JSON.parse(renewDataStr);
+useEffect(() => {
+  const renewDataStr = localStorage.getItem("renewContractData");
+  if (renewDataStr && apiData.countries.length > 0 && apiData.types.length > 0) {
+    try {
+      const { contractData: renewData } = JSON.parse(renewDataStr);
 
-        const fromCountryObj = apiData.countries.find(c =>
-          c.id.toString() === renewData.from_country_id?.toString() ||
-          c.name === renewData.from_country
-        );
-        const toCountryIds = Array.isArray(renewData.to_country_ids)
-          ? renewData.to_country_ids.map(id => id.toString())
-          : [];
-        const toCountries = apiData.countries
-          .filter(c => toCountryIds.includes(c.id.toString()))
-          .map(c => c.name);
-
-        const startDate = renewData.start_date || "";
-        const endDate = renewData.end_date || "";
-
-        const insuredTypeObj = apiData.types.find(t =>
-          t.id.toString() === renewData.insured_type_id?.toString() ||
-          t.name === renewData.insured_type_name
-        );
-        const insuredTypeName = insuredTypeObj?.name || "";
-        const personCount = renewData.person_count || "";
-
-        const persons = Array.isArray(renewData.persons)
-          ? renewData.persons.map(p => ({
-              dateBirth: p.date_birth || p.dateBirth || "",
-              name: p.full_name || p.name || "",
-              identification: p.identification || p.id_number || ""
-            }))
-          : [{ dateBirth: "", name: "", identification: "" }];
-
-        setUserData(prev => ({
-          ...prev,
-          step1: {
-            fromCountry: fromCountryObj?.name || "",
-            fromCountryId: fromCountryObj?.id?.toString() || "",
-            toCountry: toCountries,
-            toCountryId: toCountryIds,
-          },
-          step2: { startDate, endDate },
-          step3: {
-            insuredType: insuredTypeName,
-            insuredTypeId: insuredTypeObj?.id?.toString() || "",
-            personCount: personCount
-          },
-          step4: { persons }
-        }));
-
-        localStorage.removeItem("renewContractData");
-      } catch (err) {
-        console.error("Failed to prefill from renew:", err);
+      // حساب تاريخ البداية الجديد تلقائيًا
+      let newStartDate = renewData.start_date || "";
+      if (renewData.end_date) {
+        const end = new Date(renewData.end_date);
+        end.setDate(end.getDate() + 1);
+        newStartDate = end.toISOString().split("T")[0];
       }
-    }
-  }, [apiData.countries, apiData.types]);
 
+      const fromCountryObj = apiData.countries.find(c =>
+        c.id.toString() === renewData.from_country_id?.toString() ||
+        c.name === renewData.from_country
+      );
+
+      const toCountryIds = Array.isArray(renewData.to_country_ids)
+        ? renewData.to_country_ids.map(id => id.toString())
+        : [];
+      const toCountries = apiData.countries
+        .filter(c => toCountryIds.includes(c.id.toString()))
+        .map(c => c.name);
+
+      const insuredTypeObj = apiData.types.find(t =>
+        t.id.toString() === renewData.insured_type_id?.toString() ||
+        t.name === renewData.insured_type_name
+      );
+
+      const persons = Array.isArray(renewData.persons)
+        ? renewData.persons.map(p => ({
+            dateBirth: p.date_birth || p.dateBirth || "",
+            name: p.full_name || p.name || "",
+            identification: p.identification || p.id_number || ""
+          }))
+        : [{ dateBirth: "", name: "", identification: "" }];
+
+      setUserData(prev => ({
+        ...prev,
+        step1: {
+          fromCountry: fromCountryObj?.name || "",
+          fromCountryId: fromCountryObj?.id?.toString() || "",
+          toCountry: toCountries,
+          toCountryId: toCountryIds,
+        },
+        step2: { 
+          startDate: newStartDate,
+          endDate: renewData.end_date || "" 
+        },
+        step3: {
+          insuredType: insuredTypeObj?.name || renewData.insured_type_name || "",
+          insuredTypeId: insuredTypeObj?.id?.toString() || "",
+          personCount: renewData.person_count || ""
+        },
+        step4: { persons }
+      }));
+
+      localStorage.removeItem("renewContractData");
+    } catch (err) {
+      console.error("Failed to prefill renew data:", err);
+    }
+  }
+}, [apiData.countries, apiData.types]);
   useEffect(() => {
     const prefilled = localStorage.getItem("travel_destination_prefill");
     if (prefilled && apiData.countries.length > 0) {

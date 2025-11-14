@@ -35,7 +35,7 @@ export const Model = ({ show, onClose, icon, title, description }) => {
 
                 {/* Contact Button */}
                 <div className="text-center mt-4">
-                    <Link to="/contact" className="border border-secondaryColor text-secondaryColor text-xs vsm:text-base font-bold px-4 vsm:px-7 py-2 vsm:py-3 rounded-lg">
+                    <Link target="_blank" to="/contact" className="border border-secondaryColor text-secondaryColor text-xs vsm:text-base font-bold px-4 vsm:px-7 py-2 vsm:py-3 rounded-lg">
                         {t("model.contact_button")}
                     </Link>
                 </div>

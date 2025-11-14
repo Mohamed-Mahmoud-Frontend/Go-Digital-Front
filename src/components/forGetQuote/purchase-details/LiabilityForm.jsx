@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import PropTypes from 'prop-types';
 import * as iconsUtil from "@/utils/icons.util";
-import { LoadingSpinner } from "@/components";
+// (جديد) تم استيراد الكومبوننت
+import { LoadingSpinner } from "@/components"; 
+import { CountryCodeSelect } from "../../CountryCodeSelect";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const LiabilityForm = ({ isOpen, onClose, selectedQuote, userDetails }) => {
@@ -17,7 +20,7 @@ export const LiabilityForm = ({ isOpen, onClose, selectedQuote, userDetails }) =
         name: "",
         surname: "",
         email: "",
-        primaryCountryCode: "",
+        primaryCountryCode: "+30", // (جديد) القيمة الافتراضية
         primaryPhoneNumber: "",
         address: "",
         taxId: "",
@@ -43,7 +46,7 @@ export const LiabilityForm = ({ isOpen, onClose, selectedQuote, userDetails }) =
                 surname: userDetails.last_name || userDetails.surname || "",
                 email: userDetails.email || "",
                 address: userDetails.address || "",
-                // Add other fields as they become available from the API
+                // (ملاحظة) سبنا الكود الافتراضي +30 زي ما هو
             }));
         }
     }, [userDetails, isOpen]);
@@ -86,6 +89,13 @@ export const LiabilityForm = ({ isOpen, onClose, selectedQuote, userDetails }) =
         }));
     };
 
+    const handleCountryCodeChange = (code) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            primaryCountryCode: code,
+        }));
+    };
+
     // Handle medical condition change
     const handleMedicalConditionChange = (value) => {
         setFormData((prevData) => ({
@@ -110,7 +120,8 @@ export const LiabilityForm = ({ isOpen, onClose, selectedQuote, userDetails }) =
             return;
         }
 
-        if (!isStep2Valid) {
+        // (تم الإصلاح) كان لازم تستدعي الدالة بـ ()
+        if (!isStep2Valid()) { 
             return;
         }
 
@@ -189,7 +200,7 @@ export const LiabilityForm = ({ isOpen, onClose, selectedQuote, userDetails }) =
         formData.name &&
         formData.surname &&
         formData.email &&
-        formData.primaryCountryCode &&
+        formData.primaryCountryCode && // دي هتفضل شغالة عادي
         formData.primaryPhoneNumber &&
         formData.address &&
         formData.taxId &&
@@ -288,17 +299,15 @@ export const LiabilityForm = ({ isOpen, onClose, selectedQuote, userDetails }) =
                                 className="sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto w-full outline-none"
                             />
 
-                            <div className="flex items-center justify-center gap-3 w-full sm:w-[476.442px] mx-auto">
-                                {/* Country code input and phone number input */}
-                                <input
-                                    type="text"
-                                    name="primaryCountryCode"
-                                    placeholder="+30"
-                                    value={formData.primaryCountryCode}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full max-w-[90px] h-[50px] px-2 border border-[#C3C3C3] outline-none rounded-[10px] text-center"
-                                />
+                            {/* (جديد) تم استبدال الحقل بالكومبوننت */}
+                            <div className="flex items-center justify-center gap-3 w-full sm:max-w-[476px] mx-auto">
+                                <div className="w-[110px]">
+                                    <CountryCodeSelect
+                                        value={formData.primaryCountryCode}
+                                        onChange={handleCountryCodeChange}
+                                        isInvalid={!formData.primaryCountryCode}
+                                    />
+                                </div>
                                 <input
                                     type="tel"
                                     name="primaryPhoneNumber"
@@ -306,7 +315,7 @@ export const LiabilityForm = ({ isOpen, onClose, selectedQuote, userDetails }) =
                                     value={formData.primaryPhoneNumber}
                                     onChange={handleChange}
                                     required
-                                    className="w-full h-[50px] px-5 border border-[#C3C3C3] outline-none rounded-[10px]"
+                                    className="flex-1 h-[50px] px-5 border border-[#C3C3C3] outline-none rounded-[10px]"
                                 />
                             </div>
 

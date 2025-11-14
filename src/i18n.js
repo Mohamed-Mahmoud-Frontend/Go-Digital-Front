@@ -8,10 +8,13 @@ i18n
     .use(LanguageDetector)
     .use(initReactI18next)
     .init({
+        lng: 'en', 
+        
         fallbackLng: 'en',
         debug: true,
         detection: {
-            order: ['cookie', 'htmlTag', 'localStorage', 'navigator',],
+    
+            order: ['cookie', 'localStorage', 'htmlTag'],
             caches: ['cookie', 'localStorage'],
         },
         backend: {

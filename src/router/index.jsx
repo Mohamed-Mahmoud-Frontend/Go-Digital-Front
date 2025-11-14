@@ -4,12 +4,12 @@ import {
     HomePage, ForeignersPage, GuaranteesPage, IntermediariesPage, LiabilityPage, TravelPage,
     BlogPage, AllDetail, TravelDetail, GuaranteesDetail, LiabilityDetail, ForeignersDetail, IntermediariesDetail,
     TravelQuote, GuaranteeQuote, LiabilityQuote, IntermediariesQuote, ForeignersQuote, Profile, ProfileContracts, ContactPage,
-    PaymentSuccess, PaymentFailed
+     PaymentFailed
 } from "@/pages";
 // Components
 import { TravelProceed, ForeignersProceed, IntermediariesProceed, LiabilityProceed, GuaranteeProceed, ActiveContract } from "@/components";
 import { ArticlePage, NotFoundPage } from "@/pages";
-
+import PaymentSuccess from "../pages/payment/PaymentSuccess";
 const router = createBrowserRouter([
 
     {
@@ -140,7 +140,7 @@ const router = createBrowserRouter([
     // Payment Result Routes
     {
         path: "/success",
-        element: <PaymentSuccess />,
+        element: <PaymentSuccess/>,
     },
     {
         path: "/fail",

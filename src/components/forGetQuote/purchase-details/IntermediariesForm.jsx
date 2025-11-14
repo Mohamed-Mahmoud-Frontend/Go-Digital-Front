@@ -2,7 +2,9 @@ import { Fragment, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import PropTypes from 'prop-types';
 import * as iconsUtil from "@/utils/icons.util";
-import { LoadingSpinner } from "@/components";
+import { LoadingSpinner } from "@/components"; 
+import { CountryCodeSelect } from "../../CountryCodeSelect";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const IntermediariesForm = ({ isOpen, onClose, selectedQuote, userDetails }) => {
@@ -14,9 +16,9 @@ export const IntermediariesForm = ({ isOpen, onClose, selectedQuote, userDetails
         firstName: "",
         lastName: "",
         email: "",
-        mobileExtension: "",
+        mobileExtension: "+30", // (جديد) قيمة افتراضية
         mobileNumber: "",
-        phoneExtension: "",
+        phoneExtension: "+30", // (جديد) قيمة افتراضية
         phoneNumber: "",
         address: "",
         tin: "",
@@ -75,9 +77,10 @@ export const IntermediariesForm = ({ isOpen, onClose, selectedQuote, userDetails
                 firstName: userDetails.first_name || userDetails.name || "",
                 lastName: userDetails.last_name || userDetails.surname || "",
                 email: userDetails.email || "",
-                mobileExtension: userDetails.mobile_extension || userDetails.phone_extension || "",
+                // (جديد) تم تعديل اللوجيك ليحتفظ بالقيمة الافتراضية
+                mobileExtension: userDetails.mobile_extension || userDetails.phone_extension || prev.mobileExtension,
                 mobileNumber: userDetails.mobile_number || userDetails.phone || "",
-                phoneExtension: userDetails.phone_extension || userDetails.mobile_extension || "",
+                phoneExtension: userDetails.phone_extension || userDetails.mobile_extension || prev.phoneExtension,
                 phoneNumber: userDetails.phone_number || userDetails.phone || "",
                 address: userDetails.address || "",
                 tin: userDetails.tin || userDetails.tax_id || "",
@@ -96,6 +99,20 @@ export const IntermediariesForm = ({ isOpen, onClose, selectedQuote, userDetails
         setFormData((prevData) => ({
             ...prevData,
             [name]: value,
+        }));
+    };
+
+    const handleMobileCodeChange = (code) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            mobileExtension: code,
+        }));
+    };
+
+    const handlePhoneCodeChange = (code) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            phoneExtension: code,
         }));
     };
 
@@ -259,17 +276,15 @@ export const IntermediariesForm = ({ isOpen, onClose, selectedQuote, userDetails
                                 className="sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto w-full outline-none"
                             />
 
-                            {/* Mobile Extension + Number */}
-                            <div className="flex items-center justify-center gap-3 w-full sm:w-[476.442px] mx-auto">
-                                <input
-                                    type="text"
-                                    name="mobileExtension"
-                                    placeholder="+30"
-                                    value={formData.mobileExtension}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full max-w-[90px] h-[50px] px-2 border border-[#C3C3C3] outline-none rounded-[10px] text-center"
-                                />
+                            {/* (جديد) Mobile Extension + Number */}
+                            <div className="flex items-center justify-center gap-3 w-full sm:max-w-[476px] mx-auto">
+                                <div className="w-[110px]">
+                                    <CountryCodeSelect
+                                        value={formData.mobileExtension}
+                                        onChange={handleMobileCodeChange}
+                                        isInvalid={!formData.mobileExtension}
+                                    />
+                                </div>
                                 <input
                                     type="tel"
                                     name="mobileNumber"
@@ -277,21 +292,19 @@ export const IntermediariesForm = ({ isOpen, onClose, selectedQuote, userDetails
                                     value={formData.mobileNumber}
                                     onChange={handleChange}
                                     required
-                                    className="w-full h-[50px] px-5 border border-[#C3C3C3] outline-none rounded-[10px]"
+                                    className="flex-1 h-[50px] px-5 border border-[#C3C3C3] outline-none rounded-[10px]"
                                 />
                             </div>
 
-                            {/* Phone Extension + Number */}
-                            <div className="flex items-center justify-center gap-3 w-full sm:w-[476.442px] mx-auto">
-                                <input
-                                    type="text"
-                                    name="phoneExtension"
-                                    placeholder="+30"
-                                    value={formData.phoneExtension}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full max-w-[90px] h-[50px] px-2 border border-[#C3C3C3] outline-none rounded-[10px] text-center"
-                                />
+                            {/* (جديد) Phone Extension + Number */}
+                            <div className="flex items-center justify-center gap-3 w-full sm:max-w-[476px] mx-auto">
+                                <div className="w-[110px]">
+                                    <CountryCodeSelect
+                                        value={formData.phoneExtension}
+                                        onChange={handlePhoneCodeChange}
+                                        isInvalid={!formData.phoneExtension}
+                                    />
+                                </div>
                                 <input
                                     type="tel"
                                     name="phoneNumber"
@@ -299,7 +312,7 @@ export const IntermediariesForm = ({ isOpen, onClose, selectedQuote, userDetails
                                     value={formData.phoneNumber}
                                     onChange={handleChange}
                                     required
-                                    className="w-full h-[50px] px-5 border border-[#C3C3C3] outline-none rounded-[10px]"
+                                    className="flex-1 h-[50px] px-5 border border-[#C3C3C3] outline-none rounded-[10px]"
                                 />
                             </div>
 

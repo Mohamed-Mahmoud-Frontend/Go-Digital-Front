@@ -55,7 +55,9 @@ html {
 .transition_all {
   transition: all 0.5s ease-out;
 }
-
+.react-select--invalid > div:first-child {
+  border-color: #dc2626 !important;
+}
 .react-tel-input .form-control {
   height: 80px !important;
   padding-top: 0 !important;

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import PropTypes from 'prop-types';
 import * as iconsUtil from "@/utils/icons.util";
 import { LoadingSpinner } from "@/components";
+import { CountryCodeSelect } from "../../CountryCodeSelect";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -14,24 +15,24 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
-        // Step 1 - Person the service is bought for (from previous screen)
+        // Step 1 - Person the service is bought for
         startDate: "",
         identification: "",
         firstName: "",
         lastName: "",
-        mobileExtension: "",
+        mobileExtension: "+30", // (جديد)
         mobileNumber: "",
         address: "",
 
         // Step 2 - Questions from API
         questions: [],
 
-        // Step 3 - User account details (auto-filled from /user/details)
+        // Step 3 - User account details
         userIdentification: "",
         userFirstName: "",
         userLastName: "",
         userEmail: "",
-        userMobileExtension: "",
+        userMobileExtension: "+30", // (جديد)
         userMobileNumber: "",
         userAddress: "",
         userTin: "",
@@ -130,7 +131,8 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                 userFirstName: data.first_name || data.name || "",
                 userLastName: data.last_name || data.surname || "",
                 userEmail: data.email || "",
-                userMobileExtension: data.mobile_extension || data.phone_extension || "",
+                // (جديد) تعديل اللوجيك للحفاظ على القيمة الافتراضية
+                userMobileExtension: data.mobile_extension || data.phone_extension || prevData.userMobileExtension,
                 userMobileNumber: data.mobile_number || data.phone || "",
                 userAddress: data.address || "",
                 userTin: data.tin || data.tax_id || "",
@@ -150,6 +152,20 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
         setFormData((prevData) => ({
             ...prevData,
             [name]: value,
+        }));
+    };
+
+    const handleMobileCodeChange = (code) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            mobileExtension: code,
+        }));
+    };
+
+    const handleUserMobileCodeChange = (code) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            userMobileExtension: code,
         }));
     };
 
@@ -177,7 +193,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
     const handleNext = () => {
         if (step === 1 && isStep1Valid) {
             setStep(2);
-        } else if (step === 2 && isStep2Valid) {
+        } else if (step === 2 && isStep2Valid()) { // (تصحيح) الدالة دي لازم تتنادى
             setStep(3);
         }
     };
@@ -385,16 +401,15 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                                 />
                             </span>
 
+                            {/* (جديد) Mobile Extension + Number (Step 1) */}
                             <div className="flex items-center justify-center gap-3 w-full sm:w-[476.442px] mx-auto">
-                                <input
-                                    type="text"
-                                    name="mobileExtension"
-                                    placeholder="+30"
-                                    value={formData.mobileExtension}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full max-w-[90px] h-[50px] px-2 border border-[#C3C3C3] outline-none rounded-[10px] text-center"
-                                />
+                                <div className="w-[110px]">
+                                    <CountryCodeSelect
+                                        value={formData.mobileExtension}
+                                        onChange={handleMobileCodeChange}
+                                        isInvalid={!formData.mobileExtension}
+                                    />
+                                </div>
                                 <input
                                     type="tel"
                                     name="mobileNumber"
@@ -402,7 +417,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                                     value={formData.mobileNumber}
                                     onChange={handleChange}
                                     required
-                                    className="w-full h-[50px] px-5 border border-[#C3C3C3] outline-none rounded-[10px]"
+                                    className="flex-1 h-[50px] px-5 border border-[#C3C3C3] outline-none rounded-[10px]"
                                 />
                             </div>
 
@@ -491,7 +506,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                                                     <textarea
                                                         value={question.textarea || ""}
                                                         onChange={(e) => handleQuestionTextareaChange(apiQuestion.id, e.target.value)}
-                                                        placeholder="{t('foreigners_form.placeholders.additionalDetails')}"
+                                                        placeholder={t('foreigners_form.placeholders.additionalDetails')}
                                                         required
                                                         className="w-full h-[100px] px-4 py-3 border border-[#C3C3C3] rounded-[10px] outline-none resize-none"
                                                     />
@@ -574,16 +589,15 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                                 className="sm:max-w-[476.442px] h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto w-full outline-none"
                             />
 
+                            {/* (جديد) User Mobile Extension + Number (Step 3) */}
                             <div className="flex items-center justify-center gap-3 w-full sm:w-[476.442px] mx-auto">
-                                <input
-                                    type="text"
-                                    name="userMobileExtension"
-                                    placeholder="+30"
-                                    value={formData.userMobileExtension}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full max-w-[90px] h-[50px] px-2 border border-[#C3C3C3] outline-none rounded-[10px] text-center"
-                                />
+                                <div className="w-[110px]">
+                                    <CountryCodeSelect
+                                        value={formData.userMobileExtension}
+                                        onChange={handleUserMobileCodeChange}
+                                        isInvalid={!formData.userMobileExtension}
+                                    />
+                                </div>
                                 <input
                                     type="tel"
                                     name="userMobileNumber"
@@ -591,7 +605,7 @@ export const ForeignersForm = ({ isOpen, onClose, selectedQuote, userDetails }) 
                                     value={formData.userMobileNumber}
                                     onChange={handleChange}
                                     required
-                                    className="w-full h-[50px] px-5 border border-[#C3C3C3] outline-none rounded-[10px]"
+                                    className="flex-1 h-[50px] px-5 border border-[#C3C3C3] outline-none rounded-[10px]"
                                 />
                             </div>
 

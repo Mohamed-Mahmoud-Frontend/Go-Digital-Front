@@ -1,4 +1,10 @@
-{
+{"success": {
+  "title": "Your policy has been issued successfully!",
+  "message": "Your policy has been sent to your email and is ready to use.",
+  "back_to_home": "Back to Home",
+  "renew_contract": "Renew Policy",
+  "support": "Need help? Contact us at support@godigital.gr"
+},
     "nav": {
         "home": "Home",
         "products": "Products",
