@@ -20,10 +20,27 @@ export const LiabilityQuote = () => {
 
   const [vehicleInput, setVehicleInput] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData.vehicles));
   }, [userData.vehicles]);
+
+  useEffect(() => {
+    const renewDataStr = localStorage.getItem("renewContractData");
+    if (renewDataStr) {
+      try {
+        const { contractData } = JSON.parse(renewDataStr);
+        if (contractData && Array.isArray(contractData.vehicles) && contractData.vehicles.length > 0) {
+          const uniqueVehicles = [...new Set(contractData.vehicles.map(v => v.toString().trim()))].filter(Boolean);
+          setUserData(prev => ({ ...prev, vehicles: uniqueVehicles }));
+          localStorage.removeItem("renewContractData");
+        }
+      } catch (err) {
+        console.error("Failed to load renewal data:", err);
+      }
+    }
+  }, []);
 
   const handleVehicleInputChange = (e) => {
     const value = e.target.value;
@@ -36,15 +53,15 @@ export const LiabilityQuote = () => {
   const addVehicle = () => {
     const trimmed = vehicleInput.trim();
     if (!trimmed) {
-      setError(t("validation.enter_vehicle"));
+      setError("Please enter a vehicle");
       return;
     }
     if (trimmed.length < 2) {
-      setError(t("validation.vehicle_too_short"));
+      setError("Vehicle is too short");
       return;
     }
     if (userData.vehicles.includes(trimmed)) {
-      setError(t("validation.vehicle_exists"));
+      setError("Vehicle already exists");
       return;
     }
 
@@ -74,16 +91,29 @@ export const LiabilityQuote = () => {
 
   const handleSubmit = () => {
     if (!isInputValid()) {
-      setError(t("validation.add_at_least_one"));
+      setError("Please add at least one vehicle");
       return;
     }
+    localStorage.setItem("liabilityQuoteData", JSON.stringify({ vehicles: userData.vehicles }));
     navigate("/get-a-quote-liability/proceed");
   };
 
   const handleBack = () => {
     localStorage.removeItem(LOCAL_STORAGE_KEY);
+    localStorage.removeItem("liabilityQuoteData");
     window.history.back();
   };
+
+  if (isLoading) {
+    return (
+      <>
+        <QuoteHeader />
+        <div className="flex justify-center items-center min-h-screen">
+          <LoadingSpinner />
+        </div>
+      </>
+    );
+  }
 
   return (
     <main>
@@ -162,10 +192,6 @@ export const LiabilityQuote = () => {
   );
 };
 
-/* -------------------------------------------------------------------------- */
-/*                               ACTION BUTTON                                */
-/* -------------------------------------------------------------------------- */
-
 const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
   <button
     onClick={onClick}
@@ -195,10 +221,6 @@ const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
     )}
   </button>
 );
-
-/* -------------------------------------------------------------------------- */
-/*                                 PROPTYPES                                  */
-/* -------------------------------------------------------------------------- */
 
 ActionButton.propTypes = {
   text: PropTypes.string.isRequired,

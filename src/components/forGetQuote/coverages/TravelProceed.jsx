@@ -1,3 +1,4 @@
+// src/pages/TravelProceed.jsx
 import { Fragment, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import * as iconsUtil from "@/utils/icons.util";
@@ -6,7 +7,6 @@ import { useAuth } from "@/hooks/useAuth";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// === ديناميكي 100% - كل الأيقونات في object واحد ===
 const COVERAGE_CONFIG = [
   { key: "cancellation",        icon: iconsUtil.CancellationIcon,        fallback: "cancellation" },
   { key: "medical",             icon: iconsUtil.MedicIcon,               fallback: "medical" },
@@ -22,63 +22,59 @@ const COVERAGE_CONFIG = [
 export const TravelProceed = () => {
   const { t, i18n } = useTranslation();
   const { isAuthenticated } = useAuth();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [selectedQuote, setSelectedQuote] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Authentication popup states
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
   const [isRegisterPopupOpen, setIsRegisterPopupOpen] = useState(false);
   const [isOtpPopupOpen, setIsOtpPopupOpen] = useState(false);
   const [otpEmail, setOtpEmail] = useState("");
 
-  // Load stored quote data
   useEffect(() => {
-    loadStoredData();
-  }, []);
+    const loadStoredData = () => {
+      try {
+        const storedData = localStorage.getItem("travelQuoteData");
+        if (!storedData) throw new Error("No quote data found");
 
-  const loadStoredData = () => {
-    try {
-      const storedData = localStorage.getItem("travelQuoteData");
-      if (storedData) {
-        const parsedData = JSON.parse(storedData);
-        if (parsedData.selectedQuote) {
-          setSelectedQuote(parsedData.selectedQuote);
-        } else if (parsedData.quotes && parsedData.quotes.length > 0) {
-          setSelectedQuote(parsedData.quotes[0]);
-        }
-        setUserDetails(parsedData.userData);
+        const parsed = JSON.parse(storedData);
+        const quotes = parsed.quotes || [];
+        const formData = parsed.formData || parsed.userData;
+
+        if (!quotes.length) throw new Error("No quotes available");
+
+        const quote = parsed.selectedQuote || quotes[0];
+        setSelectedQuote(quote);
+        setUserDetails(formData);
+      } catch (err) {
+        console.error("Failed to load quote data:", err);
+        setError(t("travel_proceed.errors.load_failed"));
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error loading stored data:", error);
-      setError("Failed to load quote data");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
+
+    loadStoredData();
+  }, [t]);
 
   const fetchUserDetails = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("No token found");
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No token");
 
-      const response = await fetch(`${API_BASE_URL}/user/details`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-          "Accept-Language": i18n.language,
-        },
-      });
+    const response = await fetch(`${API_BASE_URL}/user/details`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+        "Accept-Language": i18n.language,
+      },
+    });
 
-      if (!response.ok) throw new Error("Failed to fetch user details");
-      return await response.json();
-    } catch (error) {
-      console.error("Error fetching user details:", error);
-      throw error;
-    }
+    if (!response.ok) throw new Error("Failed to fetch user");
+    return await response.json();
   };
 
   const openModal = async () => {
@@ -96,15 +92,14 @@ export const TravelProceed = () => {
 
   const closeModal = () => setIsModalOpen(false);
 
-  // Listen for login success
   useEffect(() => {
     const handleLoginSuccess = async () => {
       if (isAuthenticated && !isModalOpen) {
         try {
           await fetchUserDetails();
           setIsModalOpen(true);
-        } catch (error) {
-          console.error("Failed to fetch user details after login:", error);
+        } catch (err) {
+          console.error("Login success but failed to load user:", err);
         }
       }
     };
@@ -112,6 +107,22 @@ export const TravelProceed = () => {
     window.addEventListener("loginSuccess", handleLoginSuccess);
     return () => window.removeEventListener("loginSuccess", handleLoginSuccess);
   }, [isAuthenticated, isModalOpen]);
+
+  const getCoverage = (key, fallbackKey) => {
+    const item = selectedQuote?.coverage?.[key];
+    return {
+      text: item?.text || t(`travel_proceed.covers.${fallbackKey}`),
+      value: item?.value || "—",
+      details: item?.details || t("common.no_details_available"),
+    };
+  };
+
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = selectedQuote?.policy_document || "#";
+    link.download = `${selectedQuote?.name || "policy"}.pdf`;
+    link.click();
+  };
 
   if (isLoading) {
     return (
@@ -129,26 +140,18 @@ export const TravelProceed = () => {
       <Fragment>
         <QuoteHeader />
         <div className="flex justify-center items-center min-h-screen">
-          <div className="text-lg font-semibold text-red-600">
-            {error || "No quote data found"}
+          <div className="text-lg font-semibold text-red-600 text-center p-5">
+            {error || t("travel_proceed.errors.no_data")}
           </div>
-        </div>
+          </div>
+       
       </Fragment>
     );
   }
 
-  // Helper: استخراج النص والقيمة من API أو fallback
-  const getCoverage = (key, fallbackKey) => {
-    const item = selectedQuote.coverage?.[key];
-    return {
-      text: item?.text || t(`travel_proceed.covers.${fallbackKey}`),
-      value: item?.value || "—",
-    };
-  };
-
   return (
     <Fragment>
-      {/* === Popups === */}
+      {/* === Authentication Popups === */}
       {isLoginPopupOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <LoginPopup
@@ -197,97 +200,92 @@ export const TravelProceed = () => {
 
       <main className="Inter_font flex flex-col lg:flex-row justify-center items-baseline gap-7 my-10 mx-5">
 
-        {/* === Insurance Details === */}
+        {/* === Insurance Summary === */}
         <section
-          className="w-full lg:w-auto 2xl:w-[778px] bg-[#FFEFEA] rounded-3xl"
+          className="w-full lg:w-auto 2xl:w-[778px] bg-[#FFEFEA] rounded-3xl p-6"
           style={{ boxShadow: "0px -2px 4px 0px #FFEFEA" }}
         >
-          <h1 className="hidden sm:block max-w-[683px] text-2xl sm:text-3xl text-left font-medium m-8">
+          <h1 className="hidden sm:block max-w-[683px] text-2xl sm:text-3xl text-left font-medium mb-4">
             {t("travel_proceed.header.desktop")}
           </h1>
-          <h1 className="sm:hidden max-w-[683px] text-2xl lg:text-3xl text-left font-medium m-7">
+          <h1 className="sm:hidden max-w-[683px] text-2xl lg:text-3xl text-left font-medium mb-4">
             {t("travel_proceed.header.mobile")}
           </h1>
 
-          <hr className="border border-[#FACABC] mx-5" />
+          <hr className="border border-[#FACABC] mx-5 mb-6" />
 
-          <div className="flex flex-col gap-6 items-start justify-center py-5 px-4 vsm:px-8 sm:px-14">
-            {/* Company */}
+          <div className="space-y-6">
+
             <article className="flex gap-4 vsm:gap-7 items-center">
               <iconsUtil.CompanyIcon />
-              <span>
+              <div>
                 <h1 className="sm:text-lg font-semibold text-secondaryColor">
                   {t("travel_proceed.insurance_company")}
                 </h1>
                 <h2 className="text-sm sm:text-base">HDI Global Specialty SE</h2>
-              </span>
+              </div>
             </article>
 
-            {/* Period */}
             <article className="flex gap-4 vsm:gap-7 items-center">
               <iconsUtil.PeriodIcon />
-              <span>
+              <div>
                 <h1 className="sm:text-lg font-semibold text-secondaryColor">
                   {t("travel_proceed.insurance_period")}
                 </h1>
                 <h2 className="text-sm sm:text-base">
                   {userDetails.step2.startDate} to {userDetails.step2.endDate}
                 </h2>
-              </span>
+              </div>
             </article>
 
-            <hr className="border border-[#FACABC] w-full" />
+            <hr className="border border-[#FACABC]" />
 
-            {/* From */}
             <article className="flex gap-4 vsm:gap-7 items-center">
               <iconsUtil.TravellingFromIcon />
-              <span>
+              <div>
                 <h1 className="sm:text-lg font-semibold text-secondaryColor">
                   {t("travel_proceed.travelling_from")}
                 </h1>
                 <h2 className="text-sm sm:text-base">{userDetails.step1.fromCountry}</h2>
-              </span>
+              </div>
             </article>
 
-            {/* To */}
             <article className="flex gap-4 vsm:gap-7 items-center">
               <iconsUtil.TravellingToIcon />
-              <span>
+              <div>
                 <h1 className="sm:text-lg font-semibold text-secondaryColor">
                   {t("travel_proceed.travelling_to")}
                 </h1>
                 <h2 className="text-sm sm:text-base">{userDetails.step1.toCountry.join(", ")}</h2>
-              </span>
+              </div>
             </article>
 
-            <hr className="border border-[#FACABC] w-full" />
+            <hr className="border border-[#FACABC]" />
 
-            {/* Traveler */}
             <article className="flex gap-4 vsm:gap-7 items-center">
               <iconsUtil.TravelerIcon />
-              <span>
+              <div>
                 <h1 className="sm:text-lg font-semibold text-secondaryColor">
                   {t("travel_proceed.traveler")}
                 </h1>
                 <h2 className="text-sm sm:text-base">
                   {userDetails.step3.insuredType} ({userDetails.step4.persons.length}{" "}
-                  {userDetails.step4.persons.length === 1 ? "person" : "persons"})
+                  {userDetails.step4.persons.length === 1 ? t("common.person") : t("common.persons")})
                 </h2>
-              </span>
+              </div>
             </article>
 
-            <hr className="border border-[#FACABC] w-full" />
+            <hr className="border border-[#FACABC]" />
 
-            {/* Total */}
-            <h1 className="text-2xl sm:text-4xl text-center font-semibold text-secondaryColor w-full">
-              {t("travel_proceed.total")} {selectedQuote.currency || "€"}
-              {selectedQuote.price || "0.00"}
-            </h1>
+            <div className="text-center">
+              <h1 className="text-2xl sm:text-4xl font-semibold text-secondaryColor">
+                {t("travel_proceed.total")} {selectedQuote.currency || "EUR"}{selectedQuote.price || "0.00"}
+              </h1>
+            </div>
 
-            {/* Proceed */}
             <button
               onClick={openModal}
-              className="text-center sm:text-xl font-bold bg-secondaryColor hover:bg-secondaryColor/70 text-white rounded-[30px] py-3 w-full transition-all"
+              className="w-full bg-secondaryColor hover:bg-secondaryColor/80 text-white font-bold text-center py-3 rounded-[30px] transition-all duration-200"
               style={{ boxShadow: "0px -2px 4px 0px #FFEFEA" }}
             >
               {t("travel_proceed.proceed_button")}
@@ -295,34 +293,39 @@ export const TravelProceed = () => {
           </div>
         </section>
 
-        {/* === Cover Details - ديناميكي 100% === */}
+        {/* === Coverage Details - ديناميكي 100% === */}
         <section
-          className="w-full lg:w-auto 2xl:w-[582px] bg-[#FFEFEA] rounded-3xl border border-[#FDE5DE]"
+          className="w-full lg:w-auto 2xl:w-[582px] bg-[#FFEFEA] rounded-3xl border border-[#FDE5DE] p-6"
           style={{ boxShadow: "0px -2px 4px 0px #FFEFEA" }}
         >
-          <div className="flex flex-row-reverse sm:flex-row sm:justify-between justify-end gap-5 items-center m-8">
-            <h1 className="max-w-[683px] text-2xl lg:text-3xl text-left font-medium">
+          <div className="flex flex-row-reverse sm:flex-row justify-between items-center mb-4">
+            <h1 className="text-2xl lg:text-3xl font-medium">
               {selectedQuote.name || t("travel_proceed.cover")}
             </h1>
-            <iconsUtil.DownloadIcon />
+            <button
+              onClick={handleDownload}
+              className="text-secondaryColor hover:text-black transition-colors"
+              aria-label={t("travel_proceed.download_policy")}
+            >
+              <iconsUtil.DownloadIcon />
+            </button>
           </div>
 
-          <hr className="border border-[#FACABC] mx-5" />
+          <hr className="border border-[#FACABC] mx-5 mb-6" />
 
-          {/* === Grid ديناميكي - 3 أعمدة === */}
           <div className="grid grid-cols-3 gap-4 p-5">
             {COVERAGE_CONFIG.map(({ key, icon: Icon, fallback }) => {
               const { text, value } = getCoverage(key, fallback);
               return (
                 <div
                   key={key}
-                  className="flex flex-col justify-center items-center gap-3 text-center text-sm vsm:text-lg text-secondaryColor"
+                  className="flex flex-col items-center gap-3 text-center text-sm vsm:text-lg text-secondaryColor"
                 >
                   <Icon />
-                  <p className="flex flex-col text-black">
-                    {text}
-                    <span className="font-medium">{value}</span>
-                  </p>
+                  <div className="text-black">
+                    <p className="text-xs vsm:text-sm">{text}</p>
+                    <p className="font-medium">{value}</p>
+                  </div>
                 </div>
               );
             })}
@@ -330,7 +333,7 @@ export const TravelProceed = () => {
         </section>
       </main>
 
-      {/* === Modal === */}
+      {/* === Payment Modal === */}
       <TravelForm
         isOpen={isModalOpen}
         onClose={closeModal}

@@ -54,7 +54,11 @@ export const IntermediariesQuote = () => {
         if (!response.ok) throw new Error("Failed to fetch data");
 
         const data = await response.json();
-        setApiData(data);
+        setApiData({
+          questions: data.questions || [],
+          categories: (data.categories || []).map(c => ({ id: c.id, name: c.name })),
+          types: (data.types || []).map(t => ({ id: t.id, name: t.name })),
+        });
       } catch (err) {
         toast.error(t("errors.load_failed") || "Failed to load data");
       } finally {
@@ -162,6 +166,7 @@ export const IntermediariesQuote = () => {
         if (!value) return t("validation.enter_date_of_birth");
         const date = new Date(value);
         const today = new Date(); today.setHours(0, 0, 0, 0);
+        if (isNaN(date.getTime())) return t("validation.invalid_date");
         if (date > today) return t("validation.birth_date_future");
         if (date.getFullYear() < 1900) return t("validation.birth_date_too_old");
       }
@@ -169,6 +174,7 @@ export const IntermediariesQuote = () => {
         if (!value) return t("validation.enter_start_date");
         const date = new Date(value);
         const today = new Date(); today.setHours(0, 0, 0, 0);
+        if (isNaN(date.getTime())) return t("validation.invalid_date");
         if (date < today) return t("validation.start_date_past");
       }
     }
@@ -178,6 +184,7 @@ export const IntermediariesQuote = () => {
         if (!value) return t("validation.enter_firm_established");
         const date = new Date(value);
         const today = new Date(); today.setHours(0, 0, 0, 0);
+        if (isNaN(date.getTime())) return t("validation.invalid_date");
         if (date > today) return t("validation.firm_date_future");
       }
       if (field === "type" && !value) return t("validation.select_type");
@@ -263,6 +270,13 @@ export const IntermediariesQuote = () => {
     setErrors({});
   };
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return null;
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return null;
+    return date.toISOString().split("T")[0]; // YYYY-MM-DD
+  };
+
   const handleSubmit = async () => {
     if (!validateStep(currentStep)) return;
 
@@ -274,6 +288,13 @@ export const IntermediariesQuote = () => {
         textarea: q.textarea || "",
       }));
 
+      const formattedBirthday = formatDate(userData.step1.dateBirthday);
+      if (!formattedBirthday) {
+        toast.error(t("validation.invalid_birth_date"));
+        setIsLoading(false);
+        return;
+      }
+
       const submissionData = {
         firm_established: userData.step2.firmEstablished,
         agent_type: userData.step1.agentTypeId,
@@ -284,7 +305,7 @@ export const IntermediariesQuote = () => {
         insured_type: "individual",
         start_date: userData.step1.startDate,
         questions: questionsData,
-        dates_of_birthday: [userData.step1.dateBirthday],
+        dates_of_birthday: [formattedBirthday],
       };
 
       const response = await fetch(`${API_BASE_URL}/user/intermediaryInsurance/getQuotes`, {
@@ -408,7 +429,7 @@ export const IntermediariesQuote = () => {
               </div>
 
               <h1 className="text-2xl sm:text-4xl font-semibold text-center">
-                ✨ {t("intermediaries_quote_page.steps.step1.title_date_of_birth")}
+                {t("intermediaries_quote_page.steps.step1.title_date_of_birth")}
               </h1>
               <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
                 <TravelInput

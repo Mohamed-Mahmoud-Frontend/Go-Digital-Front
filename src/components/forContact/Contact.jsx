@@ -264,15 +264,10 @@ export const Contact = () => {
                         className="w-full h-[50px] px-5 border border-[#C3C3C3] rounded-[10px] mx-auto outline-none"
                     />
 
-                    {/* Request Type Dropdown */}
+                    {/* =========== بداية التعديل =========== */}
+
+                    {/* Request Type Dropdown (بقى لوحده) */}
                     <div className="flex gap-3 w-full mx-auto">
-                        <button
-                            type="button"
-                            className={`rounded-2xl w-full h-[50px] text-[#C3C3C3] bg-white border border-[#C3C3C3]`}
-                            style={{ boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.15)' }}
-                        >
-                            {t('contact_section.form.customer')}
-                        </button>
                         <select
                             name="request_theme_id"
                             value={formData.request_theme_id}
@@ -289,9 +284,16 @@ export const Contact = () => {
                         </select>
                     </div>
 
-                    {/* Client Selection */}
                     <div className="flex gap-3 w-full mx-auto">
                         <span className="flex gap-3 w-full">
+                            <button
+                                type="button"
+                                className={`rounded-2xl w-fit text-nowrap px-4 h-[50px] text-[#C3C3C3] bg-white border border-[#C3C3C3]`}
+                                style={{ boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.15)' }}
+                            >
+                                {t('contact_section.form.customer')}
+                            </button>
+
                             <button
                                 type="button"
                                 onClick={() => handleClientSelection(true)}
@@ -310,6 +312,7 @@ export const Contact = () => {
                             </button>
                         </span>
                     </div>
+
 
                     <textarea
                         name="message"

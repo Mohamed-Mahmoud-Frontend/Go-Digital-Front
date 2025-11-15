@@ -853,19 +853,27 @@
   },
 
 "common": {
-"person": "Person",
+    "person": "Person",
     "date_of_birth": "Date of Birth",
     "full_name": "Full Name",
     "identification": "ID / Passport Number",
     "no_quotes": "No quotes available at the moment",
-  "error": {
-    "failed_load_data": "Failed to load data. Please try again.",
-    "try_again": "An error occurred during submission. Please try again."
+    "no_details_available": "No details available",
+    "click_icon_for_details": "Click on each icon to learn more about the cover",
+    "show_more": "Show more",
+    "show_less": "Show less",
+    "previous": "Previous",
+    "next": "Next",
+    "no" :"NO",
+    "yes": "YES",
+    "error": {
+      "failed_load_data": "Failed to load data. Please try again.",
+      "try_again": "An error occurred during submission. Please try again."
+    },
+    "button": {
+      "retry": "Retry"
+    }
   },
-  "button": {
-    "retry": "Retry"
-  }
-},
     "guarantee_proceed": {
         "header": "Guarantee",
         "select_quote": "Select Guarantee",
@@ -882,32 +890,37 @@
             "message": "Your application has been submitted successfully! We will contact you soon."
         }
     },
-    "intermediaries_quote_page": {
-        "steps": {
-            "step1": {
-                "title1": "Insurance Intermediary Category",
-                "title2": "When did you start practicing your profession?",
-                "placeholder_departure": "Select category",
-                "placeholder_arrival": "Select date"
-            },
-            "step2": {
-                "title1": "Insurance Start",
-                "title2": "Person Selection",
-                "placeholder_nationality": "Nationality",
-                "placeholder_id": "ID / Passport Number"
-            },
-            "step3": {
-                "title1": "Last Financial Year",
-                "title2": "Current Financial Year, Estimate for Your Business",
-                "placeholder_preference": "Selection"
-            }
-        },
-        "buttons": {
-            "previous": "Previous",
-            "next": "Next",
-            "submit": "Submit"
-        }
+   "intermediaries_quote_page": {
+    "steps": {
+      "step1": {
+        "title_agent_type": "Select Agent Type",
+        "select_agent_type": "Choose your agent type",
+        "title_date_of_birth": "Date of Birth",
+        "title_start_date": "Insurance Start Date"
+      },
+      "step2": {
+        "title_firm_established": "When was your firm established?",
+        "title_type": "Select Type",
+        "select_type": "Choose type"
+      },
+      "step3": {
+        "title_gross_insured": "Gross Insured Amount",
+        "placeholder_gross_insured": "Enter amount",
+        "title_gross_insured_current": "Current Year Gross Insured",
+        "placeholder_gross_insured_current": "Enter current amount"
+      },
+      "step4": {
+        "title": "Additional Questions",
+        "placeholder_details": "Provide details..."
+      }
     },
+    "buttons": {
+      "next": "Next",
+      "previous": "Previous",
+      "submit": "Get Quotes"
+    }
+  },
+
    "liability_quote_page": {
    "form": {
      "title": "License Plate Number (VRM)",
@@ -1127,6 +1140,7 @@
         "proceed_button": "Continue",
         "back_button": "Go Back"
     },
+    
     "travel_proceed": {
     
         "header": {
@@ -1134,7 +1148,26 @@
             "mobile": "Economy"
         },
         "common.person": "Person"
-  ,
+  ,"common": {
+    "person": "Person",
+    "date_of_birth": "Date of Birth",
+    "full_name": "Full Name",
+    "identification": "ID / Passport Number",
+    "no_quotes": "No quotes available at the moment",
+    "no_details_available": "No details available",
+    "click_icon_for_details": "Click on each icon to learn more about the cover",
+    "show_more": "Show more",
+    "show_less": "Show less",
+    "previous": "Previous",
+    "next": "Next",
+    "error": {
+      "failed_load_data": "Failed to load data. Please try again.",
+      "try_again": "An error occurred during submission. Please try again."
+    },
+    "button": {
+      "retry": "Retry"
+    }
+  },
         "insurance_company": "Insurance Company",
         "insurance_period": "Insurance Period",
         "travelling_from": "Where are you travelling from?",

@@ -2,11 +2,11 @@ import { Fragment, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
-import { QuoteHeader, Economy, LoadingSpinner } from "@/components";
+import { QuoteHeader, LoadingSpinner, Economy } from "@/components";
 import * as Icons from "@/utils/icons.util";
 import { toast, Toaster } from "react-hot-toast";
+import api from "@/api/axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const LOCAL_STORAGE_KEY = "travelQuoteForm";
 
 const getApiInsuredType = (insuredType) => {
@@ -26,19 +26,18 @@ const getApiInsuredType = (insuredType) => {
 export const TravelQuote = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-
+  const [quote, setQuote] = useState([]);
+  const [showEconomy, setShowEconomy] = useState({});
   const totalSteps = 5;
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [apiData, setApiData] = useState({ countries: [], types: [] });
-  const [showEconomy, setShowEconomy] = useState({});
   const [errors, setErrors] = useState({});
 
   const [userData, setUserData] = useState(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (!saved) return getDefaultUserData();
-      return JSON.parse(saved);
+      return saved ? JSON.parse(saved) : getDefaultUserData();
     } catch {
       return getDefaultUserData();
     }
@@ -58,104 +57,101 @@ export const TravelQuote = () => {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
     } catch (err) {
-      console.error("Failed to save:", err);
+      console.error("Failed to save data:", err);
     }
   }, [userData]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInitialData = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch(`${API_BASE_URL}/user/travelInsurance/getArguments`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept-Language": i18n.language,
-          },
+        const response = await api.get("/user/travelInsurance/getArguments");
+        setApiData({
+          countries: response.data.countries || [],
+          types: response.data.types || [],
         });
-        if (!res.ok) throw new Error("Failed to fetch");
-        const data = await res.json();
-        setApiData({ countries: data.countries || [], types: data.types || [] });
       } catch (err) {
-        toast.error(t("errors.load_failed"));
+        toast.error("Failed to load data");
       } finally {
         setIsLoading(false);
       }
     };
-    fetchData();
+    fetchInitialData();
   }, [i18n.language, t]);
 
-useEffect(() => {
-  const renewDataStr = localStorage.getItem("renewContractData");
-  if (renewDataStr && apiData.countries.length > 0 && apiData.types.length > 0) {
-    try {
-      const { contractData: renewData } = JSON.parse(renewDataStr);
-
-      // حساب تاريخ البداية الجديد تلقائيًا
-      let newStartDate = renewData.start_date || "";
-      if (renewData.end_date) {
-        const end = new Date(renewData.end_date);
-        end.setDate(end.getDate() + 1);
-        newStartDate = end.toISOString().split("T")[0];
-      }
-
-      const fromCountryObj = apiData.countries.find(c =>
-        c.id.toString() === renewData.from_country_id?.toString() ||
-        c.name === renewData.from_country
-      );
-
-      const toCountryIds = Array.isArray(renewData.to_country_ids)
-        ? renewData.to_country_ids.map(id => id.toString())
-        : [];
-      const toCountries = apiData.countries
-        .filter(c => toCountryIds.includes(c.id.toString()))
-        .map(c => c.name);
-
-      const insuredTypeObj = apiData.types.find(t =>
-        t.id.toString() === renewData.insured_type_id?.toString() ||
-        t.name === renewData.insured_type_name
-      );
-
-      const persons = Array.isArray(renewData.persons)
-        ? renewData.persons.map(p => ({
-            dateBirth: p.date_birth || p.dateBirth || "",
-            name: p.full_name || p.name || "",
-            identification: p.identification || p.id_number || ""
-          }))
-        : [{ dateBirth: "", name: "", identification: "" }];
-
-      setUserData(prev => ({
-        ...prev,
-        step1: {
-          fromCountry: fromCountryObj?.name || "",
-          fromCountryId: fromCountryObj?.id?.toString() || "",
-          toCountry: toCountries,
-          toCountryId: toCountryIds,
-        },
-        step2: { 
-          startDate: newStartDate,
-          endDate: renewData.end_date || "" 
-        },
-        step3: {
-          insuredType: insuredTypeObj?.name || renewData.insured_type_name || "",
-          insuredTypeId: insuredTypeObj?.id?.toString() || "",
-          personCount: renewData.person_count || ""
-        },
-        step4: { persons }
-      }));
-
-      localStorage.removeItem("renewContractData");
-    } catch (err) {
-      console.error("Failed to prefill renew data:", err);
+  useEffect(() => {
+    if (quote.length > 0) {
+      const newShow = {};
+      quote.forEach((_, i) => {
+        newShow[`item${i + 1}`] = false;
+      });
+      setShowEconomy(newShow);
     }
-  }
-}, [apiData.countries, apiData.types]);
+  }, [quote]);
+
+  useEffect(() => {
+    const renewDataStr = localStorage.getItem("renewContractData");
+    if (renewDataStr && apiData.countries.length > 0 && apiData.types.length > 0) {
+      try {
+        const { contractData: renewData } = JSON.parse(renewDataStr);
+
+        const fromCountryObj = apiData.countries.find(
+          (c) => c.id.toString() === renewData.from_country
+        );
+
+        const toCountryObj = apiData.countries.find(
+          (c) => c.id.toString() === renewData.to_country
+        );
+
+        const insuredTypeObj = apiData.types.find(
+          (t) => t.name.toLowerCase() === renewData.insured_type.toLowerCase()
+        );
+
+        const persons = Array.isArray(renewData.persons) && renewData.persons.length > 0
+          ? [{
+              dateBirth: renewData.persons[0].date_birth || "",
+              name: renewData.persons[0].fullName || "",
+              identification: renewData.persons[0].identification || "",
+            }]
+          : [{ dateBirth: "", name: "", identification: "" }];
+
+        const planDuration = parseInt(renewData.plan_duration) || 1;
+        const today = new Date();
+        const startDate = today.toISOString().split("T")[0];
+        const endDate = new Date(today);
+        endDate.setDate(today.getDate() + planDuration - 1);
+        const formattedEndDate = endDate.toISOString().split("T")[0];
+
+        setUserData((prev) => ({
+          ...prev,
+          step1: {
+            fromCountry: fromCountryObj?.name || "",
+            fromCountryId: fromCountryObj?.id?.toString() || "",
+            toCountry: toCountryObj ? [toCountryObj.name] : [],
+            toCountryId: toCountryObj ? [toCountryObj.id.toString()] : [],
+          },
+          step2: { startDate, endDate: formattedEndDate },
+          step3: {
+            insuredType: insuredTypeObj?.name || renewData.insured_type || "Individual",
+            insuredTypeId: insuredTypeObj?.id?.toString() || "",
+            personCount: "",
+          },
+          step4: { persons },
+        }));
+
+        localStorage.removeItem("renewContractData");
+      } catch (err) {
+        console.error("Failed to populate renewal data:", err);
+      }
+    }
+  }, [apiData.countries, apiData.types]);
+
   useEffect(() => {
     const prefilled = localStorage.getItem("travel_destination_prefill");
     if (prefilled && apiData.countries.length > 0) {
-      const country = apiData.countries.find(c => c.id.toString() === prefilled);
+      const country = apiData.countries.find((c) => c.id.toString() === prefilled);
       if (country && !userData.step1.toCountryId.includes(country.id.toString())) {
-        setUserData(prev => ({
+        setUserData((prev) => ({
           ...prev,
           step1: {
             ...prev.step1,
@@ -174,11 +170,11 @@ useEffect(() => {
 
     if (step === 0) {
       if (!userData.step1.fromCountry) {
-        newErrors.fromCountry = t("validation.select_departure");
+        newErrors.fromCountry = "Please select departure country";
         isValid = false;
       }
       if (userData.step1.toCountry.length === 0) {
-        newErrors.toCountry = t("validation.select_destination");
+        newErrors.toCountry = "Please select at least one destination";
         isValid = false;
       }
     }
@@ -186,36 +182,36 @@ useEffect(() => {
     if (step === 1) {
       const today = new Date().toISOString().split("T")[0];
       if (!userData.step2.startDate) {
-        newErrors.startDate = t("validation.enter_start_date");
+        newErrors.startDate = "Please enter start date";
         isValid = false;
       } else if (userData.step2.startDate < today) {
-        newErrors.startDate = t("validation.start_date_future");
+        newErrors.startDate = "Start date must be today or later";
         isValid = false;
       }
 
       if (!userData.step2.endDate) {
-        newErrors.endDate = t("validation.enter_end_date");
+        newErrors.endDate = "Please enter end date";
         isValid = false;
       } else if (userData.step2.endDate < userData.step2.startDate) {
-        newErrors.endDate = t("validation.end_before_start");
+        newErrors.endDate = "End date cannot be before start date";
         isValid = false;
       } else if (userData.step2.endDate < today) {
-        newErrors.endDate = t("validation.end_date_future");
+        newErrors.endDate = "End date must be today or later";
         isValid = false;
       }
     }
 
     if (step === 2) {
       if (!userData.step3.insuredType) {
-        newErrors.insuredType = t("validation.select_insured_type");
+        newErrors.insuredType = "Please select insured type";
         isValid = false;
       }
 
-      const isFamilyOrGroup = ["Οικογένεια", "Family", "Ομάδα (Group)", "Group"].includes(userData.step3.insuredType);
+      const isFamilyOrGroup = ["Family", "Group"].includes(userData.step3.insuredType);
       if (isFamilyOrGroup) {
         const count = parseInt(userData.step3.personCount);
         if (!count || isNaN(count) || count < 1 || count > 20) {
-          newErrors.personCount = t("validation.person_count_range");
+          newErrors.personCount = "Number of persons must be between 1 and 20";
           isValid = false;
         }
       }
@@ -230,29 +226,29 @@ useEffect(() => {
         const birth = p.dateBirth ? new Date(p.dateBirth) : null;
 
         if (!p.dateBirth) {
-          newErrors[`person_${i}_dateBirth`] = t("validation.enter_date_of_birth");
+          newErrors[`person_${i}_dateBirth`] = "Please enter date of birth";
           isValid = false;
         } else if (birth >= today) {
-          newErrors[`person_${i}_dateBirth`] = t("validation.birth_date_future");
+          newErrors[`person_${i}_dateBirth`] = "Birth date cannot be in the future";
           isValid = false;
         } else if (birth < minBirthDate) {
-          newErrors[`person_${i}_dateBirth`] = t("validation.birth_date_too_old");
+          newErrors[`person_${i}_dateBirth`] = "Birth date is too old";
           isValid = false;
         }
 
         if (!p.name.trim()) {
-          newErrors[`person_${i}_name`] = t("validation.enter_full_name");
+          newErrors[`person_${i}_name`] = "Please enter full name";
           isValid = false;
         } else if (p.name.trim().length < 2) {
-          newErrors[`person_${i}_name`] = t("validation.name_too_short");
+          newErrors[`person_${i}_name`] = "Name is too short";
           isValid = false;
         }
 
         if (!p.identification.trim()) {
-          newErrors[`person_${i}_id`] = t("validation.enter_identification");
+          newErrors[`person_${i}_id`] = "Please enter identification";
           isValid = false;
         } else if (!/^[A-Za-z0-9]{3,20}$/.test(p.identification.trim())) {
-          newErrors[`person_${i}_id`] = t("validation.id_invalid_format");
+          newErrors[`person_${i}_id`] = "Identification must be 3-20 alphanumeric characters";
           isValid = false;
         }
       });
@@ -263,10 +259,10 @@ useEffect(() => {
   };
 
   const handleFromCountrySelect = (name) => {
-    const country = apiData.countries.find(c => c.name === name);
+    const country = apiData.countries.find((c) => c.name === name);
     if (country) {
-      setErrors(prev => ({ ...prev, fromCountry: "" }));
-      setUserData(prev => ({
+      setErrors((prev) => ({ ...prev, fromCountry: "" }));
+      setUserData((prev) => ({
         ...prev,
         step1: {
           ...prev.step1,
@@ -278,10 +274,10 @@ useEffect(() => {
   };
 
   const handleToCountryAdd = (name) => {
-    const country = apiData.countries.find(c => c.name === name);
+    const country = apiData.countries.find((c) => c.name === name);
     if (country && !userData.step1.toCountryId.includes(country.id.toString())) {
-      setErrors(prev => ({ ...prev, toCountry: "" }));
-      setUserData(prev => ({
+      setErrors((prev) => ({ ...prev, toCountry: "" }));
+      setUserData((prev) => ({
         ...prev,
         step1: {
           ...prev.step1,
@@ -293,7 +289,7 @@ useEffect(() => {
   };
 
   const handleToCountryRemove = (index) => {
-    setUserData(prev => ({
+    setUserData((prev) => ({
       ...prev,
       step1: {
         ...prev.step1,
@@ -304,15 +300,15 @@ useEffect(() => {
   };
 
   const handleInsuredTypeSelection = (name) => {
-    const type = apiData.types.find(t => t.name === name);
-    setErrors(prev => ({ ...prev, insuredType: "", personCount: "" }));
-    setUserData(prev => ({
+    const type = apiData.types.find((t) => t.name === name);
+    setErrors((prev) => ({ ...prev, insuredType: "", personCount: "" }));
+    setUserData((prev) => ({
       ...prev,
       step3: {
         ...prev.step3,
         insuredType: name,
         insuredTypeId: type ? type.id.toString() : "",
-        personCount: name.includes("Οικογένεια") || name.includes("Family") || name.includes("Group") ? prev.step3.personCount : "",
+        personCount: name.includes("Family") || name.includes("Group") ? prev.step3.personCount : "",
       },
     }));
   };
@@ -323,14 +319,14 @@ useEffect(() => {
     if (currentStep === 2) {
       const type = userData.step3.insuredType;
       let count = 1;
-      if (type.includes("Ζευγάρι") || type.includes("Couple")) count = 2;
-      else if (["Οικογένεια", "Family", "Ομάδα (Group)", "Group"].includes(type)) {
+      if (type.includes("Couple")) count = 2;
+      else if (["Family", "Group"].includes(type)) {
         count = Math.max(1, Math.min(20, parseInt(userData.step3.personCount) || 1));
       }
-      const persons = Array(count).fill(null).map((_, i) =>
-        userData.step4.persons[i] || { dateBirth: "", name: "", identification: "" }
-      );
-      setUserData(prev => ({ ...prev, step4: { persons } }));
+      const persons = Array(count)
+        .fill(null)
+        .map((_, i) => userData.step4.persons[i] || { dateBirth: "", name: "", identification: "" });
+      setUserData((prev) => ({ ...prev, step4: { persons } }));
     }
 
     if (currentStep === 3) {
@@ -338,11 +334,11 @@ useEffect(() => {
       return;
     }
 
-    setCurrentStep(prev => prev + 1);
+    setCurrentStep((prev) => prev + 1);
   };
 
   const handlePrevious = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 0));
+    setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
   const handleSubmit = async (goToProceed = true) => {
@@ -353,40 +349,19 @@ useEffect(() => {
       const payload = {
         from_country: userData.step1.fromCountryId,
         to_country: userData.step1.toCountryId,
-        persons: userData.step4.persons.map(p => ({ date_birth: p.dateBirth })),
+        persons: userData.step4.persons.map((p) => ({ date_birth: p.dateBirth })),
         start_date: userData.step2.startDate,
         end_date: userData.step2.endDate,
         insured_type: getApiInsuredType(userData.step3.insuredType),
       };
 
-      const res = await fetch(`${API_BASE_URL}/user/travelInsurance/getQuotes`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept-Language": i18n.language,
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await api.post("/user/travelInsurance/getQuotes", payload);
+      const result = response.data;
 
-      if (res.status === 400) {
-        const err = await res.json();
-        toast.error(err.error || t("errors.invalid_data"));
-        setIsLoading(false);
-        return;
-      }
+      setQuote(result.quotes || []);
 
-      if (!res.ok) throw new Error("Failed to fetch quotes");
-
-      const result = await res.json();
-      const stored = { quotes: result.quotes || [], userData, submissionData: payload };
-      localStorage.setItem("travelQuoteData", JSON.stringify(stored));
-      localStorage.removeItem(LOCAL_STORAGE_KEY);
-
-      const newShow = {};
-      (result.quotes || []).forEach((_, i) => {
-        newShow[`item${i + 1}`] = false;
-      });
-      setShowEconomy(newShow);
+      const travelQuoteData = { quotes: result.quotes || [], formData: userData };
+      localStorage.setItem("travelQuoteData", JSON.stringify(travelQuoteData));
 
       if (goToProceed) {
         navigate("/get-a-quote-travel/proceed");
@@ -394,7 +369,7 @@ useEffect(() => {
         setCurrentStep(4);
       }
     } catch (err) {
-      toast.error(err.message || t("errors.submit_failed"));
+      toast.error(err.message || "Failed to submit");
     } finally {
       setIsLoading(false);
     }
@@ -438,10 +413,7 @@ useEffect(() => {
                   ${i === currentStep ? "ml-[70px] md:ml-16" : ""}`}
               />
             ))}
-            <span
-              className={`${currentStep < 4 ? "absolute" : ""} transition-all duration-300`}
-              style={{ left: `calc(${currentStep * 23.5}%)` }}
-            >
+            <span className={`${currentStep < 4 ? "absolute" : ""} transition-all duration-300`} style={{ left: `calc(${currentStep * 23.5}%)` }}>
               <Icons.QuotePlaneIcon />
             </span>
           </div>
@@ -452,8 +424,8 @@ useEffect(() => {
             <Fragment>
               <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
                 <SearchableSelect
-                  placeholder={t("travel_quote_page.steps.step1.placeholder_departure")}
-                  options={apiData.countries.map(c => c.name)}
+                  placeholder="From which country?"
+                  options={apiData.countries.map((c) => c.name)}
                   value={userData.step1.fromCountry}
                   onChange={handleFromCountrySelect}
                 />
@@ -462,8 +434,8 @@ useEffect(() => {
 
               <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
                 <MultiCountrySelect
-                  placeholder={t("travel_quote_page.steps.step1.placeholder_arrival")}
-                  options={apiData.countries.map(c => c.name)}
+                  placeholder="To which country?"
+                  options={apiData.countries.map((c) => c.name)}
                   selectedCountries={userData.step1.toCountry}
                   onAddCountry={handleToCountryAdd}
                   onRemoveCountry={handleToCountryRemove}
@@ -477,15 +449,20 @@ useEffect(() => {
             <div className="flex flex-col justify-center items-center gap-10">
               <Icons.QuoteDurationIcon />
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
-                {t("travel_quote_page.steps.step2.title")}
+                When do you want to travel?
               </h1>
               <div className="flex flex-wrap justify-center gap-5">
                 <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
                   <TravelInput
                     type="date"
-                    placeholder={t("travel_quote_page.steps.step2.placeholder_start_date")}
+                    placeholder="Start Date"
                     value={userData.step2.startDate}
-                    onChange={(e) => setUserData(prev => ({ ...prev, step2: { ...prev.step2, startDate: e.target.value } }))}
+                    onChange={(e) =>
+                      setUserData((prev) => ({
+                        ...prev,
+                        step2: { ...prev.step2, startDate: e.target.value },
+                      }))
+                    }
                     min={new Date().toISOString().split("T")[0]}
                   />
                   {errors.startDate && <p className="text-red-600 text-sm mt-1 text-center">{errors.startDate}</p>}
@@ -493,9 +470,14 @@ useEffect(() => {
                 <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
                   <TravelInput
                     type="date"
-                    placeholder={t("travel_quote_page.steps.step2.placeholder_end_date")}
+                    placeholder="End Date"
                     value={userData.step2.endDate}
-                    onChange={(e) => setUserData(prev => ({ ...prev, step2: { ...prev.step2, endDate: e.target.value } }))}
+                    onChange={(e) =>
+                      setUserData((prev) => ({
+                        ...prev,
+                        step2: { ...prev.step2, endDate: e.target.value },
+                      }))
+                    }
                     min={userData.step2.startDate || new Date().toISOString().split("T")[0]}
                   />
                   {errors.endDate && <p className="text-red-600 text-sm mt-1 text-center">{errors.endDate}</p>}
@@ -507,28 +489,31 @@ useEffect(() => {
           {currentStep === 2 && (
             <div className="flex flex-col justify-center items-center gap-10">
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
-                {t("travel_quote_page.steps.step3.title")}
+                Who is traveling?
               </h1>
               <div className="w-full max-w-80 vsm:max-w-96 sm:w-[400px]">
                 <TravelSelect
-                  placeholder={t("travel_quote_page.steps.step3.placeholder_preference")}
+                  placeholder="Select type"
                   value={userData.step3.insuredType}
                   onChange={(e) => handleInsuredTypeSelection(e.target.value)}
-                  options={apiData.types.map(t => t.name)}
+                  options={apiData.types.map((t) => t.name)}
                 />
                 {errors.insuredType && <p className="text-red-600 text-sm mt-1 text-center">{errors.insuredType}</p>}
               </div>
-              {["Οικογένεια", "Family", "Ομάδα (Group)", "Group"].includes(userData.step3.insuredType) && (
+              {["Family", "Group"].includes(userData.step3.insuredType) && (
                 <div className="flex flex-col items-center gap-3">
-                  <h2 className="text-lg font-semibold">
-                    {t("travel_quote_page.steps.step3.person_count") || "Number of Persons"}
-                  </h2>
+                  <h2 className="text-lg font-semibold">Number of persons</h2>
                   <div className="w-full max-w-80 vsm:max-w-96 sm:w-[200px]">
                     <TravelInput
                       type="number"
                       placeholder="1"
                       value={userData.step3.personCount}
-                      onChange={(e) => setUserData(prev => ({ ...prev, step3: { ...prev.step3, personCount: e.target.value } }))}
+                      onChange={(e) =>
+                        setUserData((prev) => ({
+                          ...prev,
+                          step3: { ...prev.step3, personCount: e.target.value },
+                        }))
+                      }
                       min="1"
                       max="20"
                     />
@@ -543,60 +528,72 @@ useEffect(() => {
             <div className="flex flex-col justify-center items-center gap-10 w-full">
               <Icons.QuoteBirthIcon />
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold">
-                {t("travel_quote_page.steps.step4.title")}
+                Enter traveler details
               </h1>
-              <div className={`grid gap-6 w-full max-w-2xl ${userData.step4.persons.length === 1 ? "grid-cols-1" : "md:grid-cols-2"}`}>
+              <div
+                className={`grid gap-6 w-full max-w-2xl ${
+                  userData.step4.persons.length === 1 ? "grid-cols-1" : "md:grid-cols-2"
+                }`}
+              >
                 {userData.step4.persons.map((person, i) => {
-                  const showLabel = !["Ένα Άτομο", "Individual"].includes(userData.step3.insuredType);
+                  const showLabel = !["Individual"].includes(userData.step3.insuredType);
                   return (
                     <div key={i} className="flex flex-col gap-4">
                       {showLabel && (
                         <h3 className="text-lg font-semibold text-center">
-                          {t("common.person")} {i + 1}
+                          Person {i + 1}
                         </h3>
                       )}
                       <div>
                         <TravelInput
                           type="date"
-                          placeholder={t("common.date_of_birth")}
+                          placeholder="Date of Birth"
                           value={person.dateBirth}
                           onChange={(e) => {
                             const newPersons = [...userData.step4.persons];
                             newPersons[i].dateBirth = e.target.value;
-                            setUserData(prev => ({ ...prev, step4: { persons: newPersons } }));
+                            setUserData((prev) => ({ ...prev, step4: { persons: newPersons } }));
                           }}
                           max={new Date().toISOString().split("T")[0]}
                           fullWidth
                         />
-                        {errors[`person_${i}_dateBirth`] && <p className="text-red-600 text-sm mt-1 text-center">{errors[`person_${i}_dateBirth`]}</p>}
+                        {errors[`person_${i}_dateBirth`] && (
+                          <p className="text-red-600 text-sm mt-1 text-center">
+                            {errors[`person_${i}_dateBirth`]}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <TravelInput
                           type="text"
-                          placeholder={t("common.full_name")}
+                          placeholder="Full Name"
                           value={person.name}
                           onChange={(e) => {
                             const newPersons = [...userData.step4.persons];
                             newPersons[i].name = e.target.value;
-                            setUserData(prev => ({ ...prev, step4: { persons: newPersons } }));
+                            setUserData((prev) => ({ ...prev, step4: { persons: newPersons } }));
                           }}
                           fullWidth
                         />
-                        {errors[`person_${i}_name`] && <p className="text-red-600 text-sm mt-1 text-center">{errors[`person_${i}_name`]}</p>}
+                        {errors[`person_${i}_name`] && (
+                          <p className="text-red-600 text-sm mt-1 text-center">{errors[`person_${i}_name`]}</p>
+                        )}
                       </div>
                       <div>
                         <TravelInput
                           type="text"
-                          placeholder={t("common.identification")}
+                          placeholder="ID / Passport"
                           value={person.identification}
                           onChange={(e) => {
                             const newPersons = [...userData.step4.persons];
                             newPersons[i].identification = e.target.value;
-                            setUserData(prev => ({ ...prev, step4: { persons: newPersons } }));
+                            setUserData((prev) => ({ ...prev, step4: { persons: newPersons } }));
                           }}
                           fullWidth
                         />
-                        {errors[`person_${i}_id`] && <p className="text-red-600 text-sm mt-1 text-center">{errors[`person_${i}_id`]}</p>}
+                        {errors[`person_${i}_id`] && (
+                          <p className="text-red-600 text-sm mt-1 text-center">{errors[`person_${i}_id`]}</p>
+                        )}
                       </div>
                     </div>
                   );
@@ -608,31 +605,25 @@ useEffect(() => {
           {currentStep === 4 && (
             <section className="w-full max-w-3xl">
               <h1 className="max-w-[683px] text-2xl sm:text-4xl text-center font-semibold mb-6">
-                {t("travel_quote_page.steps.step5.title")}
+                Choose your plan
               </h1>
               <div className="bg-[#FDE5DE] rounded-[15px] p-4">
-                {(() => {
-                  try {
-                    const stored = JSON.parse(localStorage.getItem("travelQuoteData") || "{}");
-                    const quotes = Array.isArray(stored.quotes) ? stored.quotes : [];
-                    if (!quotes.length) {
-                      return <p className="text-center py-8 text-gray-600">{t("common.no_quotes")}</p>;
-                    }
-                    return quotes.map((quote, i) => (
-                      <Economy
-                        key={quote.id || i}
-                        id={`item${i + 1}`}
-                        show={showEconomy[`item${i + 1}`] || false}
-                        setShow={setShowEconomy}
-                        background={i % 2 === 0 ? "#FDE5DE" : "white"}
-                        quote={quote}
-                        index={i}
-                      />
-                    ));
-                  } catch {
-                    return <p className="text-center py-8 text-red-600">فشل تحميل العروض</p>;
-                  }
-                })()}
+                {quote.length === 0 ? (
+                  <p className="text-center py-8 text-gray-600">No quotes available</p>
+                ) : (
+                  quote.map((q, i) => (
+                    <Economy
+                      key={q.id}
+                      id={`item${i + 1}`}
+                      show={showEconomy[`item${i + 1}`] || false}
+                      setShow={setShowEconomy}
+                      onPrevious={handlePrevious}
+                      background={i % 2 === 0 ? "#FDE5DE" : "white"}
+                      quote={q}
+                      index={i}
+                    />
+                  ))
+                )}
               </div>
             </section>
           )}
@@ -641,13 +632,13 @@ useEffect(() => {
         {currentStep < 4 && (
           <div className="flex justify-center items-center gap-3 vsm:gap-10 my-5">
             <ActionButton
-              text={t("travel_quote_page.buttons.previous")}
+              text="Previous"
               iconPosition="left"
               onClick={handlePrevious}
               isDisabled={currentStep === 0}
             />
             <ActionButton
-              text={t("travel_quote_page.buttons.next")}
+              text="Next"
               iconPosition="right"
               onClick={handleNext}
               isNext
@@ -679,9 +670,13 @@ const TravelSelect = ({ placeholder, value, onChange, options }) => (
     className={`w-full max-w-80 vsm:max-w-96 sm:w-[400px] h-[75px] px-4 border rounded-[10px] font-medium focus:outline-none
       border-[#C3C3C3] ${value ? "text-black border-black" : "text-[#C3C3C3]"}`}
   >
-    <option value="" disabled hidden>{placeholder}</option>
+    <option value="" disabled hidden>
+      {placeholder}
+    </option>
     {options.map((opt, i) => (
-      <option key={i} value={opt}>{opt}</option>
+      <option key={i} value={opt}>
+        {opt}
+      </option>
     ))}
   </select>
 );
@@ -742,7 +737,7 @@ const MultiCountrySelect = ({ placeholder, options, selectedCountries = [], onAd
   const safeSelected = Array.isArray(selectedCountries) ? selectedCountries : [];
 
   const availableOptions = options.filter(
-    opt => !safeSelected.includes(opt) && opt.toLowerCase().includes(filter.toLowerCase())
+    (opt) => !safeSelected.includes(opt) && opt.toLowerCase().includes(filter.toLowerCase())
   );
 
   const handleAdd = (name) => {
@@ -759,7 +754,10 @@ const MultiCountrySelect = ({ placeholder, options, selectedCountries = [], onAd
         onClick={() => setIsOpen(true)}
       >
         {safeSelected.map((country, i) => (
-          <span key={i} className="flex items-center bg-gray-200 text-black rounded-full px-3 py-1 text-sm font-medium">
+          <span
+            key={i}
+            className="flex items-center bg-gray-200 text-black rounded-full px-3 py-1 text-sm font-medium"
+          >
             {country}
             <button
               type="button"
@@ -813,8 +811,10 @@ const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
       ${isDisabled ? "text-gray-400 cursor-not-allowed" : "text-black"}`}
   >
     {iconPosition === "left" && (
-      <span className={`flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform -rotate-90 group-hover:-rotate-[135deg]
-        ${isDisabled ? "bg-gray-300" : "bg-black"}`}>
+      <span
+        className={`flex justify-center items-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-transform -rotate-90 group-hover:-rotate-[135deg]
+        ${isDisabled ? "bg-gray-300" : "bg-black"}`}
+      >
         <Icons.QuoteArrowIcon />
       </span>
     )}
@@ -827,8 +827,42 @@ const ActionButton = ({ text, iconPosition, onClick, isDisabled, isNext }) => (
   </button>
 );
 
-TravelInput.propTypes = { placeholder: PropTypes.string, value: PropTypes.string, onChange: PropTypes.func.isRequired, type: PropTypes.string, min: PropTypes.string, max: PropTypes.string, fullWidth: PropTypes.bool };
-TravelSelect.propTypes = { placeholder: PropTypes.string, value: PropTypes.string, onChange: PropTypes.func.isRequired, options: PropTypes.array.isRequired };
-SearchableSelect.propTypes = { placeholder: PropTypes.string, options: PropTypes.array.isRequired, value: PropTypes.string, onChange: PropTypes.func.isRequired };
-MultiCountrySelect.propTypes = { placeholder: PropTypes.string, options: PropTypes.array.isRequired, selectedCountries: PropTypes.array, onAddCountry: PropTypes.func.isRequired, onRemoveCountry: PropTypes.func.isRequired };
-ActionButton.propTypes = { text: PropTypes.string.isRequired, iconPosition: PropTypes.oneOf(["left", "right"]).isRequired, onClick: PropTypes.func.isRequired, isDisabled: PropTypes.bool, isNext: PropTypes.bool };
+TravelInput.propTypes = {
+  placeholder: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  type: PropTypes.string,
+  min: PropTypes.string,
+  max: PropTypes.string,
+  fullWidth: PropTypes.bool,
+};
+
+TravelSelect.propTypes = {
+  placeholder: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  options: PropTypes.array.isRequired,
+};
+
+SearchableSelect.propTypes = {
+  placeholder: PropTypes.string,
+  options: PropTypes.array.isRequired,
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+};
+
+MultiCountrySelect.propTypes = {
+  placeholder: PropTypes.string,
+  options: PropTypes.array.isRequired,
+  selectedCountries: PropTypes.array,
+  onAddCountry: PropTypes.func.isRequired,
+  onRemoveCountry: PropTypes.func.isRequired,
+};
+
+ActionButton.propTypes = {
+  text: PropTypes.string.isRequired,
+  iconPosition: PropTypes.oneOf(["left", "right"]).isRequired,
+  onClick: PropTypes.func.isRequired,
+  isDisabled: PropTypes.bool,
+  isNext: PropTypes.bool,
+};
