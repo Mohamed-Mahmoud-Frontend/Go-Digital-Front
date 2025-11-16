@@ -198,9 +198,9 @@ export const Economy = ({
                 e.stopPropagation();
                 onPrevious();
               }}
-              className="group flex items-center justify-center gap-2 bg-white w-2/5 h-12 text-sm vsm:text-base font-medium border rounded-[27.5px] shadow-md transition-all text-black"
+              className="group p-2 flex items-center justify-center gap-2 bg-white w-2/5 h-12 text-sm vsm:text-base font-medium border rounded-[27.5px] shadow-md transition-all text-black"
             >
-              <span className="flex justify-center items-center bg-black w-8 h-8 rounded-full transition-transform -rotate-90 group-hover:-rotate-[135deg]">
+              <span className="flex p-2 justify-center items-center bg-black w-8 h-8 rounded-full transition-transform -rotate-90 group-hover:-rotate-[135deg]">
                 <iconsUtil.QuoteArrowIcon />
               </span>
               {t("common.previous")}
@@ -214,7 +214,7 @@ export const Economy = ({
               className="group flex items-center justify-center gap-2 bg-white w-2/5 h-12 text-sm vsm:text-base font-medium border rounded-[27.5px] shadow-md transition-all text-black"
             >
               {t("common.next")}
-              <span className="flex justify-center items-center bg-secondaryColor w-8 h-8 rounded-full transition-transform group-hover:rotate-45">
+              <span className="flex p-2 justify-center items-center bg-secondaryColor w-8 h-8 rounded-full transition-transform group-hover:rotate-45">
                 <iconsUtil.QuoteArrowIcon />
               </span>
             </button>
