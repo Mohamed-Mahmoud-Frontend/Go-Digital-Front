@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import * as iconsUtil from "@/utils/icons.util";
 import { LoadingSpinner } from "@/components";
 import { CountryCodeSelect } from "../../CountryCodeSelect";
-import api from "@/api/axios";
+import api from "../../../API/axios";
 
 export const TravelForm = ({ isOpen, onClose, selectedQuote, userDetails }) => {
   const { t, i18n } = useTranslation();

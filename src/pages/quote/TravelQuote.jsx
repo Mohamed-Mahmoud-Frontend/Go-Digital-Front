@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { QuoteHeader, LoadingSpinner, Economy } from "@/components";
 import * as Icons from "@/utils/icons.util";
 import { toast, Toaster } from "react-hot-toast";
-import api from "@/api/axios";
+import api from "../../API/axios";
 
 const LOCAL_STORAGE_KEY = "travelQuoteForm";
 
